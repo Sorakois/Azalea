@@ -9,7 +9,7 @@ csvFile = './cookies.csv'
 # 
 ###############################################################
 
-base_url = "https://cookierunkingdom.fandom.com/wiki/"
+base_url = "https://cookierunkingdom.fandom.com"
 
 class Cookie:
 	'''
@@ -45,7 +45,7 @@ def basic_cookie_scrape():
 	returns:
 		cookies (list[Cookie]) : a list of Cookie objects
 	'''
-	r = requests.get(base_url + "List_of_Cookies")
+	r = requests.get(base_url + "/wiki/List_of_Cookies")
 
 	soup = BeautifulSoup(r.content, 'html5lib')
 	cookies = []
