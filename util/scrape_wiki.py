@@ -22,17 +22,17 @@ class Cookie:
 	def find_info(self):
 		'''
 		Search through cookie's link to scrape the information.
-		Sets: Gender, 
+		Sets: image link, gender, release date, type, position
 		'''
 		pass
 
 
-def scrape_cookies():
+def basic_cookie_scrape():
 	'''
 	Function to scrape the cookies information.
 
 	returns:
-		cookies (List[Cookie]) : a list of Cookie objects
+		cookies (list[Cookie]) : a list of Cookie objects
 	'''
 	r = requests.get(base_url + "List_of_Cookies")
 
@@ -49,4 +49,20 @@ def scrape_cookies():
 	return cookies
 
 
-cookies = scrape_cookies()
+def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV = None):
+	'''
+	Deep dives each cookie info if information is not known yet
+
+	params:
+		cookies (list[Cookie]): list of basic Cookie objects
+		cookieCSV (str): csv file of known cookie info
+
+	returns:
+		cookies (list[Cookie]): list of all required updated cookies
+	'''
+	pass
+
+
+cookies = basic_cookie_scrape()
+
+cookies_to_update = indepth_cookie_scrape(cookies=cookies, cookieCSV=None)
