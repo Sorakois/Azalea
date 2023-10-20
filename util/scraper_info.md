@@ -1,0 +1,1 @@
+- Place the cookie CSV into the same folder as the scrape_wiki.py before running.
