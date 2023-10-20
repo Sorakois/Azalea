@@ -30,7 +30,22 @@ class Cookie:
 		self.link = link
 
 	def __str__(self):
+		'''
+		Allows for name to be called when referenced.
+
+		returns:
+			self.name (str) : name of cookie
+		'''
 		return self.name
+	
+	def to_list(self):
+		'''
+		Converts Cookie object into list format
+
+		returns:
+			cookie_info (list[str]) : list formatted object
+		'''
+		return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link]
 
 	def find_info(self):
 		'''
@@ -125,14 +140,13 @@ def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV):
 	
 	f1.close()
 
+
 	for cookie in new_cookies:
 		cookie.find_info()
-		print(cookie.name, cookie.link, cookie.img_link, cookie.pronouns, cookie.release, cookie.ctype, cookie.position)
+		with open(cookieCSV, 'a', newline='') as f:
+			writer = csv.writer(f)
+			writer.writerow(cookie.to_list())
 		
-
-
-
-
 
 cookies = basic_cookie_scrape()
 
