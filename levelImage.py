@@ -5,6 +5,20 @@ import numpy as np
 import requests
 
 def rankingHandler(level, highest_level, ranking, user_id) -> (str, int):
+    '''
+    Badge ranking image
+
+    params:
+        level (int) : current user level
+        highest_level (int) : highest level of the current server
+        ranking (int) : ranking within the server
+        user_id (int) : ID of the user
+
+    returns:
+        rank (str) : directory of image to use
+        rankNum (int) : rank number
+    '''
+
     defaultDir = 'assets/level/'
 
     rank = ''
@@ -67,6 +81,20 @@ def rankingHandler(level, highest_level, ranking, user_id) -> (str, int):
     return rank, rankNum
 
 async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
+    '''
+    Implements template of the leveling banner
+
+    params:
+        pfp (str) : directory of user pfp
+        level (int) : current user level
+        xp (int) : current user xp
+        highest_level (int) : highest level of the current server
+        ranking (int) : ranking of current user
+        user_id (int) : ID of the current user
+
+    returns:
+        buffer (BytesIO) : Byte stream of the generated image
+    '''
 
     font1 = ImageFont.truetype('assets/cookieRunFont.ttf', size=30)
     font2 = ImageFont.truetype('assets/cookieRunFont.ttf', size=20)

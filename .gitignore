@@ -4,3 +4,6 @@ venv/
 .env
 
 logs/
+
+util/cookies.csv
+cookies.csv

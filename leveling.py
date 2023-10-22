@@ -51,6 +51,15 @@ class Leveling(commands.Cog):
 
     @app_commands.command(name="leaderboard", description="Display the leaderboard for this server")
     async def leaderboard(self, interaction: discord.Interaction):
+        '''
+        Check the leaderboard of the server
+
+        params:
+            interaction (discord.Interaction) : Interaction object to respond to
+
+        returns:
+            A message sent to user.
+        '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT user, level FROM levels ORDER BY level DESC LIMIT 10")
@@ -74,6 +83,13 @@ class Leveling(commands.Cog):
 
     @app_commands.command(name="level", description="Display the level of a user")
     async def level(self, interaction: discord.Interaction, name: discord.User = None) -> None:
+        '''
+        Checks the current level of a server member
+
+        params:
+            interaction (discord.Interaction) : Interaction object to respond to
+            name (discord.User) [Optional] : An optional username to check other users' level
+        '''
         if name is None:
             member = interaction.user
         else:
@@ -119,6 +135,12 @@ class Leveling(commands.Cog):
 
             
     async def levelUp(self, message: discord.Message) -> None:
+        '''
+        Called whenever a message is sent and does experience and level up logic
+
+        params:
+            message (discord.Message) : Message object that was sent
+        '''
         if message.author.bot:
             return
         if message.author.id in ignoreList:
@@ -168,6 +190,15 @@ class Leveling(commands.Cog):
             await self.bot.process_commands(message)
 
     async def assign_role(self, user, level, highest_level, guild):
+        '''
+        Called when a user levels up, will remove and add roles of each level accordingly.
+
+        params:
+            user (discord.User) : User object to change role of
+            level (int) : the new level of the user
+            highest_level (int) : the highest level in the server
+            guild (discord.Guild) : Guild object that the user is in.
+        '''
         async def checkAssign(index):
             getRole = lambda i : discord.utils.get(guild.roles, name=list(roles.keys())[i])
             if getRole(index) not in user.roles:

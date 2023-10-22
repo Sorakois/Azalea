@@ -10,8 +10,10 @@ import datetime
 from leveling import Leveling
 from dotenv import load_dotenv
 
+# load the enviroment variables
 load_dotenv()
 
+# start up logging
 logging.basicConfig(filename=f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}')
 stderrLogger=logging.StreamHandler()
 stderrLogger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
@@ -19,21 +21,23 @@ logging.getLogger().addHandler(stderrLogger)
 
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
+# start up database connection
 mysql_login = {'host':'78.108.218.47',
                'user':'u104092_P8hJJbGHcV',
                'password':'bt1c@A^l^obLB4hAMA8YKAOW',
                'db':'s104092_levels',
                'port':3306}
 
+# discord bot settings
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
 activity = discord.Activity(type=discord.ActivityType.watching, name="the chat logs 👀")
 bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 
 cogs = {'leveling': Leveling(bot)}
 
+# bot settings
 f = open('bot_settings.json')
 data = json.load(f)
 if data['xp_modifier']['enabled']:
@@ -46,6 +50,12 @@ class General(commands.Cog):
 
     @app_commands.command(name="help", description="Need assistance?")
     async def help(self, interaction : discord.Interaction):
+        '''
+        Help command displays all current commands
+
+        params:
+            interaction (discord.Interaction) : slash command object
+        '''
         em = discord.Embed(title="Help")
         em.add_field(name="", value="Need assistance?", inline=False)
         em.add_field(name="Command", value="/help\n/level\n/leaderboard", inline=True)
@@ -54,10 +64,22 @@ class General(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
+        '''
+        Runs functions whenever a message is sent
+
+        params:
+            message (discord.Message) : Message object of message sent
+        '''
         await cogs["leveling"].levelUp(message=message)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.User):
+        '''
+        Runs whenever a user joins the server
+
+        params:
+            member (discord.User) : User object of the user that joined
+        '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT user FROM levels WHERE user = %s", member.id)
@@ -67,8 +89,20 @@ class General(commands.Cog):
                 roleToAdd = discord.utils.get(member.guild.roles, name='Chocolate II')
                 await member.add_roles(roleToAdd)
 
+    @app_commands.command(name="wiki")
+    async def wiki(self, interaction: discord.Interaction, character: str):
+        # Implement later
+        pass
+
     @app_commands.command(name="declare")
     async def declare(self, interaction: discord.Interaction, prompt: str):
+        '''
+        Admin commands for xp boosting and extra (more will be added later)
+
+        params:
+            interaction (discord.Interaction) : Interaction object to respond to.
+            prompt (str) : the given prompt to run within the function
+        '''
         if discord.utils.get(interaction.guild.roles, id=1083875075930980523) in interaction.user.roles:
             split = prompt.split(' ')
 
@@ -87,6 +121,9 @@ cogs['general'] = General(bot)
 
 @bot.event
 async def on_ready():
+    '''
+    Runs on bot startup
+    '''
     print("Ready!")
     pool = await aiomysql.create_pool(host=mysql_login['host'],
                                        user=mysql_login['user'],
@@ -102,4 +139,4 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('TEST_TOKEN'))
