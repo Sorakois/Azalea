@@ -7,7 +7,7 @@ import time
 # Customizable variables:
 #
 ## csv file relative path name
-cookieCSVFile = './cookies.csv'
+cookieCSVFile = 'util/cookies.csv'
 # 
 ###############################################################
 
@@ -132,7 +132,7 @@ def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV):
 	for cookie in cookies:
 		found = False
 		for row in csvReader:
-			if cookie.name == row[0]:
+			if cookie.name == row[0] or cookie.link == row[1]:
 				found = True
 				break
 		if not found:
@@ -140,14 +140,16 @@ def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV):
 	
 	f1.close()
 
-
 	for cookie in new_cookies:
 		cookie.find_info()
 		with open(cookieCSV, 'a', newline='') as f:
 			writer = csv.writer(f)
 			writer.writerow(cookie.to_list())
+
+	return new_cookies
 		
+def scrape_cookies():
+	cookies = basic_cookie_scrape()
 
-cookies = basic_cookie_scrape()
-
-cookies_to_update = indepth_cookie_scrape(cookies=cookies, cookieCSV=cookieCSVFile)
+	cookies_to_update = indepth_cookie_scrape(cookies=cookies, cookieCSV=cookieCSVFile)
+	return "updated"

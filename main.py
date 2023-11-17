@@ -9,6 +9,7 @@ import json
 import datetime
 from leveling import Leveling
 from dotenv import load_dotenv
+from util.scrape_wiki import scrape_cookies
 
 load_dotenv()
 
@@ -79,8 +80,12 @@ class General(commands.Cog):
                 Leveling.MAXEXP *= boost
                 await interaction.response.send_message(f"Double XP Started for {days} days")
                 print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
+
+            if split[0] == 'scrape_cookie':
+                res = scrape_cookies()
+                await interaction.response.send_message(f"resolved with: {res}", ephemeral=True)
         else:
-            await interaction.response.send_message('You do not have permission to use this command')
+            await interaction.response.send_message('You do not have permission to use this command', ephemeral=True)
 
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
@@ -102,4 +107,4 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('TEST_TOKEN'))
