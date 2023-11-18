@@ -34,7 +34,7 @@ class CookieInfo(commands.Cog):
 			query = 'Schwarzwälder'
 
 		# search query
-		f = open('util/cookies.csv')
+		f = open('util/cookies.csv', 'r', encoding='latin-1')
 		csvReader = list(csv.reader(f, delimiter=','))
 
 		res = ''
@@ -53,12 +53,18 @@ class CookieInfo(commands.Cog):
 			em = discord.Embed(title=res[0])
 			em.set_image(url=row[6])
 			em.add_field(name='Pronouns', value=row[2], inline=True)
-			em.add_field(name='Type', value=f'{self.emoji_ids2[row[4]]}{row[4]}', inline=True)
-			em.add_field(name='Position', value=f'{self.emoji_ids1[row[5]]}{row[5]}', inline=True)
+			try:
+				em.add_field(name='Type', value=f'{self.emoji_ids2[row[4]]}{row[4]}', inline=True)
+			except KeyError:
+				em.add_field(name='Type', value=f'Unknown', inline=True)
+			try:
+				em.add_field(name='Position', value=f'{self.emoji_ids1[row[5]]}{row[5]}', inline=True)
+			except:
+				em.add_field(name='Type', value=f'Unknown', inline=True)
 			em.set_footer(text=f'Release Date: {row[3]}')
 
 			await interaction.response.send_message(embed=em)
 		except IndexError as e:
 			await interaction.response.send_message(f"Cookie does not exist. {query}")
 
-		
+		f.close()
