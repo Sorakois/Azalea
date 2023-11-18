@@ -94,11 +94,6 @@ class General(commands.Cog):
                 roleToAdd = discord.utils.get(member.guild.roles, name='Chocolate II')
                 await member.add_roles(roleToAdd)
 
-    @app_commands.command(name="wiki")
-    async def wiki(self, interaction: discord.Interaction, character: str):
-        # Implement later
-        pass
-
     @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
         '''
