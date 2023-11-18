@@ -10,6 +10,7 @@ import datetime
 from leveling import Leveling
 from dotenv import load_dotenv
 from util.scrape_wiki import scrape_cookies
+from cookie_info import CookieInfo
 
 load_dotenv()
 
@@ -33,7 +34,10 @@ intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="the chat logs 👀")
 bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 
-cogs = {'leveling': Leveling(bot)}
+cogs = {
+    'leveling': Leveling(bot),
+    'cookie_info' : CookieInfo(bot) 
+    }
 
 f = open('bot_settings.json')
 data = json.load(f)
@@ -68,7 +72,7 @@ class General(commands.Cog):
                 roleToAdd = discord.utils.get(member.guild.roles, name='Chocolate II')
                 await member.add_roles(roleToAdd)
 
-    @app_commands.command(name="declare")
+    @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
         # Experienced role
         if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
