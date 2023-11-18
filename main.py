@@ -149,4 +149,4 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('TEST_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))
