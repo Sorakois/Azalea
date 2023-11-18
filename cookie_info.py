@@ -5,6 +5,23 @@ from discord import app_commands
 
 class CookieInfo(commands.Cog):
 
+	emoji_ids1 = {
+		'Rear': '<:Rear:1175532619509809312>',
+		'Middle': '<:Middle:1175532618410893383>',
+		'Front': '<:Front:1175532616624119948>'
+	}
+	emoji_ids2 = {
+		'Support': '<:Support:1175532593089884270>',
+		'Ranged': '<:Ranged:1175532591701557248>',
+		'Magic': '<:Magic:1175532589432459324>',
+		'Healing': '<:Support:1175532593089884270>',
+		'Defense': '<:Defense:1175532587121381436>',
+		'Charge': '<:Charge:1175532586253164704>',
+		'BTS': '<:BTS:1175532584583835748>',
+		'Bomber': '<:Bomber:1175532583526871040>',
+		'Ambush': '<:Ambush:1175532580062376067>'
+	}
+
 	def __init__(self, bot : commands.Bot):
 		self.bot = bot
 
@@ -29,5 +46,12 @@ class CookieInfo(commands.Cog):
 			if query.capitalize() == temp.capitalize():
 				res = row
 				break
+			
+		em = discord.Embed(title=res[0])
+		em.set_image(url=row[6])
+		em.add_field(name='Pronouns', value=row[2], inline=True)
+		em.add_field(name='Type', value=f'{self.emoji_ids2[row[4]]}{row[4]}', inline=True)
+		em.add_field(name='Position', value=f'{self.emoji_ids1[row[5]]}{row[5]}', inline=True)
+		em.set_footer(text=f'Release Date: {row[3]}')
 
-		await interaction.response.send_message(f'Hello {res}')
+		await interaction.response.send_message(embed=em)
