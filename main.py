@@ -70,7 +70,8 @@ class General(commands.Cog):
 
     @app_commands.command(name="declare")
     async def declare(self, interaction: discord.Interaction, prompt: str):
-        if discord.utils.get(interaction.guild.roles, id=1083875075930980523) in interaction.user.roles:
+        # Experienced role
+        if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
             split = prompt.split(' ')
 
             if split[0] == 'xp-boost':
