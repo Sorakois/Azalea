@@ -9,6 +9,8 @@ import json
 import datetime
 from leveling import Leveling
 from dotenv import load_dotenv
+from util.scrape_wiki import scrape_cookies
+from cookie_info import CookieInfo
 
 # load the enviroment variables
 load_dotenv()
@@ -35,7 +37,10 @@ intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="the chat logs 👀")
 bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 
-cogs = {'leveling': Leveling(bot)}
+cogs = {
+    'leveling': Leveling(bot),
+    'cookie_info' : CookieInfo(bot) 
+    }
 
 # bot settings
 f = open('bot_settings.json')
@@ -94,7 +99,7 @@ class General(commands.Cog):
         # Implement later
         pass
 
-    @app_commands.command(name="declare")
+    @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
         '''
         Admin commands for xp boosting and extra (more will be added later)
@@ -103,7 +108,8 @@ class General(commands.Cog):
             interaction (discord.Interaction) : Interaction object to respond to.
             prompt (str) : the given prompt to run within the function
         '''
-        if discord.utils.get(interaction.guild.roles, id=1083875075930980523) in interaction.user.roles:
+        # Experienced role
+        if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
             split = prompt.split(' ')
 
             if split[0] == 'xp-boost':
@@ -113,8 +119,12 @@ class General(commands.Cog):
                 Leveling.MAXEXP *= boost
                 await interaction.response.send_message(f"Double XP Started for {days} days")
                 print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
+
+            if split[0] == 'scrape_cookie':
+                res = scrape_cookies()
+                await interaction.response.send_message(f"resolved with: {res}", ephemeral=True)
         else:
-            await interaction.response.send_message('You do not have permission to use this command')
+            await interaction.response.send_message('You do not have permission to use this command', ephemeral=True)
 
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
