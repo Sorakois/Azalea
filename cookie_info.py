@@ -27,10 +27,13 @@ class CookieInfo(commands.Cog):
 
 	@app_commands.command(name="wiki" , description="Search wiki for a cookie")
 	async def cookie_wiki(self, interaction: discord.Interaction, query: str):
-
+		# cleansing query
 		if query.upper().find('COOKIE') != -1:
 			query = query[:-7]
+		if query.upper() == 'BRUTE' or query.upper() == 'SCHWARZ' or query.upper() == 'SCHWARZWALDER':
+			query = 'Schwarzwälder'
 
+		# search query
 		f = open('util/cookies.csv')
 		csvReader = list(csv.reader(f, delimiter=','))
 
@@ -56,6 +59,6 @@ class CookieInfo(commands.Cog):
 
 			await interaction.response.send_message(embed=em)
 		except IndexError as e:
-			await interaction.response.send_message("Cookie does not exist.")
+			await interaction.response.send_message(f"Cookie does not exist. {query}")
 
 		
