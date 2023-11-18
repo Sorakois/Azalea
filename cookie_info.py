@@ -46,12 +46,16 @@ class CookieInfo(commands.Cog):
 			if query.capitalize() == temp.capitalize():
 				res = row
 				break
-			
-		em = discord.Embed(title=res[0])
-		em.set_image(url=row[6])
-		em.add_field(name='Pronouns', value=row[2], inline=True)
-		em.add_field(name='Type', value=f'{self.emoji_ids2[row[4]]}{row[4]}', inline=True)
-		em.add_field(name='Position', value=f'{self.emoji_ids1[row[5]]}{row[5]}', inline=True)
-		em.set_footer(text=f'Release Date: {row[3]}')
+		try:
+			em = discord.Embed(title=res[0])
+			em.set_image(url=row[6])
+			em.add_field(name='Pronouns', value=row[2], inline=True)
+			em.add_field(name='Type', value=f'{self.emoji_ids2[row[4]]}{row[4]}', inline=True)
+			em.add_field(name='Position', value=f'{self.emoji_ids1[row[5]]}{row[5]}', inline=True)
+			em.set_footer(text=f'Release Date: {row[3]}')
 
-		await interaction.response.send_message(embed=em)
+			await interaction.response.send_message(embed=em)
+		except IndexError as e:
+			await interaction.response.send_message("Cookie does not exist.")
+
+		
