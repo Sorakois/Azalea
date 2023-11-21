@@ -61,13 +61,23 @@ def rankingHandler(level, highest_level, ranking, user_id) -> (str, int):
         rank = defaultDir + 'ranks/Grandmaster-2.png'
     elif level >= highest_level*.8 and level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-3.png'
+    elif level >= highest_level*.7 and level > 20:
+        rank = defaultDir + 'ranks/Elite-1.png'
     elif level >= highest_level*.6 and level > 20:
-        rank = defaultDir + 'ranks/Master-1.png'
+        rank = defaultDir + 'ranks/Elite-2.png'
     elif level >= highest_level*.5 and level > 20:
-        rank = defaultDir + 'ranks/Master-2.png'
+        rank = defaultDir + 'ranks/Elite-3.png'
+    elif level >= highest_level*.4 and level > 20:
+        rank = defaultDir + 'ranks/Elite-4.png'
     elif level >= highest_level*.3 and level > 20:
-        rank = defaultDir + 'ranks/Master-3.png'
+        rank = defaultDir + 'ranks/Elite-5.png'
+    elif level >= highest_level*.25 and level > 20:
+        rank = defaultDir + 'ranks/Master-1.png'
     elif level >= highest_level*.2 and level > 20:
+        rank = defaultDir + 'ranks/Master-2.png'
+    elif level >= highest_level*.15 and level > 20:
+        rank = defaultDir + 'ranks/Master-3.png'
+    elif level >= highest_level*.1 and level > 20:
         rank = defaultDir + 'ranks/Master-4.png'
     elif level > 20:
         rank = defaultDir + 'ranks/Master-5.png'

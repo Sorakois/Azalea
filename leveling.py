@@ -30,6 +30,11 @@ roles = {
     "Master III": 1083847110740414565,
     "Master II": 1083847154134696065, 
     "Master I": 1083847222610899065,
+    "Elite V": 1176363093853483008,
+    "Elite IV": 1176363039352705104,
+    "Elite III": 1176362985363611709,
+    "Elite II": 1176362613563732059,
+    "Elite I": 1176362538766708816,
     "Grandmaster III": 1083847310976499752, 
     "Grandmaster II": 1083847373647785985, 
     "Grandmaster I": 1083847441855561799
@@ -241,18 +246,28 @@ class Leveling(commands.Cog):
         elif level == 20:
             await checkAssign(15)
         elif level == highest_level and level >= 50:
-            await checkAssign(23)
+            await checkAssign(28)
         elif level >= highest_level * .9 and level >= 50:
-            await checkAssign(22)
+            await checkAssign(27)
         elif level >= highest_level * .8 and level >= 50:
-            await checkAssign(21)
+            await checkAssign(26)
+        elif level >= highest_level * .7 and level > 20:
+            await checkAssign(25)
         elif level >= highest_level * .6 and level > 20:
-            await checkAssign(20)
+            await checkAssign(24)
         elif level >= highest_level * .5 and level > 20:
-            await checkAssign(19)
+            await checkAssign(23)
+        elif level >= highest_level * .4 and level > 20:
+            await checkAssign(22)
         elif level >= highest_level * .3 and level > 20:
-            await checkAssign(18)
+            await checkAssign(21)
+        elif level >= highest_level * .25 and level > 20:
+            await checkAssign(20)
         elif level >= highest_level * .2 and level > 20:
+            await checkAssign(19)
+        elif level >= highest_level * .15 and level > 20:
+            await checkAssign(18)
+        elif level >= highest_level * .1 and level > 20:
             await checkAssign(17)
         elif level > 20:
             await checkAssign(16)
