@@ -95,10 +95,11 @@ def basic_cookie_scrape():
 	soup = BeautifulSoup(r.content, 'html5lib')
 	cookies = []
 
-	for table in soup.findAll("table", attrs = {'class' : 'fandom-table'}):
-		for tr in table.findAll("tr"):
-			name = tr.th.b.a['title']
-			link = tr.th.b.a['href']
+	for div in soup.findAll("div", attrs = {'class' : 'scrolly scrollyflex'}):
+		div = div.div
+		for div2 in div.findAll("div", attrs= {'style' : 'background-color:var(--theme-table-content-2); padding:0; margin:10px; overflow:hidden; width:165px; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid var(--theme-dark-accent); box-shadow:3px 3px var(--theme-table-outline),-3px 3px var(--theme-table-outline),-3px -3px var(--theme-table-outline),3px -3px var(--theme-table-outline); border-radius:3px;'}):
+			name = div2.div.a['title']
+			link = div2.div.a['href']
 			c = Cookie(name, link)
 			cookies.append(c)
 	
