@@ -16,18 +16,22 @@ class Interaction(commands.Cog):
         - check balance
         - daily login bonus
     '''
-    @app_commands.command(name="pull", description="Pull a single character")
+    @app_commands.command(name="pull", description="Pull once")
     async def pull(interaction : discord.Interaction):
         res = Gacha.pull()
         return res
     
-    @app_commands.command(name="multipull", description="Pull multiple characters")
+    @app_commands.command(name="multipull", description="Pull multiple times")
     async def multipull(interaction : discord.Interaction):
         res = []
         for i in range(0, 11):    
             res.append(Gacha.pull())
         return res
 
+    @app_commands.command(name="balance", description="Check your balance of gems")
+    async def balance(interaction : discord.Interaction):
+        balance = 1
+        interaction.response.send_message(f"Your balance is: {balance}")
 
 class Gacha:
     '''
