@@ -16,7 +16,10 @@ class Interaction(commands.Cog):
         - check balance
         - daily login bonus
     '''
-    pass
+    @app_commands.command(name="pull", description="Pull a single character")
+    async def pull(interaction : discord.Interaction):
+        res = Gacha.pull()
+        return res
 
 
 class Gacha:
@@ -27,7 +30,8 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-    pass
+    async def pull():
+        pass # All the computations and stuff for pulling a cook
 
 
 class Cookie:
