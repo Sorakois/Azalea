@@ -20,6 +20,13 @@ class Interaction(commands.Cog):
     async def pull(interaction : discord.Interaction):
         res = Gacha.pull()
         return res
+    
+    @app_commands.command(name="multipull", description="Pull multiple characters")
+    async def multipull(interaction : discord.Interaction):
+        res = []
+        for i in range(0, 11):    
+            res.append(Gacha.pull())
+        return res
 
 
 class Gacha:
