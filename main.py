@@ -11,7 +11,7 @@ from leveling import Leveling
 from dotenv import load_dotenv
 from util.scrape_wiki import scrape_cookies
 from cookie_info import CookieInfo
-from gacha import Interaction
+from gacha import GachaInteraction
 
 # load the enviroment variables
 load_dotenv()
@@ -41,7 +41,7 @@ bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 cogs = {
     'leveling': Leveling(bot),
     'cookie_info' : CookieInfo(bot),
-    'interaction' : Interaction(bot)
+    'gacha' : GachaInteraction(bot)
     }
 
 # bot settings

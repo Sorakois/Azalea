@@ -6,7 +6,7 @@ import datetime
 import random
 
 
-class Interaction(commands.Cog):
+class GachaInteraction(commands.Cog):
     '''
     Interaction with the users (slash commands, other than )
 
@@ -16,16 +16,19 @@ class Interaction(commands.Cog):
         - check balance
         - daily login bonus
     '''
+    async def __init__(self, bot):
+        self.bot = bot
+
     @app_commands.command(name="pull", description="Pull once.")
     async def pull(self, interaction : discord.Interaction):
-        res = Gacha.pull()
+        res = Gacha.pull_cookie()
         return res
     
     @app_commands.command(name="multipull", description="Pull multiple times.")
     async def multipull(self, interaction : discord.Interaction):
         res = []
         for i in range(0, 11):    
-            res.append(Gacha.pull())
+            res.append(Gacha.pull_cookie())
         return res
 
     @app_commands.command(name="balance", description="Check your balance of gems.")
@@ -33,7 +36,7 @@ class Interaction(commands.Cog):
         balance = 1
         await interaction.response.send_message(f"Your balance is: {balance}")
 
-    @app_commands.command(name="daily", description="Recieve your daily bonus!")|
+    @app_commands.command(name="daily", description="Recieve your daily bonus!")
     async def daily(self, interaction : discord.Interaction):
         '''
         Needs time restraint for usage
@@ -49,22 +52,22 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-    async def pull(self):
-        x = random.random()
+    async def pull_cookie(self):
+        probability = random.random()
         rarity = ""
 
         if balance <= 300:
-            if 0<=x<0.4:
+            if 0 <= probability < 0.4:
                 ''' Give user Common Rarity Cookie '''
-            if 0.4<=x<0.65:
+            if 0.4 <= probability < 0.65:
                 ''' Give user Rare Rarity Cookie '''
-            if 0.65<=x<0.83:
+            if 0.65 <= probability < 0.83:
                 ''' Give user Epic Rarity Cookie '''
-            if 0.83<=x<0.93:
+            if 0.83 <= probability < 0.93:
                 ''' Give user Super Epic Rarity Cookie '''
-            if 0.93<=x<0.98:
+            if 0.93 <= probability < 0.98:
                 ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
-            if 0.98<=x<1:
+            if 0.98 <= probability < 1:
                 ''' Give user Ancient Rarity Cookie '''
 
         pass # All the computations and stuff for pulling a cook
