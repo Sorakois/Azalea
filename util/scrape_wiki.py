@@ -7,7 +7,7 @@ import time
 # Customizable variables:
 #
 ## csv file relative path name
-cookieCSVFile = 'util/cookies.csv'
+cookieCSVFile = 'cookies.csv'
 # 
 ###############################################################
 
@@ -45,7 +45,7 @@ class Cookie:
 		returns:
 			cookie_info (list[str]) : list formatted object
 		'''
-		return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link]
+		return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link, self.rarity]
 
 	def find_info(self):
 		'''
@@ -81,6 +81,11 @@ class Cookie:
 			self.position = posdiv.findAll('a')[1].getText()
 		except IndexError:
 			self.position = 'Unknown'
+
+		self.rarity = soup.find('div', attrs={'data-source':'rarity'}).div.a.img['alt']
+		if self.rarity[:2] == 'Ep':
+			self.rarity = 'Epic'
+		print(self.rarity)
 
 
 def basic_cookie_scrape():
@@ -122,7 +127,7 @@ def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV):
 	except FileNotFoundError as e:
 		print("csv file does not exist, creating new csv.")
 		with open(cookieCSV, 'w') as f:
-			f.write('Name, Link, Gender, Release, Type, Position, Picture\n')
+			f.write('Name, Link, Gender, Release, Type, Position, Picture, Rarity\n')
 		f1 = open(cookieCSV, 'r')
 
 
