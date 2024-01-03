@@ -49,7 +49,7 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-    async def pull():
+    async def pull(self):
         x = random.random()
         rarity = ""
 
@@ -66,8 +66,6 @@ class Gacha:
                 ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
             if 0.98<x<=1:
                 ''' Give user Ancient Rarity Cookie '''
-        elif:
-            await interaction.response.send_message(f"Sorry, your balance is too low!")
 
         pass # All the computations and stuff for pulling a cook
 
@@ -80,42 +78,8 @@ class Cookie:
     
     **Cookie ID determined by general release date**
     '''
-    rarity.c = []
-    rarity.r = []
-    rarity.e = []
-    rarity.se = []
-    rarity.l = []
-    rarity.d = []
-    rarity.s = []
-    rarity.a = []
-
-    cookie.001 = "Alchemist Cookie" '''R'''
-    cookie.002 = "Angel Cookie" '''R'''
-    cookie.003 = "Cherry Cookie" '''R'''
-    cookie.004 = "Dark Choco Cookie" '''E'''
-    cookie.005 = "Devil Cookie" '''R'''
-    cookie.006 = "GingerBrave" '''C'''
-    cookie.007 = "GingerBright" '''C'''
-    cookie.008 = "Gumball Cookie" '''R'''
-    cookie.009 = "Hero Cookie" '''E'''
-    cookie.010 = "Kumiho Cookie" '''E'''
-    cookie.011 = "Muscle Cookie " '''R'''
-    cookie.012 = "Ninja Cookie" '''R'''
-    cookie.013 = "Pilot Cookie" '''R'''
-    cookie.014 = "Pirate Cookie" '''E'''
-    cookie.015 = "Pistachio Cookie" '''R'''
-    cookie.016 = "Popcorn Cookie" '''E'''
-    cookie.017 = "Rockstar Cookie" '''R/E, will be E due to change in rarity for CRK'''
-    cookie.018 = "Skater Cookie" '''C'''
-    cookie.019 = "Skating Queen Cookie" '''E'''
-    cookie.020 = "Snow Sugar Cookie" '''E'''
-    cookie.021 = "Soda Cookie" '''R'''
-    cookie.022 = "Space Doughnut" '''E'''
-    cookie.023 = "Strawberry Cookie" '''C'''
-    cookie.024 = "Tiger Lily Cookie" '''E'''
-    cookie.025 = "Vampire Cookie" '''R/E, will be E due to change in rarity for CRK'''
-    cookie.026 = "Werewolf Cookie" '''E'''
-    cookie.030 = "Wizard Cookie" '''E/C, will be C due to change in rarity for CRK'''
-    cookie.031 = ""
+    async def __init__(self):
+        self.rarity = ''
+        self.name = ''
 
     pass
