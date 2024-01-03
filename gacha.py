@@ -53,7 +53,7 @@ class Gacha:
         x = random.random()
         rarity = ""
 
-        if balance <= 300
+        if balance <= 300:
             if 0<x<=0.4:
                 ''' Give user Common Rarity Cookie '''
             if 0.4<x<=0.65:
@@ -66,7 +66,7 @@ class Gacha:
                 ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
             if 0.98<x<=1:
                 ''' Give user Ancient Rarity Cookie '''
-        elif
+        elif:
             await interaction.response.send_message(f"Sorry, your balance is too low!")
 
         pass # All the computations and stuff for pulling a cook
