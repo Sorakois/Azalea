@@ -54,17 +54,17 @@ class Gacha:
         rarity = ""
 
         if balance <= 300:
-            if 0<x<=0.4:
+            if 0<=x<0.4:
                 ''' Give user Common Rarity Cookie '''
-            if 0.4<x<=0.65:
+            if 0.4<=x<0.65:
                 ''' Give user Rare Rarity Cookie '''
-            if 0.65<x<=0.83:
+            if 0.65<=x<0.83:
                 ''' Give user Epic Rarity Cookie '''
-            if 0.83<x<=0.93:
+            if 0.83<=x<0.93:
                 ''' Give user Super Epic Rarity Cookie '''
-            if 0.93<x<=0.98:
+            if 0.93<=x<0.98:
                 ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
-            if 0.98<x<=1:
+            if 0.98<=x<1:
                 ''' Give user Ancient Rarity Cookie '''
 
         pass # All the computations and stuff for pulling a cook
