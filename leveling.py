@@ -42,7 +42,7 @@ roles = {
 
 # roles = {'tier 1': 1135634051479388180, 'tier 2': 1135634087051268216, 'tier 3': 1135634103211925566}
 
-ignoreList = {836367313502208040, 329669053838917632, 400443611105460234}
+# ignoreList = {836367313502208040, 329669053838917632, 400443611105460234}
 
 class Leveling(commands.Cog):
 
@@ -139,7 +139,7 @@ class Leveling(commands.Cog):
                 await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.png')])
 
             
-    async def levelUp(self, message: discord.Message) -> None:
+    async def levelUp(self, message: discord.Message):
         '''
         Called whenever a message is sent and does experience and level up logic
 
@@ -148,8 +148,10 @@ class Leveling(commands.Cog):
         '''
         if message.author.bot:
             return
-        if message.author.id in ignoreList:
-            return
+        # if message.author.id in ignoreList:
+        #     return
+
+        valid_time = False # returned to send if time is valid to operate other on-message functions
 
         currentTime = datetime.datetime.utcnow()
         author = message.author
@@ -175,6 +177,8 @@ class Leveling(commands.Cog):
                         xp = 0
                         level = 0
 
+                    valid_time = True
+
                     xp += random.randint(self.MINEXP, self.MAXEXP)
                     await cursor.execute("UPDATE levels SET xp = %s WHERE user = %s AND guild = %s", (xp, author.id, guild.id,))
                     await cursor.execute("UPDATE levels SET last_msg = %s WHERE user = %s AND guild = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), author.id, guild.id,)) # time
@@ -193,6 +197,7 @@ class Leveling(commands.Cog):
 
             await conn.commit()
             await self.bot.process_commands(message)
+        return valid_time
 
     async def assign_role(self, user, level, highest_level, guild):
         '''

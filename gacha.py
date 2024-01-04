@@ -16,8 +16,38 @@ class GachaInteraction(commands.Cog):
         - check balance
         - daily login bonus
     '''
-    async def __init__(self, bot):
+
+    MINCRYS = 20
+    MAXCRYS = 55
+
+    def __init__(self, bot) -> None:
         self.bot = bot
+
+    async def crystalOnMessage(self, message: discord.Message, valid_time):
+        if message.author.bot:
+            return
+        
+        author = message.author
+
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (author.id,))
+                crystals = await cursor.fetchone()
+
+                if not crystals:
+                    await cursor.execute("INSERT INTO currencies (userID, crystals) VALUES (%s, %s)", (author.id, 0))
+
+                if valid_time:
+                    try:
+                        crystals = crystals[0]
+                    except ValueError as e:
+                        crystals = 0
+                    
+                    crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
+                    await cursor.execute("UPDATE currencies SET crystals = %s WHERE userID = %s", (crystals, author.id,))
+        
+            await conn.commit()
+            await self.bot.process_commands(message)  
 
     @app_commands.command(name="pull", description="Pull once.")
     async def pull(self, interaction : discord.Interaction):
