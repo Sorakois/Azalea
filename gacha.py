@@ -63,8 +63,23 @@ class GachaInteraction(commands.Cog):
 
     @app_commands.command(name="balance", description="Check your balance of gems.")
     async def balance(self, interaction : discord.Interaction):
-        balance = 1
-        await interaction.response.send_message(f"Your balance is: {balance}")
+
+        member = interaction.user
+
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id))
+                balance = await cursor.fetchone()
+
+                try:
+                    balance = balance[0]
+                except TypeError:
+                    em = discord.Embed()
+                    em.add_field(name="Error", value="Sorry, your current balance cannot be viewed as you have not sent any messages.")
+                    await interaction.response.send_message(embed=em, ephemeral=True)
+                    return
+                
+                await interaction.response.send_message(f"Your balance is: {balance}")
 
     @app_commands.command(name="daily", description="Recieve your daily bonus!")
     async def daily(self, interaction : discord.Interaction):
