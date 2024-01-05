@@ -4,6 +4,7 @@ from discord.ext import commands
 import aiomysql
 import datetime
 import random
+import math
 
 
 class GachaInteraction(commands.Cog):
@@ -19,6 +20,7 @@ class GachaInteraction(commands.Cog):
 
     MINCRYS = 20
     MAXCRYS = 55
+    DAILYCOOLDOWN = 82800 # 23 hours in seconds
 
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -40,7 +42,7 @@ class GachaInteraction(commands.Cog):
                 if valid_time:
                     try:
                         crystals = crystals[0]
-                    except ValueError as e:
+                    except ValueError:
                         crystals = 0
                     
                     crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
@@ -86,8 +88,52 @@ class GachaInteraction(commands.Cog):
         '''
         Needs time restraint for usage
         '''
-        balance += random.randrange(1200, 3601) 
-        await interaction.response.send_message(f"Your new balance is: {balance}")
+
+        member = interaction.user
+
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
+                balance = await cursor.fetchone()
+
+                dailyAmount = random.randrange(1200, 3601)
+                currentTime = datetime.datetime.utcnow()
+                
+                if not balance:
+                    await cursor.execute("INSERT INTO currencies (userID, crystals) VALUES (%s, %s)", (member.id, dailyAmount,))
+
+                await cursor.execute("SELECT lastDaily FROM currencies WHERE userID = %s", (member.id,))
+                last_message_sent = await cursor.fetchone()
+
+                if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
+                    try:
+                        balance = balance[0]
+                    except TypeError:
+                        em = discord.Embed()
+                        em.add_field(name="Error", value="Sorry, you cannot claim a daily login as you have not sent any messages.")
+                        await interaction.response.send_message(embed=em, ephemeral=True)
+                        return
+
+                    balance += dailyAmount
+                    
+                    await cursor.execute("UPDATE currencies SET crystals = %s WHERE userID = %s", (balance, member.id,))
+                    await cursor.execute("UPDATE currencies SET lastDaily = %s WHERE userID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
+
+                    await interaction.response.send_message(f"You earned **{dailyAmount}** crystals!\nYour new balance is: __{balance}__")
+
+                else:
+                    time_remaining = 82800 - (currentTime - last_message_sent[0]).total_seconds()
+                    if time_remaining > 3600:
+                        time_remaining_str = f'{math.ceil(time_remaining/3600)} hours'
+                    elif time_remaining > 60:
+                        time_remaining_str = f'{math.ceil(time_remaining/60)} minutes'
+                    else:
+                        time_remaining_str = f'{time_remaining} seconds'
+                    em = discord.Embed()
+                    em.add_field(name="Claimed Daily", value=f"Sorry, you have already collected your daily login bonus today, try again in {time_remaining_str}!")
+                    await interaction.response.send_message(embed=em, ephemeral=False)
+
+            await conn.commit()
 
 class Gacha:
     '''
