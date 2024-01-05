@@ -59,7 +59,11 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
                 balance = await cursor.fetchone()
                 if balance >= 300:
-                    res = Gacha.pull_cookie() #Make into an embed later
+                    async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                pass
+    
+        res = Gacha.pull_cookie() #Make into an embed later
         return res
     
     @app_commands.command(name="multipull", description="Pull multiple times.")
