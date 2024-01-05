@@ -53,6 +53,10 @@ class GachaInteraction(commands.Cog):
 
     @app_commands.command(name="pull", description="Pull once.")
     async def pull(self, interaction : discord.Interaction):
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                pass
+    
         res = Gacha.pull_cookie()
         return res
     
