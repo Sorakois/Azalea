@@ -53,14 +53,26 @@ class GachaInteraction(commands.Cog):
 
     @app_commands.command(name="pull", description="Pull once.")
     async def pull(self, interaction : discord.Interaction):
-        res = Gacha.pull_cookie()
+        member = interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
+                balance = await cursor.fetchone()
+                if balance >= 300:
+                    res = Gacha.pull_cookie() #Make into an embed later
         return res
     
     @app_commands.command(name="multipull", description="Pull multiple times.")
     async def multipull(self, interaction : discord.Interaction):
-        res = []
-        for i in range(0, 11):    
-            res.append(Gacha.pull_cookie())
+        member = interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
+                balance = await cursor.fetchone()   
+                if balance >= 3000:
+                    res = []
+                    for i in range(0, 11):    
+                        res.append(Gacha.pull_cookie()) #Make into an larger embed later
         return res
 
     @app_commands.command(name="balance", description="Check your balance of gems.")
@@ -147,19 +159,18 @@ class Gacha:
         probability = random.random()
         rarity = ""
 
-        if balance <= 300:
-            if 0 <= probability < 0.4:
-                ''' Give user Common Rarity Cookie '''
-            if 0.4 <= probability < 0.65:
-                ''' Give user Rare Rarity Cookie '''
-            if 0.65 <= probability < 0.83:
-                ''' Give user Epic Rarity Cookie '''
-            if 0.83 <= probability < 0.93:
-                ''' Give user Super Epic Rarity Cookie '''
-            if 0.93 <= probability < 0.98:
-                ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
-            if 0.98 <= probability < 1:
-                ''' Give user Ancient Rarity Cookie '''
+        if 0 <= probability < 0.4:
+            ''' Give user Common Rarity Cookie '''
+        if 0.4 <= probability < 0.65:
+            ''' Give user Rare Rarity Cookie '''
+        if 0.65 <= probability < 0.83:
+            ''' Give user Epic Rarity Cookie '''
+        if 0.83 <= probability < 0.93:
+            ''' Give user Super Epic Rarity Cookie '''
+        if 0.93 <= probability < 0.98:
+            ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
+        if 0.98 <= probability < 1:
+            ''' Give user Ancient Rarity Cookie '''
 
         pass # All the computations and stuff for pulling a cook
 
