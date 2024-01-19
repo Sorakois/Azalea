@@ -60,14 +60,16 @@ class Cookie:
 
 		pronoundiv = soup.find('div', attrs={'data-source':'pronouns'})
 		self.pronouns = pronoundiv.findAll('a')[1].getText()
+
 		try:
-			releasediv = soup.find('div', attrs={'data-source':'release_date'})
-			self.release = releasediv.find('div').getText()
-		except AttributeError:
+			releasediv = soup.findAll('div', attrs={'data-source':'releasedate'})
+			print(releasediv)
+			self.release = releasediv[-1].find('div').getText()
+		except (AttributeError, IndexError):
 			try:
-				releasediv = soup.find('div', attrs={'data-source':'releasedate'})
-				self.release = releasediv.find('div').getText()
-			except AttributeError:
+				releasediv = soup.findAll('div', attrs={'data-source':'release_date'})
+				self.release = releasediv[-1].find('div').getText()
+			except (AttributeError, IndexError):
 				self.release = 'Unreleased/TBA'
 		
 		try:
@@ -85,7 +87,6 @@ class Cookie:
 		self.rarity = soup.find('div', attrs={'data-source':'rarity'}).div.a.img['alt']
 		if self.rarity[:2] == 'Ep':
 			self.rarity = 'Epic'
-		print(self.rarity)
 
 
 def basic_cookie_scrape():
