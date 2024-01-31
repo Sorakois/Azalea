@@ -84,7 +84,7 @@ class Leveling(commands.Cog):
                 em.add_field(name='Level', value=levelString, inline=True)
                 em.add_field(name='User', value=userString, inline=True)
 
-                await interaction.response.send_message(embed=em, ephemeral=True)
+                await interaction.response.send_message(embed=em, ephemeral=False)
 
     @app_commands.command(name="level", description="Display the level of a user")
     async def level(self, interaction: discord.Interaction, name: discord.User = None) -> None:
@@ -127,7 +127,7 @@ class Leveling(commands.Cog):
                     pfp = 'assets/level/default.jpg'
                     online = False
 
-                await interaction.response.send_message(content="Loading...", ephemeral=True)
+                await interaction.response.send_message(content="Loading...", ephemeral=False)
 
                 await cursor.execute("SELECT level FROM levels ORDER BY level DESC LIMIT 1")
                 highest_level = await cursor.fetchone()
