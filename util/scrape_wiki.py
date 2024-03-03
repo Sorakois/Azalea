@@ -1,13 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-import csv
-import time
 
 ###############################################################
 # Customizable variables:
 #
 ## csv file relative path name
-cookieCSVFile = 'util/cookies.csv'
+cookieCSVFile = 'cookies.csv'
 # 
 ###############################################################
 
@@ -28,6 +26,8 @@ class Cookie:
 		'''
 		self.name = name
 		self.link = link
+		self.identify_released()
+		self.identify_type()
 
 	def __str__(self):
 		'''
@@ -45,7 +45,31 @@ class Cookie:
 		returns:
 			cookie_info (list[str]) : list formatted object
 		'''
-		return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link]
+		return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link, self.rarity]
+	
+	def identify_released(self):
+		r = requests.get(base_url + self.link)
+		soup = BeautifulSoup(r.content, 'html5lib')
+
+		try:
+			releasediv = soup.findAll('div', attrs={'data-source':'releasedate'})
+			self.release = releasediv[-1].find('div').getText()
+		except (AttributeError, IndexError):
+			try:
+				releasediv = soup.findAll('div', attrs={'data-source':'release_date'})
+				self.release = releasediv[-1].find('div').getText()
+			except (AttributeError, IndexError):
+				self.release = 'Unreleased/TBA'
+
+	def identify_type(self):
+		r = requests.get(base_url + self.link)
+		soup = BeautifulSoup(r.content, 'html5lib')
+
+		try:
+			typediv = soup.find('td', attrs={'data-source':'role'})
+			self.ctype = typediv.findAll('a')[1].getText()
+		except IndexError:
+			self.ctype = 'Unknown'
 
 	def find_info(self):
 		'''
@@ -60,27 +84,16 @@ class Cookie:
 
 		pronoundiv = soup.find('div', attrs={'data-source':'pronouns'})
 		self.pronouns = pronoundiv.findAll('a')[1].getText()
-		try:
-			releasediv = soup.find('div', attrs={'data-source':'release_date'})
-			self.release = releasediv.find('div').getText()
-		except AttributeError:
-			try:
-				releasediv = soup.find('div', attrs={'data-source':'releasedate'})
-				self.release = releasediv.find('div').getText()
-			except AttributeError:
-				self.release = 'Unreleased/TBA'
-		
-		try:
-			typediv = soup.find('td', attrs={'data-source':'role'})
-			self.ctype = typediv.findAll('a')[1].getText()
-		except IndexError:
-			self.ctype = 'Unknown'
 
 		try:
 			posdiv = soup.find('td', attrs={'data-source':'position'})
 			self.position = posdiv.findAll('a')[1].getText()
 		except IndexError:
 			self.position = 'Unknown'
+
+		self.rarity = soup.find('div', attrs={'data-source':'rarity'}).div.a.img['alt']
+		if self.rarity[:2] == 'Ep':
+			self.rarity = 'Epic'
 
 
 def basic_cookie_scrape():
@@ -106,7 +119,7 @@ def basic_cookie_scrape():
 	return cookies
 
 
-def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV):
+async def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV, bot):
 	'''
 	Deep dives each cookie info if information is not known yet
 
@@ -117,40 +130,46 @@ def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV):
 	returns:
 		cookies (list[Cookie]): list of all required updated cookies
 	'''
-	try:
-		f1 = open(cookieCSV, 'r')
-	except FileNotFoundError as e:
-		print("csv file does not exist, creating new csv.")
-		with open(cookieCSV, 'w') as f:
-			f.write('Name, Link, Gender, Release, Type, Position, Picture\n')
-		f1 = open(cookieCSV, 'r')
+	# Open the data
+	async with bot.db.acquire() as conn:
+		async with conn.cursor() as cursor:
+			await cursor.execute("SELECT Name, Link, Released, Type FROM cookie_info")
+			cookies_db = await cursor.fetchall()
+			
 
+			# Identify what cookies are new!
+			# Check if name is not found first. If name found, check the release date for difference. Otherwise add to list.
+			new_cookies = []
+			update_cookies = []
 
-	# Identify what cookies are new!
-	new_cookies = []
-	csvReader = list(csv.reader(f1, delimiter=','))
+			for cookie in cookies:
+				releaseChange = False
+				found = False
+				for row in cookies_db:
+					if cookie.name == row[0] or cookie.link == row[1]:
+						found = True
+					if found and cookie.release != row[3]:
+						releaseChange = True
+					if found:
+						break
+					
+				if not found:
+					new_cookies.append(cookie)
+				if releaseChange:
+					update_cookies.append(cookie)
 
-	for cookie in cookies:
-		found = False
-		for row in csvReader:
-			if cookie.name == row[0] or cookie.link == row[1]:
-				found = True
-				break
-		if not found:
-			new_cookies.append(cookie)
-	
-	f1.close()
-
-	for cookie in new_cookies:
-		cookie.find_info()
-		with open(cookieCSV, 'a', newline='') as f:
-			writer = csv.writer(f)
-			writer.writerow(cookie.to_list())
+			# Register information and add new cookies
+			for cookie in new_cookies:
+				cookie.find_info()
+				await cursor.execute("INSERT INTO cookie_info (Name,Link,Gender,Released,Type,Position,Picture,Rarity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", tuple(cookie.to_list()))
+			for cookie in update_cookies:
+				await cursor.execute("UPDATE cookie_info SET Released = %s, Type = %s WHERE Name = %s AND Link = %s", (cookie.release, cookie.ctype, cookie.name, cookie.link))
+		await conn.commit()
 
 	return new_cookies
 		
-def scrape_cookies():
+async def scrape_cookies(bot):
 	cookies = basic_cookie_scrape()
 
-	cookies_to_update = indepth_cookie_scrape(cookies=cookies, cookieCSV=cookieCSVFile)
-	return "updated"
+	cookies_to_update = await indepth_cookie_scrape(cookies=cookies, cookieCSV=cookieCSVFile, bot=bot)
+	return cookies_to_update

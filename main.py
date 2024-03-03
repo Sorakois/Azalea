@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import aiomysql
+import asyncio
 import sys
 import os
 import logging
@@ -25,10 +26,10 @@ logging.getLogger().addHandler(stderrLogger)
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
 # start up database connection
-mysql_login = {'host':os.environ.get('DB_HOST'),
-               'user':os.environ.get('DB_USER'),
-               'password':os.environ.get('DB_PSWD'),
-               'db':os.environ.get('DB_DB'),
+mysql_login = {'host':"db-buf-05.sparkedhost.us",
+               'user':"u104092_jfUaeyVlqc",
+               'password':"^lR0+=!4nvkHd9zQvs0BggFS",
+               'db':"s104092_db_update",
                'port':3306}
 
 # discord bot settings
@@ -90,7 +91,7 @@ class General(commands.Cog):
         '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT user FROM levels WHERE user = %s", member.id)
+                await cursor.execute("SELECT USER_ID FROM USER WHERE USER_ID = %s", member.id)
                 userExists = await cursor.fetchall()
                 if len(userExists) != 0:
                     return
@@ -119,8 +120,9 @@ class General(commands.Cog):
                 print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
             if split[0] == 'scrape_cookie':
-                res = scrape_cookies()
-                await interaction.response.send_message(f"resolved with: {res}", ephemeral=True)
+                await interaction.response.defer()
+                res = await scrape_cookies(self.bot)
+                await interaction.followup.send('updated cookies!', ephemeral=True)
         else:
             await interaction.response.send_message('You do not have permission to use this command', ephemeral=True)
 
@@ -147,4 +149,4 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('TEST_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))
