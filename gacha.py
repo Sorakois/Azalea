@@ -161,17 +161,19 @@ class Gacha:
         probability = random.random()
         rarity = ""
 
-        if 0 <= probability < 0.4:
+        if 0 <= probability < 0.35525:
+            ''' Give user essence from a range'''
+        if 0.35525 <= probability < 0.62525:
             ''' Give user Common Rarity Cookie '''
-        if 0.4 <= probability < 0.65:
+        if 0.62525 <= probability < 0.86525:
             ''' Give user Rare Rarity Cookie '''
-        if 0.65 <= probability < 0.83:
+        if 0.86525 <= probability < 0.96525:
             ''' Give user Epic Rarity Cookie '''
-        if 0.83 <= probability < 0.93:
+        if 0.96525 <= probability < 0.99825:
             ''' Give user Super Epic Rarity Cookie '''
-        if 0.93 <= probability < 0.98:
+        if 0.99825 <= probability < .99950:
             ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
-        if 0.98 <= probability < 1:
+        if .99950 <= probability < 1:
             ''' Give user Ancient Rarity Cookie '''
 
         pass # All the computations and stuff for pulling a cook
