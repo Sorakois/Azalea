@@ -67,7 +67,7 @@ class Leveling(commands.Cog):
         '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT user, level FROM levels ORDER BY level DESC LIMIT 10")
+                await cursor.execute("SELECT USER_ID, USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 10")
                 leaders = await cursor.fetchall()
 
                 userString = ''
@@ -101,13 +101,13 @@ class Leveling(commands.Cog):
             member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT xp FROM levels WHERE user = %s AND guild = %s", (member.id, interaction.guild.id,))
+                await cursor.execute("SELECT USER_XP FROM USER WHERE USER_ID = %s", (member.id,))
                 xp = await cursor.fetchone()
-                await cursor.execute("SELECT level FROM levels WHERE user = %s AND guild = %s", (member.id, interaction.guild.id,))
+                await cursor.execute("SELECT USER_LEVEL FROM USER WHERE USER_ID = %s", (member.id,))
                 level = await cursor.fetchone()
 
                 if not xp or not level:
-                    await cursor.execute("INSERT INTO levels (level, xp, user, guild, last_msg) VALUES (%s, %s, %s, %s, %s)", (1, 0, member.id, interaction.guild.id, datetime.datetime.utcnow(),))
+                    await cursor.execute("INSERT INTO USER (USER_ID, USER_LEVEL, USER_XP, USER_LAST_MSG) VALUES (%s, %s, %s, %s)", (member.id, 1, 0, datetime.datetime.utcnow(),))
 
                 try:
                     xp = xp[0]
@@ -129,9 +129,9 @@ class Leveling(commands.Cog):
 
                 await interaction.response.send_message(content="Loading...", ephemeral=True)
 
-                await cursor.execute("SELECT level FROM levels ORDER BY level DESC LIMIT 1")
+                await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
                 highest_level = await cursor.fetchone()
-                await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY level DESC), user FROM levels ")
+                await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY USER_LEVEL DESC), USER_ID FROM USER")
                 rankings = await cursor.fetchall()
 
                 res = await createImage(pfp, level, xp, online, highest_level[0], rankings, member.id)
@@ -156,15 +156,15 @@ class Leveling(commands.Cog):
         guild = message.guild
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT xp FROM levels WHERE user = %s AND guild = %s", (author.id, guild.id,))
+                await cursor.execute("SELECT USER_XP FROM USER WHERE USER_ID = %s", (author.id,))
                 xp = await cursor.fetchone()
-                await cursor.execute("SELECT level FROM levels WHERE user = %s AND guild = %s", (author.id, guild.id,))
+                await cursor.execute("SELECT USER_LEVEL FROM USER WHERE USER_ID = %s", (author.id,))
                 level = await cursor.fetchone()
 
                 if not xp or not level:
-                    await cursor.execute("INSERT INTO levels (level, xp, user, guild) VALUES (%s, %s, %s, %s)", (1, 0, author.id, guild.id,))
+                    await cursor.execute("INSERT INTO USER (USER_ID, USER_LEVEL, USER_XP) VALUES (%s, %s, %s)", (author.id, 1, 0,))
 
-                await cursor.execute("SELECT last_msg FROM levels WHERE user = %s AND guild = %s", (author.id, guild.id,))
+                await cursor.execute("SELECT USER_LAST_MSG FROM USER WHERE USER_ID = %s", (author.id,))
                 last_message_sent = await cursor.fetchone()
 
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.COOLDOWN:
@@ -176,17 +176,17 @@ class Leveling(commands.Cog):
                         level = 0
 
                     xp += random.randint(self.MINEXP, self.MAXEXP)
-                    await cursor.execute("UPDATE levels SET xp = %s WHERE user = %s AND guild = %s", (xp, author.id, guild.id,))
-                    await cursor.execute("UPDATE levels SET last_msg = %s WHERE user = %s AND guild = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), author.id, guild.id,)) # time
+                    await cursor.execute("UPDATE USER SET USER_XP = %s WHERE USER_ID = %s", (xp, author.id,))
+                    await cursor.execute("UPDATE USER SET USER_LAST_MSG = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), author.id,)) # time
 
                     nextLevel = 12*level**2+60
                     if xp >= nextLevel:
                         level += 1
-                        await cursor.execute("UPDATE levels SET level = %s WHERE user = %s AND guild = %s", (level, author.id, guild.id,))
-                        await cursor.execute("UPDATE levels SET xp = %s WHERE user = %s AND guild = %s", (xp-nextLevel, author.id, guild.id,))
+                        await cursor.execute("UPDATE USER SET USER_LEVEL = %s WHERE USER_ID = %s", (level, author.id,))
+                        await cursor.execute("UPDATE USER SET USER_XP = %s WHERE USER_ID = %s", (xp-nextLevel, author.id,))
                         await self.bot.get_channel(self.levelUpChannel).send(f"{author.mention} has leveled up to level **{level}**!") # sends message to level-up channel
 
-                        await cursor.execute("SELECT level FROM levels ORDER BY level DESC LIMIT 1")
+                        await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
                         highest_level = await cursor.fetchone()
 
                         await self.assign_role(author, level, highest_level[0], message.guild)

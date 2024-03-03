@@ -87,7 +87,7 @@ class General(commands.Cog):
         '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT user FROM levels WHERE user = %s", member.id)
+                await cursor.execute("SELECT USER_ID FROM USER WHERE USER_ID = %s", member.id)
                 userExists = await cursor.fetchall()
                 if len(userExists) != 0:
                     return
