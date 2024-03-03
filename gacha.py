@@ -20,6 +20,9 @@ class GachaInteraction(commands.Cog):
 
     MINCRYS = 20
     MAXCRYS = 55
+
+    DAILY_MIN = 1200
+    DAILY_MAX = 3600
     DAILYCOOLDOWN = 82800 # 23 hours in seconds
 
     def __init__(self, bot) -> None:
@@ -107,7 +110,7 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
                 balance = await cursor.fetchone()
 
-                dailyAmount = random.randrange(1200, 3601)
+                dailyAmount = random.randrange(self.DAILY_MIN, self.DAILY_MAX + 1)
                 currentTime = datetime.datetime.utcnow()
                 
                 if not balance:
