@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import aiomysql
+import asyncio
 import sys
 import os
 import logging
@@ -116,8 +117,9 @@ class General(commands.Cog):
                 print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
             if split[0] == 'scrape_cookie':
-                res = scrape_cookies()
-                await interaction.response.send_message(f"resolved with: {res}", ephemeral=True)
+                await interaction.response.defer()
+                res = await scrape_cookies(self.bot)
+                await interaction.followup.send('updated cookies!', ephemeral=True)
         else:
             await interaction.response.send_message('You do not have permission to use this command', ephemeral=True)
 
@@ -144,4 +146,4 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('TEST_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))

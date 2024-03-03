@@ -34,12 +34,14 @@ class CookieInfo(commands.Cog):
 			query = 'Schwarzwälder'
 
 		# search query
-		f = open('util/cookies.csv', 'r', encoding='latin-1')
-		csvReader = list(csv.reader(f, delimiter=','))
-
+		async with self.bot.db.acquire() as conn:
+			async with conn.cursor() as cursor:
+				await cursor.execute("SELECT * FROM cookie_info")
+				cookies_db = await cursor.fetchall()
+				
 		res = ''
 
-		for row in csvReader:
+		for row in cookies_db:
 			temp = row[0]
 			if row[0].upper().find('COOKIE') != -1:
 				if row[0] == 'Custard Cookie III':
@@ -66,5 +68,3 @@ class CookieInfo(commands.Cog):
 			await interaction.response.send_message(embed=em)
 		except IndexError as e:
 			await interaction.response.send_message(f"Cookie does not exist. {query}")
-
-		f.close()
