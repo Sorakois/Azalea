@@ -24,10 +24,10 @@ logging.getLogger().addHandler(stderrLogger)
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
 # start up database connection
-mysql_login = {'host':'78.108.218.47',
-               'user':'u104092_P8hJJbGHcV',
-               'password':'bt1c@A^l^obLB4hAMA8YKAOW',
-               'db':'s104092_levels',
+mysql_login = {'host':os.environ.get('DB_HOST'),
+               'user':os.environ.get('DB_USER'),
+               'password':os.environ.get('DB_PSWD'),
+               'db':os.environ.get('DB_DB'),
                'port':3306}
 
 # discord bot settings
