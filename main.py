@@ -24,10 +24,10 @@ logging.getLogger().addHandler(stderrLogger)
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
 # start up database connection
-mysql_login = {'host':os.environ.get('DB_HOST'),
-               'user':os.environ.get('DB_USER'),
-               'password':os.environ.get('DB_PSWD'),
-               'db':os.environ.get('DB_DB'),
+mysql_login = {'host':"db-buf-05.sparkedhost.us",
+               'user':"u104092_jfUaeyVlqc",
+               'password':"^lR0+=!4nvkHd9zQvs0BggFS",
+               'db':"s104092_db_update",
                'port':3306}
 
 # discord bot settings
@@ -76,7 +76,7 @@ class General(commands.Cog):
             message (discord.Message) : Message object of message sent
         '''
         await cogs["leveling"].levelUp(message=message)
-
+        
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.User):
         '''
