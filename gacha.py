@@ -33,11 +33,8 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (author.id,))
+                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (author.id,))
                 crystals = await cursor.fetchone()
-
-                if not crystals:
-                    await cursor.execute("INSERT INTO currencies (userID, crystals) VALUES (%s, %s)", (author.id, 0))
 
                 if valid_time:
                     try:
@@ -46,7 +43,7 @@ class GachaInteraction(commands.Cog):
                         crystals = 0
                     
                     crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
-                    await cursor.execute("UPDATE currencies SET crystals = %s WHERE userID = %s", (crystals, author.id,))
+                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (crystals, author.id,))
         
             await conn.commit()
             await self.bot.process_commands(message)  
@@ -56,7 +53,7 @@ class GachaInteraction(commands.Cog):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
+                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
                 balance = await cursor.fetchone()
                 if balance >= 300:
                     Gacha.pull_cookie()
@@ -69,7 +66,7 @@ class GachaInteraction(commands.Cog):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
+                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
                 balance = await cursor.fetchone()   
                 if balance >= 3000:
                     res = []
@@ -84,7 +81,7 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id))
+                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id))
                 balance = await cursor.fetchone()
 
                 try:
@@ -107,16 +104,16 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT crystals FROM currencies WHERE userID = %s", (member.id,))
+                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
                 balance = await cursor.fetchone()
 
                 dailyAmount = random.randrange(1200, 3601)
                 currentTime = datetime.datetime.utcnow()
                 
                 if not balance:
-                    await cursor.execute("INSERT INTO currencies (userID, crystals) VALUES (%s, %s)", (member.id, dailyAmount,))
+                    await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
 
-                await cursor.execute("SELECT lastDaily FROM currencies WHERE userID = %s", (member.id,))
+                await cursor.execute("SELECT USER_LAST_DAILY FROM USER WHERE USER_ID = %s", (member.id,))
                 last_message_sent = await cursor.fetchone()
 
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
@@ -130,8 +127,8 @@ class GachaInteraction(commands.Cog):
 
                     balance += dailyAmount
                     
-                    await cursor.execute("UPDATE currencies SET crystals = %s WHERE userID = %s", (balance, member.id,))
-                    await cursor.execute("UPDATE currencies SET lastDaily = %s WHERE userID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
+                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                    await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
 
                     await interaction.response.send_message(f"You earned **{dailyAmount}** crystals!\nYour new balance is: __{balance}__")
 
