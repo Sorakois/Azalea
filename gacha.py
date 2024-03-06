@@ -58,11 +58,25 @@ class GachaInteraction(commands.Cog):
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
                 balance = await cursor.fetchone()
+
+                try:
+                    balance = balance[0]
+                except TypeError:
+                    em = discord.Embed()
+                    em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any gems yet.")
+                    await interaction.response.send_message(embed=em, ephemeral=True)
+                    return
+                    
                 if balance >= 300:
-                    Gacha.pull_cookie()
-    
-        res = Gacha.pull_cookie() #Make into an embed later
-        return res
+                    res = await Gacha().pull_cookie()
+                    balance -= 300
+                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                    await interaction.response.send_message("!")
+                else:
+                    await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
+
+                await conn.commit()
+
     
     @app_commands.command(name="multipull", description="Pull multiple times.")
     async def multipull(self, interaction : discord.Interaction):
@@ -70,11 +84,20 @@ class GachaInteraction(commands.Cog):
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
-                balance = await cursor.fetchone()   
+                balance = await cursor.fetchone()
+
+                try:
+                    balance = balance[0]
+                except TypeError:
+                    em = discord.Embed()
+                    em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any gems yet.")
+                    await interaction.response.send_message(embed=em, ephemeral=True)
+                    return
+
                 if balance >= 3000:
                     res = []
                     for i in range(0, 11):    
-                        res.append(Gacha.pull_cookie()) #Make into an larger embed later
+                        res.append(Gacha().pull_cookie()) #Make into an larger embed later
         return res
 
     @app_commands.command(name="balance", description="Check your balance of gems.")
@@ -177,6 +200,7 @@ class Gacha:
             ''' Give user Ancient Rarity Cookie '''
 
         pass # All the computations and stuff for pulling a cook
+        return
 
 
 class Cookie:
