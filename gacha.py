@@ -240,16 +240,3 @@ class Gacha:
         return random.randrange(25,51)
 
 
-class Cookie:
-    '''
-    An individual item (cookie) stats of cookie
-    C = Common, R = Rare, E = Epic, SE = Super Epic, L = Legendary, D = Dragon, S = Special, A = Ancient
-    "https://ovenbreak.miraheze.org/wiki/List_of_Cookies" // "https://cookierunkingdom.fandom.com/wiki/List_of_Updates#Launch"
-    
-    **Cookie ID determined by general release date**
-    '''
-    async def __init__(self):
-        self.rarity = ''
-        self.name = ''
-
-    pass
