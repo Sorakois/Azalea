@@ -71,7 +71,14 @@ class GachaInteraction(commands.Cog):
                     res = await Gacha().pull_cookie()
                     balance -= 300
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
-                    await interaction.response.send_message("!")
+                    await interaction.response.send_message(f"{res}")
+
+                    if isinstance(res, int): # If integer, must mean essence
+                        balance += res
+                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                    elif isinstance(res, str): # If string, must mean rarity
+                        await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res, member.id,))
+
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
 
@@ -120,7 +127,7 @@ class GachaInteraction(commands.Cog):
                 
                 await interaction.response.send_message(f"Your balance is: {balance}")
 
-    @app_commands.command(name="daily", description="Recieve your daily bonus!")
+    @app_commands.command(name="daily", description="Receive your daily bonus!")
     async def daily(self, interaction : discord.Interaction):
         '''
         Needs time restraint for usage
@@ -185,22 +192,45 @@ class Gacha:
         rarity = ""
 
         if 0 <= probability < 0.35525:
-            ''' Give user essence from a range'''
-        if 0.35525 <= probability < 0.62525:
-            ''' Give user Common Rarity Cookie '''
-        if 0.62525 <= probability < 0.86525:
-            ''' Give user Rare Rarity Cookie '''
-        if 0.86525 <= probability < 0.96525:
-            ''' Give user Epic Rarity Cookie '''
-        if 0.96525 <= probability < 0.99825:
-            ''' Give user Super Epic Rarity Cookie '''
-        if 0.99825 <= probability < .99950:
-            ''' Give user Legendary, Dragon, or Special Rarity Cookie '''
-        if .99950 <= probability < 1:
-            ''' Give user Ancient Rarity Cookie '''
+            # Give user essence
+            essence = await self.handle_essence()
+            return essence
 
-        pass # All the computations and stuff for pulling a cook
-        return
+        elif 0.35525 <= probability < 0.62525:
+            # Give user a common cookie
+            rarity = 'Common'
+
+        elif 0.62525 <= probability < 0.86525:
+            # Give user a rare cookie
+            rarity = 'Rare'
+
+        elif 0.86525 <= probability < 0.96525:
+            # Give user a epic cookie
+            rarity = 'Epic'
+
+        elif 0.96525 <= probability < 0.99825:
+            #Give user a super epic cookie
+            rarity = 'Super Epic'
+
+        elif 0.99825 <= probability < .99950:
+            # Give user Legendary, Dragon, or Special cookie
+            with random.randrange(0,3) as r:
+                match r:
+                    case 0:
+                        rarity = 'Legendary'
+                    case 1:
+                        rarity = 'Dragon'
+                    case 2:
+                        rarity = 'Special'
+            
+        elif .99950 <= probability < 1:
+            # Give user Ancient cookie
+            rarity = 'Ancient'
+    
+        return rarity
+    
+    async def handle_essence(self):
+        return random.randrange(25,51)
 
 
 class Cookie:
