@@ -7,6 +7,25 @@ import random
 import math
 
 
+async def check_full_inventory(cursor, member, threshold):
+    await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
+    inventory = await cursor.fetchone()
+    return inventory[0] < inventory[1] + threshold # Maxed out inventory if True
+
+async def fetch_balance(cursor, member, interaction):
+    await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
+    balance = await cursor.fetchone()
+
+    try:
+        balance = balance[0]
+    except TypeError:
+        em = discord.Embed()
+        em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any gems yet.")
+        await interaction.response.send_message(embed=em, ephemeral=True)
+        return None # No value detected
+    
+    return balance
+
 class GachaInteraction(commands.Cog):
     '''
     Interaction with the users (slash commands, other than )
@@ -57,21 +76,12 @@ class GachaInteraction(commands.Cog):
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
 
-                await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
-                inventory = await cursor.fetchone()
-                if inventory[0] <= inventory[1]: # Maxed out inventory
+                if await check_full_inventory(cursor, member, 1):
                     interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
                     return
-
-                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
-                balance = await cursor.fetchone()
-
-                try:
-                    balance = balance[0]
-                except TypeError:
-                    em = discord.Embed()
-                    em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any gems yet.")
-                    await interaction.response.send_message(embed=em, ephemeral=True)
+                
+                balance = fetch_balance(cursor, member, interaction)
+                if balance is None:
                     return
                     
                 if balance >= 300:
@@ -97,15 +107,13 @@ class GachaInteraction(commands.Cog):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
-                balance = await cursor.fetchone()
 
-                try:
-                    balance = balance[0]
-                except TypeError:
-                    em = discord.Embed()
-                    em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any gems yet.")
-                    await interaction.response.send_message(embed=em, ephemeral=True)
+                if await check_full_inventory(cursor, member, 11):
+                    interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
+                    return
+
+                balance = fetch_balance(cursor, member, interaction)
+                if balance is None:
                     return
 
                 if balance >= 3000:
