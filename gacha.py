@@ -56,6 +56,13 @@ class GachaInteraction(commands.Cog):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
+
+                await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
+                inventory = await cursor.fetchone()
+                if inventory[0] <= inventory[1]: # Maxed out inventory
+                    interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
+                    return
+
                 await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
                 balance = await cursor.fetchone()
 
