@@ -77,7 +77,7 @@ class GachaInteraction(commands.Cog):
             async with conn.cursor() as cursor:
 
                 if await check_full_inventory(cursor, member, 1):
-                    interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
+                    await interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
                     return
                 
                 balance = await fetch_balance(cursor, member, interaction)
@@ -95,6 +95,7 @@ class GachaInteraction(commands.Cog):
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     elif isinstance(res, str): # If string, must mean rarity
                         await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res, member.id,))
+                        await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
 
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
@@ -109,7 +110,7 @@ class GachaInteraction(commands.Cog):
             async with conn.cursor() as cursor:
 
                 if await check_full_inventory(cursor, member, 11):
-                    interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
+                    await interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
                     return
 
                 balance = await fetch_balance(cursor, member, interaction)
