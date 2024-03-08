@@ -141,27 +141,17 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
-                balance = await cursor.fetchone()
+                balance = fetch_balance(cursor, member, interaction)
+                if not balance:
+                    await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
 
                 dailyAmount = random.randrange(self.DAILY_MIN, self.DAILY_MAX + 1)
                 currentTime = datetime.datetime.utcnow()
-                
-                if not balance:
-                    await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
 
                 await cursor.execute("SELECT USER_LAST_DAILY FROM USER WHERE USER_ID = %s", (member.id,))
                 last_message_sent = await cursor.fetchone()
 
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
-                    try:
-                        balance = balance[0]
-                    except TypeError:
-                        em = discord.Embed()
-                        em.add_field(name="Error", value="Sorry, you cannot claim a daily login as you have not sent any messages.")
-                        await interaction.response.send_message(embed=em, ephemeral=True)
-                        return
-
                     balance += dailyAmount
                     
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
