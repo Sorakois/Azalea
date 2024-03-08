@@ -103,6 +103,11 @@ class GachaInteraction(commands.Cog):
 
                 await conn.commit()
 
+    @pull.error
+    async def on_pull_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
+
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="multipull", description="Pull multiple times.")
     async def multipull(self, interaction : discord.Interaction):
@@ -124,6 +129,11 @@ class GachaInteraction(commands.Cog):
                         res.append(Gacha().pull_cookie()) #Make into an larger embed later
         return res
 
+    @multipull.error
+    async def on_multipull_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
+
     @discord.app_commands.checks.cooldown(2, 15)
     @app_commands.command(name="balance", description="Check your balance of gems.")
     async def balance(self, interaction : discord.Interaction):
@@ -133,6 +143,11 @@ class GachaInteraction(commands.Cog):
                 balance = await fetch_balance(cursor, member, interaction)
                 
                 await interaction.response.send_message(f"Your balance is: {balance}")
+
+    @balance.error
+    async def on_balance_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
 
     @app_commands.command(name="daily", description="Receive your daily bonus!")
     async def daily(self, interaction : discord.Interaction):
