@@ -70,6 +70,7 @@ class GachaInteraction(commands.Cog):
             await conn.commit()
             await self.bot.process_commands(message)  
 
+    @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="pull", description="Pull once.")
     async def pull(self, interaction : discord.Interaction):
         member = interaction.user
@@ -102,7 +103,7 @@ class GachaInteraction(commands.Cog):
 
                 await conn.commit()
 
-    
+    @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="multipull", description="Pull multiple times.")
     async def multipull(self, interaction : discord.Interaction):
         member = interaction.user
@@ -123,6 +124,7 @@ class GachaInteraction(commands.Cog):
                         res.append(Gacha().pull_cookie()) #Make into an larger embed later
         return res
 
+    @discord.app_commands.checks.cooldown(2, 15)
     @app_commands.command(name="balance", description="Check your balance of gems.")
     async def balance(self, interaction : discord.Interaction):
         member = interaction.user
@@ -226,5 +228,3 @@ class Gacha:
     
     async def handle_essence(self):
         return random.randrange(25,51)
-
-
