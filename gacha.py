@@ -80,7 +80,7 @@ class GachaInteraction(commands.Cog):
                     interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
                     return
                 
-                balance = fetch_balance(cursor, member, interaction)
+                balance = await fetch_balance(cursor, member, interaction)
                 if balance is None:
                     return
                     
@@ -112,7 +112,7 @@ class GachaInteraction(commands.Cog):
                     interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
                     return
 
-                balance = fetch_balance(cursor, member, interaction)
+                balance = await fetch_balance(cursor, member, interaction)
                 if balance is None:
                     return
 
@@ -127,7 +127,7 @@ class GachaInteraction(commands.Cog):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                balance = fetch_balance(cursor, member, interaction)
+                balance = await fetch_balance(cursor, member, interaction)
                 
                 await interaction.response.send_message(f"Your balance is: {balance}")
 
@@ -141,7 +141,7 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                balance = fetch_balance(cursor, member, interaction)
+                balance = await fetch_balance(cursor, member, interaction)
                 if not balance:
                     await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
 
