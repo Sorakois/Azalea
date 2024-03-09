@@ -7,6 +7,21 @@ import random
 import math
 
 
+class InventoryView(discord.ui.View):
+
+    def __init__(self, inventory, timeout: float | None = 180):
+        super().__init__(timeout=timeout)
+        self.inventory = inventory
+        self.pages = math.ceil(len(self.inventory)/12)
+
+    @discord.ui.button(label="◀", style=discord.ButtonStyle.blurple)
+    async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("left")
+
+    @discord.ui.button(label="▶", style=discord.ButtonStyle.blurple)
+    async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("right")
+
 async def check_full_inventory(cursor, member, threshold):
     await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
     inventory = await cursor.fetchone()
@@ -190,6 +205,22 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
             await conn.commit()
+
+    @app_commands.command(name="inventory", description="Check your inventory")
+    async def inventory(self, interaction : discord.Interaction):
+        member = interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT ITEM_INFO.ITEM_RARITY, ITEM_INFO.ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY ITEM.ITEM_INFO_ID ASC", (member.id,))
+                inventory_items = await cursor.fetchall()
+
+                if not inventory_items:
+                    interaction.response.send_message("You currently do not own any cookies. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]")
+                    return
+        
+        view = InventoryView(inventory=inventory_items, timeout=50)
+
+        await interaction.response.send_message("This this this.", view=view)
 
 class Gacha:
     '''
