@@ -93,5 +93,3 @@ async def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV, bot):
 async def scrape_cookies(bot):
     cookies = basic_cookie_scrape()
     await indepth_cookie_scrape(cookies=cookies, cookieCSV=1, bot=bot)
-
-asyncio.run(scrape_cookies(5))
