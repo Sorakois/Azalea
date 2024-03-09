@@ -25,10 +25,11 @@ logging.getLogger().addHandler(stderrLogger)
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
 # start up database connection
-mysql_login = {'host':'db-buf-05.sparkedhost.us',
-               'user':'u104092_jfUaeyVlqc',
-               'password':'^lR0+=!4nvkHd9zQvs0BggFS',
-               'db':'s104092_db_update',
+
+mysql_login = {'host':"db-buf-05.sparkedhost.us",
+               'user':"u104092_jfUaeyVlqc",
+               'password':"^lR0+=!4nvkHd9zQvs0BggFS",
+               'db':"s104092_db_update",
                'port':3306}
 
 # discord bot settings
@@ -77,7 +78,7 @@ class General(commands.Cog):
             message (discord.Message) : Message object of message sent
         '''
         await cogs["leveling"].levelUp(message=message)
-
+        
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.User):
         '''
@@ -88,7 +89,7 @@ class General(commands.Cog):
         '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT user FROM levels WHERE user = %s", member.id)
+                await cursor.execute("SELECT USER_ID FROM USER WHERE USER_ID = %s", member.id)
                 userExists = await cursor.fetchall()
                 if len(userExists) != 0:
                     return
@@ -150,4 +151,4 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('TEST_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))
