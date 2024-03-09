@@ -1,4 +1,5 @@
 import requests
+import asyncio
 from bs4 import BeautifulSoup
 
 base_url =  "https://cookierun.fandom.com"
@@ -12,7 +13,19 @@ class Cookie:
         self.link = link
 	
     def find_info(self):
-        pass
+        r = requests.get(base_url + self.link)
+        soup = BeautifulSoup(r.content, "html5lib")
+		
+        image_div = soup.find("div", attrs = {'class' : 'mw-parser-output'})
+        self.image = image_div.aside.figure.a.img["src"]
+		
+        try:
+            rarity_div = soup.find("div", attrs = {'class' : 'wds-tab__content wds-is-current'})
+            self.rarity = rarity_div.section.table.tbody.tr.td.a.img["alt"]
+        except AttributeError:
+            rarity_div = soup.findAll("div", attrs = {'class' : 'wds-tab__content wds-is-current'})[1]
+            self.rarity = rarity_div.section.table.tbody.tr.td.a.img["alt"]
+			
     
 def basic_cookie_scrape():
     r = requests.get(base_url + "/wiki/List_of_Cookies")
@@ -46,7 +59,7 @@ async def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV, bot):
 	# Open the data
 	async with bot.db.acquire() as conn:
 		async with conn.cursor() as cursor:
-			await cursor.execute("SELECT C_NAME, C_LINK, C_IMAGE, C_RELEASE FROM cookie_info_ob")
+			await cursor.execute("SELECT ITEM_RARITY, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO")
 			cookies_db = await cursor.fetchall()
 			
 
@@ -59,10 +72,8 @@ async def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV, bot):
 				releaseChange = False
 				found = False
 				for row in cookies_db:
-					if cookie.name == row[0] or cookie.link == row[1]:
+					if cookie.name == row[1]:
 						found = True
-					if found and cookie.release != row[3]:
-						releaseChange = True
 					if found:
 						break
 					
@@ -74,15 +85,13 @@ async def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV, bot):
 			# Register information and add new cookies
 			for cookie in new_cookies:
 				cookie.find_info()
-				await cursor.execute("INSERT INTO cookie_info_ob (C_NAME, C_LINK, C_IMAGE, C_RARITY, C_PRONOUNS, COMBI_PETS1, COMBI_PETS2, COMBI_TRES1, COMBI_TRES2, C_RELEASE) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", tuple(cookie.to_list()))
-			for cookie in update_cookies:
-				await cursor.execute("UPDATE cookie_info_ob SET C_RELEASE = %s WHERE C_NAME = %s AND C_LINK = %s", (cookie.release, cookie.name, cookie.link))
+				await cursor.execute("INSERT INTO ITEM_INFO (ITEM_RARITY, ITEM_NAME, ITEM_IMAGE) VALUES (%s, %s, %s)", (cookie.rarity, cookie.name, cookie.image))
 		await conn.commit()
 
 	return new_cookies
 
-def scrape_cookies(bot):
+async def scrape_cookies(bot):
     cookies = basic_cookie_scrape()
-    print (len(cookies))
+    await indepth_cookie_scrape(cookies=cookies, cookieCSV=1, bot=bot)
 
-scrape_cookies(5)
+asyncio.run(scrape_cookies(5))
