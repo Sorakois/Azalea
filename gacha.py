@@ -12,11 +12,12 @@ class InventoryView(discord.ui.View):
     page = 1
     COOKIE_PER_PAGE = 8
 
-    def __init__(self, inventory, last_interaction: discord.Interaction, timeout: float | None = 180):
+    def __init__(self, inventory, last_interaction: discord.Interaction, name: discord.User, timeout: float | None = 180):
         super().__init__(timeout=timeout)
         self.inventory = inventory
         self.pages = math.ceil(len(self.inventory)/self.COOKIE_PER_PAGE)
         self.last_interaction = last_interaction
+        self.user = name
 
     async def view_page(self, page_num) -> discord.Embed:
         first_of_page = (page_num - 1) * self.COOKIE_PER_PAGE
@@ -24,7 +25,7 @@ class InventoryView(discord.ui.View):
         if last_of_page > len(self.inventory):
             last_of_page = len(self.inventory)
 
-        em = discord.Embed(title="User's inventory")
+        em = discord.Embed(title=f"{self.user.name}'s inventory")
 
         names = ''
         raritys = ''
@@ -50,6 +51,10 @@ class InventoryView(discord.ui.View):
         await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
         await self.last_interaction.delete_original_response()
         self.last_interaction = interaction
+
+    async def on_timeout(self) -> None:
+        await self.last_interaction.delete_original_response()
+        return await super().on_timeout()
 
 async def check_full_inventory(cursor, member, threshold):
     await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
@@ -236,8 +241,11 @@ class GachaInteraction(commands.Cog):
             await conn.commit()
 
     @app_commands.command(name="inventory", description="Check your inventory")
-    async def inventory(self, interaction : discord.Interaction):
-        member = interaction.user
+    async def inventory(self, interaction : discord.Interaction, name: discord.User= None):
+        if name is None:
+            member = interaction.user
+        else:
+            member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT ITEM_INFO.ITEM_RARITY, ITEM_INFO.ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY ITEM.ITEM_INFO_ID ASC", (member.id,))
@@ -247,7 +255,7 @@ class GachaInteraction(commands.Cog):
                     interaction.response.send_message("You currently do not own any cookies. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]")
                     return
         
-        view = InventoryView(inventory=inventory_items, last_interaction=interaction, timeout=50)
+        view = InventoryView(inventory=inventory_items, last_interaction=interaction, name=member, timeout=50)
 
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
 
