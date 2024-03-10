@@ -175,8 +175,22 @@ class GachaInteraction(commands.Cog):
                 if balance >= 3000:
                     res = []
                     for i in range(0, 11):    
-                        res.append(Gacha().pull_cookie()) #Make into an larger embed later
-        return res
+                        res.append(await Gacha().pull_cookie())
+
+                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                        
+                        if isinstance(res[i], int): # If integer, must mean essence
+                            balance += res[i]
+                            await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                        elif isinstance(res[i], str): # If string, must mean rarity
+                            await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res[i], member.id,))
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
+                    balance -= 3000
+                    await interaction.response.send_message(f"{res}")
+                else:
+                    await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
+
+                await conn.commit()
 
     @multipull.error
     async def on_multipull_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
