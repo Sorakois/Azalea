@@ -11,20 +11,25 @@ class InventoryView(discord.ui.View):
 
     page = 1
 
-    def __init__(self, inventory, timeout: float | None = 180):
+    def __init__(self, inventory, last_interaction: discord.Interaction, timeout: float | None = 180):
         super().__init__(timeout=timeout)
         self.inventory = inventory
         self.pages = math.ceil(len(self.inventory)/12)
+        self.last_interaction = last_interaction
 
     @discord.ui.button(label="◀", style=discord.ButtonStyle.blurple)
     async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.page = self.pages if self.page == 1 else self.page - 1
         await interaction.response.send_message(f"left {self.page}/{self.pages}", view=self)
+        await self.last_interaction.delete_original_response()
+        self.last_interaction = interaction
 
     @discord.ui.button(label="▶", style=discord.ButtonStyle.blurple)
     async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.page = 1 if self.page == self.pages else self.page + 1
         await interaction.response.send_message(f"right {self.page}/{self.pages}", view=self)
+        await self.last_interaction.delete_original_response()
+        self.last_interaction = interaction
 
 async def check_full_inventory(cursor, member, threshold):
     await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
@@ -222,7 +227,7 @@ class GachaInteraction(commands.Cog):
                     interaction.response.send_message("You currently do not own any cookies. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]")
                     return
         
-        view = InventoryView(inventory=inventory_items, timeout=50)
+        view = InventoryView(inventory=inventory_items, last_interaction=interaction, timeout=50)
 
         await interaction.response.send_message("This this this.", view=view)
 
