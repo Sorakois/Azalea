@@ -10,24 +10,44 @@ import math
 class InventoryView(discord.ui.View):
 
     page = 1
+    COOKIE_PER_PAGE = 8
 
     def __init__(self, inventory, last_interaction: discord.Interaction, timeout: float | None = 180):
         super().__init__(timeout=timeout)
         self.inventory = inventory
-        self.pages = math.ceil(len(self.inventory)/12)
+        self.pages = math.ceil(len(self.inventory)/self.COOKIE_PER_PAGE)
         self.last_interaction = last_interaction
+
+    async def view_page(self, page_num) -> discord.Embed:
+        first_of_page = (page_num - 1) * self.COOKIE_PER_PAGE
+        last_of_page = self.COOKIE_PER_PAGE * page_num
+        if last_of_page > len(self.inventory):
+            last_of_page = len(self.inventory)
+
+        em = discord.Embed(title="User's inventory")
+
+        names = ''
+        raritys = ''
+        for item in range(first_of_page, last_of_page):
+            names += self.inventory[item][1] + '\n'
+            raritys += self.inventory[item][0] + '\n'
+        
+        em.add_field(name="Name", value=names)
+        em.add_field(name="Rarity", value=raritys)
+        em.set_footer(text=f"{self.page}/{self.pages}")
+        return em
 
     @discord.ui.button(label="◀", style=discord.ButtonStyle.blurple)
     async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.page = self.pages if self.page == 1 else self.page - 1
-        await interaction.response.send_message(f"left {self.page}/{self.pages}", view=self)
+        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
         await self.last_interaction.delete_original_response()
         self.last_interaction = interaction
 
     @discord.ui.button(label="▶", style=discord.ButtonStyle.blurple)
     async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.page = 1 if self.page == self.pages else self.page + 1
-        await interaction.response.send_message(f"right {self.page}/{self.pages}", view=self)
+        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
         await self.last_interaction.delete_original_response()
         self.last_interaction = interaction
 
@@ -229,7 +249,7 @@ class GachaInteraction(commands.Cog):
         
         view = InventoryView(inventory=inventory_items, last_interaction=interaction, timeout=50)
 
-        await interaction.response.send_message("This this this.", view=view)
+        await interaction.response.send_message(embed=await view.view_page(1), view=view)
 
 class Gacha:
     '''
