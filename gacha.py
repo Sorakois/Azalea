@@ -9,6 +9,8 @@ import math
 
 class InventoryView(discord.ui.View):
 
+    page = 1
+
     def __init__(self, inventory, timeout: float | None = 180):
         super().__init__(timeout=timeout)
         self.inventory = inventory
@@ -16,11 +18,13 @@ class InventoryView(discord.ui.View):
 
     @discord.ui.button(label="◀", style=discord.ButtonStyle.blurple)
     async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("left")
+        self.page = self.pages if self.page == 1 else self.page - 1
+        await interaction.response.send_message(f"left {self.page}/{self.pages}", view=self)
 
     @discord.ui.button(label="▶", style=discord.ButtonStyle.blurple)
     async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("right")
+        self.page = 1 if self.page == self.pages else self.page + 1
+        await interaction.response.send_message(f"right {self.page}/{self.pages}", view=self)
 
 async def check_full_inventory(cursor, member, threshold):
     await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (member.id,))
