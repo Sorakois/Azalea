@@ -138,7 +138,6 @@ class GachaInteraction(commands.Cog):
                     res = await Gacha().pull_cookie()
                     balance -= 300
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
-                    await interaction.response.send_message(f"{res}")
 
                     if isinstance(res, int): # If integer, must mean essence
                         balance += res
@@ -149,6 +148,9 @@ class GachaInteraction(commands.Cog):
 
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
+                    return
+
+                
 
                 await conn.commit()
 
@@ -189,6 +191,8 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message(f"{res}")
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
+                    return
+                
 
                 await conn.commit()
 
