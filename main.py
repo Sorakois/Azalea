@@ -118,8 +118,9 @@ class General(commands.Cog):
                 print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
             if split[0] == 'scrape_cookie':
+                await interaction.response.defer()
                 res = await scrape_cookie1(self.bot)
-                await interaction.response.send_message(f"resolved with: {res}", ephemeral=True)
+                await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
 
             if split[0] == 'scrape_cookie_ob':
                 await interaction.response.defer()
