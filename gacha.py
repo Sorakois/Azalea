@@ -120,7 +120,7 @@ class GachaInteraction(commands.Cog):
             await self.bot.process_commands(message)  
 
     @discord.app_commands.checks.cooldown(1, 3)
-    @app_commands.command(name="pull", description="Pull once.")
+    @app_commands.command(name="pull", description="Pull once for 300 gems.")
     async def pull(self, interaction : discord.Interaction):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
@@ -160,7 +160,7 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message(str(error))
 
     @discord.app_commands.checks.cooldown(1, 3)
-    @app_commands.command(name="multipull", description="Pull multiple times.")
+    @app_commands.command(name="multipull", description="Pull 11 times for 3000 gems.")
     async def multipull(self, interaction : discord.Interaction):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
@@ -180,7 +180,7 @@ class GachaInteraction(commands.Cog):
                         res.append(await Gacha().pull_cookie())
 
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
-                        
+
                         if isinstance(res[i], int): # If integer, must mean essence
                             balance += res[i]
                             await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
@@ -242,7 +242,7 @@ class GachaInteraction(commands.Cog):
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
                 
-                    em = discord.Embed(title="# Daily Reward Claimed!")
+                    em = discord.Embed(title="Daily Reward Claimed!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
                     em.set_footer(text=f"Return in 24 hours to recieve another!")
@@ -257,7 +257,7 @@ class GachaInteraction(commands.Cog):
                     else:
                         time_remaining_str = f'{time_remaining} seconds'
                     em = discord.Embed()
-                    em.add_field(name="Claimed Daily", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
+                    em.add_field(name="Daily has recently been claimed.", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Common_witch_gacha.png/revision/latest?cb=20221112035138")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
@@ -271,7 +271,7 @@ class GachaInteraction(commands.Cog):
             member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT ITEM_INFO.ITEM_RARITY, ITEM_INFO.ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY ITEM.ITEM_INFO_ID ASC", (member.id,))
+                await cursor.execute("SELECT ITEM_RARITY ,ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
                 inventory_items = await cursor.fetchall()
 
                 if not inventory_items:
@@ -290,7 +290,8 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-    async def pull_cookie(self):
+    async def pull_cookie(self#, interaction : discord.Interaction, name: discord.User= None
+                          ):
         probability = random.random()
         rarity = ""
 
@@ -329,6 +330,9 @@ class Gacha:
         elif .99950 <= probability < 1:
             # Give user Ancient cookie
             rarity = 'Ancient'
+            rarity = 'Ancient'
+    
+            rarity = 'Ancient'  
     
         return rarity
     
