@@ -238,11 +238,15 @@ class GachaInteraction(commands.Cog):
 
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
                     balance += dailyAmount
-                    
+                
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
-
-                    await interaction.response.send_message(f"You earned **{dailyAmount}** crystals!\nYour new balance is: __{balance}__")
+                
+                    em = discord.Embed(title="# Daily Reward Claimed!")
+                    em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
+                    em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
+                    em.set_footer(text=f"Return in 24 hours to recieve another!")
+                    await interaction.response.send_message(embed=em, ephemeral=False)
 
                 else:
                     time_remaining = 82800 - (currentTime - last_message_sent[0]).total_seconds()
@@ -253,7 +257,8 @@ class GachaInteraction(commands.Cog):
                     else:
                         time_remaining_str = f'{time_remaining} seconds'
                     em = discord.Embed()
-                    em.add_field(name="Claimed Daily", value=f"Sorry, you have already collected your daily login bonus today, try again in {time_remaining_str}!")
+                    em.add_field(name="Claimed Daily", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
+                    em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Common_witch_gacha.png/revision/latest?cb=20221112035138")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
             await conn.commit()
