@@ -187,7 +187,10 @@ class GachaInteraction(commands.Cog):
                             await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res[i], member.id,))
                             await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
                     balance -= 3000
-                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
+                    
+                    if essence_add != 0:
+                        await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
+
                     await interaction.response.send_message(f"{res}")
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
