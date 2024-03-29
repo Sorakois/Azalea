@@ -140,8 +140,7 @@ class GachaInteraction(commands.Cog):
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
 
                     if isinstance(res, int): # If integer, must mean essence
-                        balance += res
-                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                        await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (res, member.id,))
                     elif isinstance(res, str): # If string, must mean rarity
                         await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res, member.id,))
                         await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
@@ -150,7 +149,7 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
                     return
 
-                
+                await interaction.response.send_message(f"{res}")
 
                 await conn.commit()
 
@@ -176,18 +175,19 @@ class GachaInteraction(commands.Cog):
 
                 if balance >= 3000:
                     res = []
+                    essence_add = 0
                     for i in range(0, 11):    
                         res.append(await Gacha().pull_cookie())
 
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
 
                         if isinstance(res[i], int): # If integer, must mean essence
-                            balance += res[i]
-                            await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                            essence_add += res[i]
                         elif isinstance(res[i], str): # If string, must mean rarity
                             await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res[i], member.id,))
                             await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
                     balance -= 3000
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
                     await interaction.response.send_message(f"{res}")
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
