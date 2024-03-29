@@ -333,9 +333,6 @@ class Gacha:
         elif .99950 <= probability < 1:
             # Give user Ancient cookie
             rarity = 'Ancient'
-            rarity = 'Ancient'
-    
-            rarity = 'Ancient'  
     
         return rarity
     
