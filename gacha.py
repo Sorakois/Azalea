@@ -40,9 +40,24 @@ class MultipullView(discord.ui.View):
 
     async def view_page(self, page_num):
         if page_num == 1:
-            return discord.Embed(title=f'{self.best_cookie}')
+            em = discord.Embed(title=f"Best Cookie Recieved: ***__{self.best_cookie}__***")
+            #em.set_thumbnail("")
+            em.set_image(url=self.cookies[self.best_cookie]['image'])
+            em.set_footer(text=f"Check the next page to see everything else you pulled!")
+            return em
         else:
-            return discord.Embed(title='no')
+            #mention the user?
+            em = discord.Embed(title=f"Total Recieved:")
+            em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
+            empty = ""
+            emp2 = ""
+            for i in self.cookies.keys():
+                empty += i + "\n"
+                emp2 += self.cookies[i]['rarity'] + "\n"
+            em.add_field(name=f"Cookies:", value=f"{empty}", inline = False)
+            em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
+            em.set_footer(text=f"Go back?")
+            return em
 
     @discord.ui.button(label="⭐", style=discord.ButtonStyle.success, disabled=True)
     async def highlight(self, interaction: discord.Interaction, button: discord.ui.Button):
