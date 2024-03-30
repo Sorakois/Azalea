@@ -224,6 +224,10 @@ class GachaInteraction(commands.Cog):
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
 
                     if isinstance(res, int): # If integer, must mean essence
+                        em = discord.Embed(title=f"Essence Recieved: \n***__{self.essence}__***")
+                        em.set_thumbnail(url=self.user.avatar.url)
+                        em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/6/61/Common_soul_essence.png/revision/latest?cb=20220707172739")
+                        em.set_footer(text=f"Pull more? Do /pull or /multpull!")
                         await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (res, member.id,))
                     elif isinstance(res, str): # If string, must mean rarity
                         await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res, member.id,))
