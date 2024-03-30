@@ -110,7 +110,8 @@ class InventoryView(discord.ui.View):
             last_of_page = len(self.inventory)
 
         em = discord.Embed(title=f"{self.user.name}'s inventory")
-
+        em.set_thumbnail(url=self.user.avatar.url)
+        
         names = ''
         raritys = ''
         for item in range(first_of_page, last_of_page):
