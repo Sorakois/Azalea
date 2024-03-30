@@ -311,14 +311,16 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message(str(error))
 
     @discord.app_commands.checks.cooldown(2, 15)
-    @app_commands.command(name="balance", description="Check your balance of gems.")
+    @app_commands.command(name="balance", description="Check your balance of gems")
     async def balance(self, interaction : discord.Interaction):
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 balance = await fetch_balance(cursor, member, interaction)
-                
-                await interaction.response.send_message(f"Your balance is: {balance}")
+                em = discord.Embed(title=f"Gem Balance")
+                em.set_thumbnail(url=interaction.user.avatar.url)
+                em.add_field(name="Your balance is:", value=f"**__{balance}__** :gem:")
+                await interaction.response.send_message(embed=em, ephemeral=False)
 
     @balance.error
     async def on_balance_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
