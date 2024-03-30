@@ -5,6 +5,7 @@ import aiomysql
 import datetime
 import random
 import math
+from typing import Literal
 
 cookie_rarity_rankings = {
     'Common' : 1,
@@ -160,6 +161,21 @@ async def fetch_balance(cursor, member, interaction):
     
     return balance
 
+async def fetch_ebalance(cursor, member, interaction):
+    await cursor.execute("SELECT USER_ESSENCE FROM USER WHERE USER_ID = %s", (member.id))
+    ebalance = await cursor.fetchone()
+
+    try:
+        ebalance = ebalance[0]
+    except TypeError:
+        em = discord.Embed()
+        em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any essence yet.")
+        await interaction.response.send_message(embed=em, ephemeral=True)
+        return None # No value detected
+    
+    return ebalance
+
+
 class GachaInteraction(commands.Cog):
     '''
     Interaction with the users (slash commands, other than )
@@ -311,15 +327,24 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message(str(error))
 
     @discord.app_commands.checks.cooldown(2, 15)
-    @app_commands.command(name="balance", description="Check your balance of gems")
-    async def balance(self, interaction : discord.Interaction):
-        member = interaction.user
+    @app_commands.command(name="balance", description="Check your balance of currencies")
+    async def balance(self, interaction : discord.Interaction, currency: Literal['gem', 'essence']):
+       member=interaction.user
+       if currency == 'gem':
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 balance = await fetch_balance(cursor, member, interaction)
                 em = discord.Embed(title=f"Gem Balance")
                 em.set_thumbnail(url=interaction.user.avatar.url)
                 em.add_field(name="Your balance is:", value=f"**__{balance}__** :gem:")
+                await interaction.response.send_message(embed=em, ephemeral=False)
+       if currency == 'essence':
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                ebalance = await fetch_ebalance(cursor, member, interaction)
+                em = discord.Embed(title=f"Essence Balance")
+                em.set_thumbnail(url=interaction.user.avatar.url)
+                em.add_field(name="You have collected:", value=f"**__{ebalance}__** :cookie:")
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
     @balance.error
