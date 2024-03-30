@@ -25,6 +25,7 @@ class MultipullView(discord.ui.View):
         self.essence = essence
         self.cookies = cookies
         self.last_interaction = last_interaction
+        self.user = last_interaction.user
         
     async def eval_best_cookie(self):
         self.best_cookie = ''
@@ -40,22 +41,23 @@ class MultipullView(discord.ui.View):
 
     async def view_page(self, page_num):
         if page_num == 1:
-            em = discord.Embed(title=f"Best Cookie Recieved: ***__{self.best_cookie}__***")
-            #em.set_thumbnail("")
+            em = discord.Embed(title=f"Best Cookie Recieved: \n***__{self.best_cookie}__***")
+            em.set_thumbnail(url=self.user.avatar.url)
             em.set_image(url=self.cookies[self.best_cookie]['image'])
             em.set_footer(text=f"Check the next page to see everything else you pulled!")
             return em
         else:
             #mention the user?
             em = discord.Embed(title=f"Total Recieved:")
-            em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
+            em.set_thumbnail(url="https://static.wikia.nocookie.net/cookierunkingdom/images/a/a1/Icon_usable_decor.png/revision/latest/scale-to-width-down/50?cb=20221111042019")
             empty = ""
             emp2 = ""
             for i in self.cookies.keys():
                 empty += i + "\n"
                 emp2 += self.cookies[i]['rarity'] + "\n"
-            em.add_field(name=f"Cookies:", value=f"{empty}", inline = False)
+            em.add_field(name=f"Cookies:", value=f"{empty}", inline = True)
             em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
+            em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
             em.set_footer(text=f"Go back?")
             return em
 
