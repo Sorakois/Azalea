@@ -6,6 +6,73 @@ import datetime
 import random
 import math
 
+cookie_rarity_rankings = {
+    'Common' : 1,
+    'Rare' : 2,
+    'Epic' : 3,
+    'Super Epic': 4,
+    'Legendary' : 5,
+    'Dragon' : 5,
+    'Special' : 5,
+    'Ancient' : 6
+}
+
+class MultipullView(discord.ui.View):
+    page = 1
+
+    def __init__(self, last_interaction: discord.Interaction, essence: int, cookies: dict, timeout: float | None = 180):
+        super().__init__(timeout=timeout)
+        self.essence = essence
+        self.cookies = cookies
+        self.last_interaction = last_interaction
+        
+    async def eval_best_cookie(self):
+        self.best_cookie = ''
+        best_cookie_rarity = ''
+        for c in self.cookies.keys():
+            if best_cookie_rarity == '':
+                self.best_cookie = c
+                best_cookie_rarity = self.cookies[c]['rarity']
+            elif cookie_rarity_rankings[self.cookies[c]['rarity']] > cookie_rarity_rankings[best_cookie_rarity]:
+                self.best_cookie = c
+                best_cookie_rarity = self.cookies[c]['rarity']
+        return
+
+    async def view_page(self, page_num):
+        if page_num == 1:
+            return discord.Embed(title=f'{self.best_cookie}')
+        else:
+            return discord.Embed(title='no')
+
+    @discord.ui.button(label="⭐", style=discord.ButtonStyle.success, disabled=True)
+    async def highlight(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if self.page == 1:
+            return
+        self.page = 1
+
+        button.disabled = True
+        
+        await self.last_interaction.delete_original_response()
+        self.last_interaction = interaction
+        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
+        
+        button.disabled = False
+        
+    @discord.ui.button(label="📜", style=discord.ButtonStyle.secondary)
+    async def summary(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if self.page == 2:
+            return
+        self.page = 2
+
+        self.highlight.disabled = False
+        button.disabled = True
+
+        await self.last_interaction.delete_original_response()
+        self.last_interaction = interaction
+        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
+        button.disabled = False
+        
+        
 
 class InventoryView(discord.ui.View):
 
@@ -175,6 +242,7 @@ class GachaInteraction(commands.Cog):
 
                 if balance >= 3000:
                     res = []
+                    cookies_received = {}
                     essence_add = 0
                     for i in range(0, 11):    
                         res.append(await Gacha().pull_cookie())
@@ -184,14 +252,22 @@ class GachaInteraction(commands.Cog):
                         if isinstance(res[i], int): # If integer, must mean essence
                             essence_add += res[i]
                         elif isinstance(res[i], str): # If string, must mean rarity
-                            await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES ((SELECT ITEM_INFO_ID FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1), %s)", (res[i], member.id,))
+                            
+                            await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res[i])
+                            item_info = await cursor.fetchone()
+                            cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : res[i]}
+
+                            await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                             await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
                     balance -= 3000
-                    
+
                     if essence_add != 0:
                         await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
 
-                    await interaction.response.send_message(f"{res}")
+                    view = MultipullView(last_interaction=interaction, essence=essence_add, cookies=cookies_received)
+                    await view.eval_best_cookie()
+
+                    await interaction.response.send_message(embed=await view.view_page(1) ,view=view)
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
                     return
