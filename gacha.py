@@ -288,7 +288,7 @@ class GachaInteraction(commands.Cog):
                             await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                             await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
                     balance -= 3000
-
+                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     if essence_add != 0:
                         await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
 
@@ -333,12 +333,12 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
+                dailyAmount = random.randrange(self.DAILY_MIN, self.DAILY_MAX + 1)
+                currentTime = datetime.datetime.utcnow()
+
                 balance = await fetch_balance(cursor, member, interaction)
                 if not balance:
                     await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
-
-                dailyAmount = random.randrange(self.DAILY_MIN, self.DAILY_MAX + 1)
-                currentTime = datetime.datetime.utcnow()
 
                 await cursor.execute("SELECT USER_LAST_DAILY FROM USER WHERE USER_ID = %s", (member.id,))
                 last_message_sent = await cursor.fetchone()
