@@ -44,7 +44,7 @@ class MultipullView(discord.ui.View):
             em = discord.Embed(title=f"Best Cookie Recieved: \n***__{self.best_cookie}__***")
             em.set_thumbnail(url=self.user.avatar.url)
             em.set_image(url=self.cookies[self.best_cookie]['image'])
-            em.set_footer(text=f"Check the next page to see everything else you pulled!")
+            em.set_footer(text=f"Your best pull was a {self.cookies[self.best_cookie]['rarity']} cookie!\nCheck the next page to see everything else you pulled!")
             return em
         else:
             #mention the user?
@@ -227,15 +227,15 @@ class GachaInteraction(commands.Cog):
                         em = discord.Embed(title=f"Essence Recieved: \n***__{res}__***")
                         em.set_thumbnail(url=interaction.user.avatar.url)
                         em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/6/61/Common_soul_essence.png/revision/latest?cb=20220707172739")
-                        em.set_footer(text=f"Pull more? Do /pull or /multpull!")
+                        em.set_footer(text=f"Want to pull more? Do /pull or /multpull!")
                         await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (res, member.id,))
                     elif isinstance(res, str): # If string, must mean rarity
-                        await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res)
+                        await cursor.execute("SELECT ITEM_INFO_ID, ITEM_RARITY, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res)
                         item_info = await cursor.fetchone() # item_info[1] = name, item_info[2] = image
-                        em = discord.Embed(title=f"Cookie Recieved: \n***__{item_info[1]}__***")
+                        em = discord.Embed(title=f"Cookie Recieved: \n***__{item_info[2]}__***")
                         em.set_thumbnail(url=interaction.user.avatar.url)
-                        em.set_image(url=item_info[2])
-                        em.set_footer(text=f"Pull more? Do /pull or /multpull!")
+                        em.set_image(url=item_info[3])
+                        em.set_footer(text=f"You have recieved a {item_info[1]} cookie!\nWant to pull more? Do /pull or /multpull!")
 
                         await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                         await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
