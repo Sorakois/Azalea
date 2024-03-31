@@ -418,6 +418,29 @@ class GachaInteraction(commands.Cog):
 
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
 
+    @app_commands.command(name="crumble", description="Crumble a cookie from your inventory for essence")
+    async def crumble(self, interaction : discord.Interaction, cookie: str):
+        member=interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT 1;")
+                crumble_cookie = await cursor.fetchone()
+
+                if not crumble_cookie:
+                    await interaction.response.send_message("You currently do not own this cookie. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]")
+                    return
+                
+                view = discord.ui.View(timeout = 50)
+                button_confirm = discord.ui.Button(label = f"Crumble {cookie}", style=discord.ButtonStyle.success, emoji="✅")
+                view.add_item(button_confirm)
+                
+                button_cancel = discord.ui.Button(label = "Cancel", style=discord.ButtonStyle.danger, emoji="❌")
+                view.add_item(button_cancel)
+                
+                await interaction.response.send_message(view = view, ephemeral=True)
+
+            await interaction.response.send_message(crumble_cookie, ephemeral=True)
+
 class Gacha:
     '''
     gacha logic and computations
