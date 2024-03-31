@@ -181,10 +181,32 @@ class CrumbleView(discord.ui.View):
 
     @discord.ui.button(label = f"Crumble", style=discord.ButtonStyle.success, emoji="✅")
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        pass
+        crumble_essence = 0
+        
+        #if ITEM_RARITY == "Common":
+        #    crumble_essence += 15
+        #if ITEM_RARITY == "Rare":
+        #    crumble_essence += 20
+        #if ITEM_RARITY == "Epic":
+        #    crumble_essence += 50
+        #if ITEM_RARITY == "Super Epic":
+        #    crumble_essence += 150
+        #if ITEM_RARITY == "Legendary", "Special", "Dragon":
+        #    crumble_essence += 500
+        #if ITEM_RARITY == "Ancient":
+       #     crumble_essence += 1000
+        
+        #DELETE FROM ITEM WHERE ITEM_ID = %s; <--- for when removing cookie from user
+
+        em = discord.Embed(title=f"Cookie Crumbled")
+        em.set_thumbnail(url=interaction.user.avatar.url)
+        em.add_field(name="Essence Recieved:", value=f"**__{crumble_essence}__** :cookie:")
+        em.set_footer(text=f"REMINDER: CRUMBLING **__PERMANENTLY DELETES__** A COOKIE")
+        await interaction.response.send_message(embed=em, ephemeral=True)    
 
     @discord.ui.button(label = "Cancel", style=discord.ButtonStyle.danger, emoji="✖")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Crumble canceled.") 
         pass
 
 
