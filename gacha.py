@@ -181,28 +181,12 @@ class CrumbleView(discord.ui.View):
 
     @discord.ui.button(label = f"Crumble", style=discord.ButtonStyle.success, emoji="✅")
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        crumble_essence = 0
-        
-        #if ITEM_RARITY == "Common":
-        #    crumble_essence += 15
-        #if ITEM_RARITY == "Rare":
-        #    crumble_essence += 20
-        #if ITEM_RARITY == "Epic":
-        #    crumble_essence += 50
-        #if ITEM_RARITY == "Super Epic":
-        #    crumble_essence += 150
-        #if ITEM_RARITY == "Legendary", "Special", "Dragon":
-        #    crumble_essence += 500
-        #if ITEM_RARITY == "Ancient":
-       #     crumble_essence += 1000
-        
-        #DELETE FROM ITEM WHERE ITEM_ID = %s; <--- for when removing cookie from user
-
         em = discord.Embed(title=f"Cookie Crumbled")
         em.set_thumbnail(url=interaction.user.avatar.url)
-        em.add_field(name="Essence Recieved:", value=f"**__{crumble_essence}__** :cookie:")
-        em.set_footer(text=f"REMINDER: CRUMBLING **__PERMANENTLY DELETES__** A COOKIE")
+        em.add_field(name="Essence Recieved:", value="Do /balance do check your new balance! :cookie:")
+        em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
         await interaction.response.send_message(embed=em, ephemeral=True)    
+
 
     @discord.ui.button(label = "Cancel", style=discord.ButtonStyle.danger, emoji="✖")
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -455,11 +439,30 @@ class GachaInteraction(commands.Cog):
     @app_commands.command(name="crumble", description="Crumble a cookie from your inventory for essence")
     async def crumble(self, interaction : discord.Interaction, cookie: str):
         member = interaction.user
+        crumble_essence == 0
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT 1;")
                 crumble_cookie = await cursor.fetchone()
 
+                if crumble_cookie[3] == "Common":
+                    crumble_essence += 10
+                if crumble_cookie[3] == "Rare":
+                    crumble_essence += 10
+                if crumble_cookie[3] == "Epic":
+                    crumble_essence += 10
+                if crumble_cookie[3] == "Super Epic":
+                    crumble_essence += 10
+                if crumble_cookie[3] == "Legendary" or "Special" or "Dragon":
+                    crumble_essence += 10
+                if crumble_cookie[3] == "Ancient":
+                    crumble_essence += 10
+
+                if crumble_essence != 0:
+                    #await cursor.execute("DELETE FROM ITEM WHERE ITEM_ID = %s", (crumble_cookie))
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER ESSENCE + %s WHERE USER_ID = %s", (crumble_essence, member.id))
+                    return
+                
                 if not crumble_cookie:
                     await interaction.response.send_message("You currently do not own this cookie. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]")
                     return
