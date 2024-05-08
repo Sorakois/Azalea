@@ -501,7 +501,7 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-    async def pull_cookie(self, interaction : discord.Interaction, name: discord.User= None):
+    async def pull_cookie(self):
         probability = random.random()
         rarity = ""
 
