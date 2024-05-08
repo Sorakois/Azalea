@@ -474,17 +474,17 @@ class GachaInteraction(commands.Cog):
                 # Replace values with some sort of significance
                 try:
                     if crumble_cookie[3] == "Common":
-                        crumble_essence = 10
+                        crumble_essence = 30
                     elif crumble_cookie[3] == "Rare":
-                        crumble_essence = 10
+                        crumble_essence = 35
                     elif crumble_cookie[3] == "Epic":
-                        crumble_essence = 10
+                        crumble_essence = 80
                     elif crumble_cookie[3] == "Super Epic":
-                        crumble_essence = 10
+                        crumble_essence = 250
                     elif crumble_cookie[3] == "Legendary" or "Special" or "Dragon":
-                        crumble_essence = 10
+                        crumble_essence = 3000
                     elif crumble_cookie[3] == "Ancient":
-                        crumble_essence = 10
+                        crumble_essence = 10000
                 except TypeError:
                     await interaction.response.send_message("Cookie does not exist", ephemeral=True)
                     return
@@ -501,7 +501,7 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-    async def pull_cookie(self, interaction : discord.Interaction, name: discord.User= None):
+    async def pull_cookie(self):
         probability = random.random()
         rarity = ""
 
