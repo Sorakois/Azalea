@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from util.scrape_wiki import scrape_cookies as scrape_cookie1
 from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
+from gacha import GachaInteraction
 
 # load the enviroment variables
 load_dotenv()
@@ -41,7 +42,8 @@ bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 
 cogs = {
     'leveling': Leveling(bot),
-    'cookie_info' : CookieInfo(bot) 
+    'cookie_info' : CookieInfo(bot),
+    'gacha' : GachaInteraction(bot)
     }
 
 # bot settings
@@ -77,8 +79,9 @@ class General(commands.Cog):
         params:
             message (discord.Message) : Message object of message sent
         '''
-        await cogs["leveling"].levelUp(message=message)
-        
+        valid_time = await cogs["leveling"].levelUp(message=message)
+        await cogs["gacha"].crystalOnMessage(message=message, valid_time=valid_time)
+
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.User):
         '''
@@ -151,5 +154,6 @@ async def on_ready():
             pass
     synced = await bot.tree.sync()
     
+
 
 bot.run(os.environ.get('BOT_TOKEN'))
