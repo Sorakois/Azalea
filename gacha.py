@@ -457,12 +457,12 @@ class GachaInteraction(commands.Cog):
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
 
     @app_commands.command(name="crumble", description="Crumble a cookie from your inventory for essence")
-    async def crumble(self, interaction : discord.Interaction, cookie: str):
+    async def crumble(self, interaction : discord.Interaction, cookie: str, amount: int):
         member = interaction.user
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT 1;")
+                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
                 crumble_cookie = await cursor.fetchone()
 
                 if not crumble_cookie:
