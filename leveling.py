@@ -42,7 +42,7 @@ roles = {
 
 # roles = {'tier 1': 1135634051479388180, 'tier 2': 1135634087051268216, 'tier 3': 1135634103211925566}
 
-# ignoreList = {836367313502208040, 329669053838917632, 400443611105460234}
+ignoreList = {836367313502208040, 329669053838917632, 400443611105460234}
 
 class Leveling(commands.Cog):
 
@@ -148,8 +148,8 @@ class Leveling(commands.Cog):
         '''
         if message.author.bot:
             return
-        # if message.author.id in ignoreList:
-        #     return
+        if message.author.id in ignoreList:
+            return
 
         valid_time = False # returned to send if time is valid to operate other on-message functions
 
