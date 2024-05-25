@@ -468,7 +468,8 @@ class GachaInteraction(commands.Cog):
             async with conn.cursor() as cursor:
                 await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
                 crumble_cookie = await cursor.fetchall()
-                
+                if amount < 1:
+                    await interaction.response.send_message("Cannot crumble nothing or negative cookies. Silly!")
                 if len(crumble_cookie) < amount:
                     amount  = len(crumble_cookie)
 
