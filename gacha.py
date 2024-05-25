@@ -46,7 +46,7 @@ class MultipullView(discord.ui.View):
             em.set_thumbnail(url=self.user.avatar.url)
             em.add_field(name="Rarity:", value=f"{self.cookies[self.best_cookie]['rarity']}")
             em.set_image(url=self.cookies[self.best_cookie]['image'])
-            em.set_footer(text=f"Check the next page to see everything else you pulled!")
+            em.set_footer(text=f"Check the next page to see everything else you pulled! To recycle cookies, do /crumble.")
             return em
         else:
             em = discord.Embed(title=f"Total Recieved:")
@@ -59,7 +59,7 @@ class MultipullView(discord.ui.View):
             em.add_field(name=f"Cookies:", value=f"{empty}", inline = True)
             em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
             em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
-            em.set_footer(text=f"Go back?")
+            em.set_footer(text=f"To recycle cookies, do /crumble. Go back?")
             return em
 
     @discord.ui.button(label="⭐", style=discord.ButtonStyle.success, disabled=True)
@@ -291,7 +291,7 @@ class GachaInteraction(commands.Cog):
                         em.set_thumbnail(url=interaction.user.avatar.url)
                         em.add_field(name="Rarity:", value=f"{item_info[1]}")
                         em.set_image(url=item_info[3])
-                        em.set_footer(text=f"Want to pull more? Do /pull or /multpull!")
+                        em.set_footer(text=f"To recycle cookies, do /crumble. Want to pull more? Do /pull or /multpull!")
 
                         await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                         await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
