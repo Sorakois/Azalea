@@ -186,7 +186,7 @@ class CrumbleView(discord.ui.View):
 
     async def embed(self):
         em = discord.Embed(title=f"Are you sure you want to crumble {self.amt} {self.crumble_data[0][2]}(s)?")
-        em.add_field(name=f"You will receive {self.add} essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
+        em.add_field(name=f"You will receive {self.add*self.amt} essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
         return em
 
@@ -194,7 +194,7 @@ class CrumbleView(discord.ui.View):
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         em = discord.Embed(title=f"Cookie Crumbled")
         em.set_thumbnail(url=interaction.user.avatar.url)
-        em.add_field(name=f"Essence Recieved: {self.add}", value="Do /balance do check your new balance! :cookie:")
+        em.add_field(name=f"Essence Recieved: {self.add*self.amt}", value="Do /balance do check your new balance! :cookie:")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
 
         await self.last_interaction.delete_original_response()
@@ -205,7 +205,7 @@ class CrumbleView(discord.ui.View):
             async with conn.cursor() as cursor:
                 for c in self.crumble_data:
                     await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (c[0], c[1],))
-                await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (self.add, self.amt, c[0],))
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - 1 WHERE USER_ID = %s", (self.add, c[0],))
 
             await conn.commit()
 
@@ -496,7 +496,7 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message("Cookie does not exist", ephemeral=True)
                     return
                     
-                view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence*amount, last_interaction=interaction, amt=amount)
+                view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence, last_interaction=interaction, amt=amount)
                 em = discord.Embed()
                 await interaction.response.send_message(embed=await view.embed(), view = view, ephemeral=True)
 
