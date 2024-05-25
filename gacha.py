@@ -207,6 +207,7 @@ class CrumbleView(discord.ui.View):
                     await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (c[0], c[1],))
                     await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (self.add, c[0],))
 
+
             await conn.commit()
 
     @discord.ui.button(label = "Cancel", style=discord.ButtonStyle.danger, emoji="✖")
