@@ -404,7 +404,9 @@ class GachaInteraction(commands.Cog):
                 currentTime = datetime.datetime.utcnow()
 
                 balance = await fetch_balance(cursor, member, interaction)
-                if not balance:
+                if balance == 0:
+                    pass
+                elif not balance:
                     await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
 
                 await cursor.execute("SELECT USER_LAST_DAILY FROM USER WHERE USER_ID = %s", (member.id,))

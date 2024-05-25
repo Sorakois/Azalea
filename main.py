@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import aiomysql
-import asyncio
 import sys
 import os
 import logging
@@ -10,7 +9,8 @@ import json
 import datetime
 from leveling import Leveling
 from dotenv import load_dotenv
-from util.scrape_wiki import scrape_cookies
+from util.scrape_wiki import scrape_cookies as scrape_cookie1
+from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
 from gacha import GachaInteraction
 
@@ -26,6 +26,7 @@ logging.getLogger().addHandler(stderrLogger)
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
 # start up database connection
+
 mysql_login = {'host':"db-buf-05.sparkedhost.us",
                'user':"u104092_jfUaeyVlqc",
                'password':"^lR0+=!4nvkHd9zQvs0BggFS",
@@ -121,7 +122,12 @@ class General(commands.Cog):
 
             if split[0] == 'scrape_cookie':
                 await interaction.response.defer()
-                res = await scrape_cookies(self.bot)
+                res = await scrape_cookie1(self.bot)
+                await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
+
+            if split[0] == 'scrape_cookie_ob':
+                await interaction.response.defer()
+                res = await scrape_cookie2(self.bot)
                 await interaction.followup.send('updated cookies!', ephemeral=True)
         else:
             await interaction.response.send_message('You do not have permission to use this command', ephemeral=True)
@@ -149,4 +155,5 @@ async def on_ready():
     synced = await bot.tree.sync()
     
 
-bot.run(os.environ.get('TEST_TOKEN'))
+
+bot.run(os.environ.get('BOT_TOKEN'))
