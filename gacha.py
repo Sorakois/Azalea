@@ -46,7 +46,7 @@ class MultipullView(discord.ui.View):
             em.set_thumbnail(url=self.user.avatar.url)
             em.add_field(name="Rarity:", value=f"{self.cookies[self.best_cookie]['rarity']}")
             em.set_image(url=self.cookies[self.best_cookie]['image'])
-            em.set_footer(text=f"Check the next page to see everything else you pulled!")
+            em.set_footer(text=f"Check the next page to see everything else you pulled! To recycle cookies, do /crumble.")
             return em
         else:
             em = discord.Embed(title=f"Total Recieved:")
@@ -59,7 +59,7 @@ class MultipullView(discord.ui.View):
             em.add_field(name=f"Cookies:", value=f"{empty}", inline = True)
             em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
             em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
-            em.set_footer(text=f"Go back?")
+            em.set_footer(text=f"To recycle cookies, do /crumble. Go back?")
             return em
 
     @discord.ui.button(label="⭐", style=discord.ButtonStyle.success, disabled=True)
@@ -176,15 +176,16 @@ async def fetch_essence_balance(cursor, member, interaction):
 
 
 class CrumbleView(discord.ui.View):
-    def __init__(self, bot, crumble_data, add, last_interaction):
+    def __init__(self, bot, crumble_data, add, last_interaction, amt):
         super().__init__()
         self.bot = bot
         self.crumble_data = crumble_data
         self.add = add
         self.last_interaction = last_interaction
+        self.amt = amt
 
     async def embed(self):
-        em = discord.Embed(title=f"Are you sure you want to crumble {self.crumble_data[2]}?")
+        em = discord.Embed(title=f"Are you sure you want to crumble {self.amt} {self.crumble_data[0][2]}(s)?")
         em.add_field(name=f"You will receive {self.add} essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
         return em
@@ -202,8 +203,10 @@ class CrumbleView(discord.ui.View):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (self.crumble_data[0], self.crumble_data[1],))
-                await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - 1 WHERE USER_ID = %s", (self.add, self.crumble_data[0],))
+                for c in self.crumble_data:
+                    await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (c[0], c[1],))
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (self.add, c[0],))
+
 
             await conn.commit()
 
@@ -291,7 +294,7 @@ class GachaInteraction(commands.Cog):
                         em.set_thumbnail(url=interaction.user.avatar.url)
                         em.add_field(name="Rarity:", value=f"{item_info[1]}")
                         em.set_image(url=item_info[3])
-                        em.set_footer(text=f"Want to pull more? Do /pull or /multpull!")
+                        em.set_footer(text=f"To recycle cookies, do /crumble. Want to pull more? Do /pull or /multpull!")
 
                         await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                         await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
@@ -459,13 +462,17 @@ class GachaInteraction(commands.Cog):
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
 
     @app_commands.command(name="crumble", description="Crumble a cookie from your inventory for essence")
-    async def crumble(self, interaction : discord.Interaction, cookie: str):
+    async def crumble(self, interaction : discord.Interaction, cookie: str, amount: int):
         member = interaction.user
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT 1;")
-                crumble_cookie = await cursor.fetchone()
+                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
+                crumble_cookie = await cursor.fetchall()
+                if amount < 1:
+                    await interaction.response.send_message("Cannot crumble nothing or negative cookies. Silly!")
+                if len(crumble_cookie) < amount:
+                    amount  = len(crumble_cookie)
 
                 if not crumble_cookie:
                     await interaction.response.send_message("You currently do not own this cookie or it does not exist. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]", ephemeral=True)
@@ -475,23 +482,23 @@ class GachaInteraction(commands.Cog):
                 
                 # Replace values with some sort of significance
                 try:
-                    if crumble_cookie[3] == "Common":
+                    if crumble_cookie[0][3] == "Common":
                         crumble_essence = 30
-                    elif crumble_cookie[3] == "Rare":
+                    elif crumble_cookie[0][3] == "Rare":
                         crumble_essence = 35
-                    elif crumble_cookie[3] == "Epic":
+                    elif crumble_cookie[0][3] == "Epic":
                         crumble_essence = 80
-                    elif crumble_cookie[3] == "Super Epic":
+                    elif crumble_cookie[0][3] == "Super Epic":
                         crumble_essence = 250
-                    elif crumble_cookie[3] == "Legendary" or "Special" or "Dragon":
+                    elif crumble_cookie[0][3] == "Legendary" or "Special" or "Dragon":
                         crumble_essence = 3000
-                    elif crumble_cookie[3] == "Ancient":
+                    elif crumble_cookie[0][3] == "Ancient":
                         crumble_essence = 10000
                 except TypeError:
                     await interaction.response.send_message("Cookie does not exist", ephemeral=True)
                     return
                     
-                view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence, last_interaction=interaction)
+                view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence*amount, last_interaction=interaction, amt=amount)
                 em = discord.Embed()
                 await interaction.response.send_message(embed=await view.embed(), view = view, ephemeral=True)
 
