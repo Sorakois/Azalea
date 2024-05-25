@@ -205,7 +205,7 @@ class CrumbleView(discord.ui.View):
             async with conn.cursor() as cursor:
                 for c in self.crumble_data:
                     await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (c[0], c[1],))
-                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (self.add, c[0],))
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (self.add, self.amt, c[0]))
 
 
             await conn.commit()
