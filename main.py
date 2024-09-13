@@ -13,6 +13,7 @@ from util.scrape_wiki import scrape_cookies as scrape_cookie1
 from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
 from gacha import GachaInteraction
+import misc
 
 # load the enviroment variables
 load_dotenv()
@@ -43,7 +44,8 @@ bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 cogs = {
     'leveling': Leveling(bot),
     'cookie_info' : CookieInfo(bot),
-    'gacha' : GachaInteraction(bot)
+    'gacha' : GachaInteraction(bot),
+    'misc' : misc.MiscCMD(bot),
     }
 
 # bot settings
@@ -156,4 +158,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))
