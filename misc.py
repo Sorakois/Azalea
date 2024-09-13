@@ -44,7 +44,7 @@ class MiscCMD(commands.Cog):
             for c in HSRCharacterList:
                 if c.name == character.lower():
                     selected = c
-                break
+                    break
             
             if selected is None:
                 await interaction.response.send_message("Invalid character. Please check the name and try again.", ephemeral=True)
@@ -52,7 +52,7 @@ class MiscCMD(commands.Cog):
             else:
                 character = character.replace(" ", "-")
 
-                em = discord.Embed(color=discord.Colour.brand_green(), title=f"{" ".join(character.split("-")).capitalize()}'s Ideal Build")
+                em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{" ".join(character.split("-")).capitalize()}'s Ideal Build")
                 em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character}-character_action_side_icon.webp?x34722")
                 em.add_field(name="Recommended Stats: ", value=f"{selected.stats}")
                 em.add_field(name="Trace Priority: ", value=f"{selected.trapri}")
