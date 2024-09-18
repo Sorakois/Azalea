@@ -527,7 +527,7 @@ class GachaInteraction(commands.Cog):
                     NewInvSlots = await cursor.fetchone()
 
                     em = discord.Embed(title="Inventory EXPANDED!")
-                    em.add_field(name=f"You have increased your inventory slots by 8!", value=f"You now have __{NewInvSlots[0]}__ slots!")
+                    em.add_field(name=f"By spending {EssenceCostEquation} essence, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} essence and now have __{NewInvSlots[0]}__ inventory slots! ")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/d/dd/Standard_cookie_gacha_reveal.png/revision/latest?cb=20221109024120")
                     em.set_footer(text=f"Want more slots? Do the command again!")
                     await interaction.response.send_message(embed=em, ephemeral=True)
