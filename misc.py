@@ -13,7 +13,10 @@ hugging_gifs = [
     "https://media1.tenor.com/m/uiak6BECN_sAAAAC/emunene-emu.gif",
     "https://media1.tenor.com/m/qVWUEYImyKAAAAAC/sad-hug-anime.gif",
     "https://media1.tenor.com/m/UnpQCW40JekAAAAC/anime-hug.gif",
-    "https://media1.tenor.com/m/b3Qvt--s_i0AAAAC/hugs.gif"
+    "https://media1.tenor.com/m/b3Qvt--s_i0AAAAC/hugs.gif",
+    "https://tenor.com/view/sami-en-dina-sami-dina-dina-sami-dina-en-sami-gif-15422575992980791421",
+    "https://cdn.weeb.sh/images/S1DyFuQD-.gif",
+    "https://cdn.weeb.sh/images/Bkta0ExOf.gif"
 ]
 
 class MiscCMD(commands.Cog):
@@ -33,7 +36,7 @@ class MiscCMD(commands.Cog):
             await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
             print(f"Error [/hug]: {e}")
 
-    @discord.app_commands.checks.cooldown(5, 15)
+    '''@discord.app_commands.checks.cooldown(5, 15)
     @app_commands.command(name="build", description="Check the optimal build for each character!")
     async def build(self, interaction : discord.Interaction, game: Literal['HSR', 'CRK'], character: str=""):
         character = character.lower()
@@ -62,7 +65,7 @@ class MiscCMD(commands.Cog):
                 em.add_field(name="Best Team Synergy: ", value=f"{selected.bestteam}")
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
-        '''add what to do when error [invalid character], add meat'''
+        ''''''add what to do when error [invalid character], add meat''''''
         if game == 'CRK':
             character = character.replace(" ", "_")
             em = discord.Embed(title=f"{" ".join(character.split("_")).capitalize()}'s Ideal Build")
@@ -75,3 +78,4 @@ class MiscCMD(commands.Cog):
     async def OnBuildError(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
+            '''
