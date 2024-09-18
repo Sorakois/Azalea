@@ -500,6 +500,40 @@ class GachaInteraction(commands.Cog):
                 em = discord.Embed()
                 await interaction.response.send_message(embed=await view.embed(), view = view, ephemeral=True)
 
+    @app_commands.command(name="expand", description="Expand your inventory slots!")
+    async def expand(self, interaction : discord.Interaction):
+        member = interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                
+                await cursor.execute("SELECT EXPAND_PURCHASES FROM USER WHERE USER_ID = %s", (member.id,))
+                TimesPurchased = await cursor.fetchone()
+
+                EssenceCostEquation = (125*(TimesPurchased[0]**2)) + 150
+
+                essence = await fetch_essence_balance(cursor, member, interaction)
+                
+                if essence <= EssenceCostEquation:
+                    await interaction.response.send_message("You cannot expand your inventory at this time. Please gain more essence by gacha or crumbling.", ephemeral=True)
+                    return
+                else:
+                    ExpandNewBalance = essence - EssenceCostEquation
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = %s WHERE USER_ID = %s", (ExpandNewBalance, member.id))
+
+                    await cursor.execute("UPDATE USER SET EXPAND_PURCHASES = EXPAND_PURCHASES + 1 WHERE USER_ID = %s", (member.id))
+                    await cursor.execute("UPDATE USER SET USER_INV_SLOTS = USER_INV_SLOTS + 8 WHERE USER_ID = %s", (member.id))
+
+                    await cursor.execute("SELECT USER_INV_SLOTS FROM USER WHERE USER_ID = %s", (member.id))
+                    NewInvSlots = await cursor.fetchone()
+
+                    em = discord.Embed(title="Inventory EXPANDED!")
+                    em.add_field(name=f"By spending {EssenceCostEquation} essence, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} essence and now have __{NewInvSlots[0]}__ inventory slots! ")
+                    em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/d/dd/Standard_cookie_gacha_reveal.png/revision/latest?cb=20221109024120")
+                    em.set_footer(text=f"Want more slots? Do the command again!")
+                    await interaction.response.send_message(embed=em, ephemeral=True)
+
+            await conn.commit()
+
 class Gacha:
     '''
     gacha logic and computations
