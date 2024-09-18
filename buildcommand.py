@@ -23,7 +23,7 @@ HSRCharacterList = [
       "Along the Passing Shore, Incessant Rain",
       "4P Pioneer Diver of Dead Waters or 4P Genius of Brilliant Stars",
       "Izumo Gensei and Takama Divine Realm, Inert Salsotto",
-      "Pela, Silver Wolf, Jiaoqiu, Black Swan, Kafka, Fu Xuan, Sparkle, Aventurine"
+      "Pela, Silver Wolf, Jiaoqiu, Black Swan, Kafka, Fu Xuan, Sparkle, Aventurine",
     ),
     HSRCharacter(
       "argenti",
