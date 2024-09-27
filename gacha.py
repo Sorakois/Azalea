@@ -514,7 +514,7 @@ class GachaInteraction(commands.Cog):
                 essence = await fetch_essence_balance(cursor, member, interaction)
                 
                 if essence <= EssenceCostEquation:
-                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You need {EssenceCostEquation} essence. Please gain more essence by gacha or crumbling.", ephemeral=True)
+                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} essence. Please gain more essence by gacha or crumbling.", ephemeral=True)
                     return
                 else:
                     ExpandNewBalance = essence - EssenceCostEquation
