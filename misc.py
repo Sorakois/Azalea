@@ -5,7 +5,7 @@ from discord import Colour
 import random
 from typing import Literal
 from buildcommand import HSRCharacter
-from buildcommand import HSRCharacterList
+import logging
 
 # Database of gifs (links)
 hugging_gifs = [
@@ -36,37 +36,51 @@ class MiscCMD(commands.Cog):
             await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
             print(f"Error [/hug]: {e}")
 
-    '''@discord.app_commands.checks.cooldown(5, 15)
+    @discord.app_commands.checks.cooldown(5, 15)
     @app_commands.command(name="build", description="Check the optimal build for each character!")
     async def build(self, interaction : discord.Interaction, game: Literal['HSR', 'CRK'], character: str=""):
         character = character.lower()
-        member=interaction.user
-        if game == 'HSR':
 
-            selected = None
-            for c in HSRCharacterList:
-                if c.name == character.lower():
-                    selected = c
-                    break
+        if game == "HSR":
+            #Cleansing Query
+            if character.upper() == "DR. RATIO" or character.upper() == "RATIO" or character.upper() == "DOCTOR RATIO":
+                character = "dr ratio"
+            if character.upper() == "DHIL" or character.upper() == "DAN HENG IMBIBITOR LUNAE":
+                character = "imbibitor lunae"
             
-            if selected is None:
-                await interaction.response.send_message("Invalid character. Please check the name and try again.", ephemeral=True)
-                return
-            else:
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    await cursor.execute("SELECT * FROM HSR_BUILD") #WHERE name = %s", (character)
+                    HSRBuildInfo = await cursor.fetchall()
+                    #await interaction.response.send_message(f"I have recieved your array. It is: {HSRBuildInfo[0]}", ephemeral=True)
+
+            res = ''
+            for row in HSRBuildInfo:
+                temp = row[0]
+                if character == temp:
+                    res = row
+                    break
+            #await interaction.response.send_message(f"I have recieved your array. It is: {character} who uses {res[3]}", ephemeral=True)
+            try:
+                #add a hyphen for URL
                 character = character.replace(" ", "-")
-
+                #embed for build
                 em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{" ".join(character.split("-")).capitalize()}'s Ideal Build")
-                em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character}-character_action_side_icon.webp?x34722")
-                em.add_field(name="Recommended Stats: ", value=f"{selected.stats}")
-                em.add_field(name="Trace Priority: ", value=f"{selected.trapri}")
-                em.add_field(name="Best LCs: ", value=f"{selected.bestlc}")
-                em.add_field(name="Best Relics: ", value=f"{selected.bestrelics}")
-                em.add_field(name="Best Planar Relics: ", value=f"{selected.bestplanar}")
-                em.add_field(name="Best Team Synergy: ", value=f"{selected.bestteam}")
+                em.add_field(name="Recommended Stats: ", value=f"{res[1]}")
+                em.add_field(name="Trace Priority: ", value=f"{res[2]}")
+                em.add_field(name="Best LCs: ", value=f"{res[3]}")
+                em.add_field(name="Best Relics: ", value=f"{res[4]}")
+                em.add_field(name="Best Planar Relics: ", value=f"{res[5]}")
+                em.add_field(name="Best Team Synergy: ", value=f"{res[6]}")
+                em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_action_side_icon.webp?x33576")
+                em.set_footer(text=f"Wrote by: {res[7].capitalize()}")
                 await interaction.response.send_message(embed=em, ephemeral=False)
+            except IndexError as e:
+                await interaction.response.send_message(f"The character you entered, __**{character}**__ , was not found. Please check the name and try again.", ephemeral=True)
+            return
 
-        ''''''add what to do when error [invalid character], add meat''''''
-        if game == 'CRK':
+        '''add what to do when error [invalid character], add meat'''
+        if game == "CRK":
             character = character.replace(" ", "_")
             em = discord.Embed(title=f"{" ".join(character.split("_")).capitalize()}'s Ideal Build")
             em.set_thumbnail(url=interaction.user.avatar.url)
@@ -74,8 +88,15 @@ class MiscCMD(commands.Cog):
             #em.add_field(name="Your balance is:", value=f"**__{balance}__** :gem:")
             await interaction.response.send_message(embed=em, ephemeral=False)
 
+    #new ways to get gems
+    '''@discord.app_commands.checks.cooldown(1, 15)
+    @app_commands.command(name="build", description="Check the optimal build for each character!")
+    async def build(self, interaction : discord.Interaction, game: Literal['HSR', 'CRK'], character: str=""):
+        character = character.lower()
+        member = interaction.user'''
+
     @build.error
     async def OnBuildError(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
-            '''
+            

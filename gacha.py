@@ -448,7 +448,7 @@ class GachaInteraction(commands.Cog):
             member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT ITEM_RARITY ,ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
+                await cursor.execute("SELECT ITEM_RARITY, ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
                 inventory_items = await cursor.fetchall()
 
                 if not inventory_items:
@@ -458,7 +458,98 @@ class GachaInteraction(commands.Cog):
         view = InventoryView(inventory=inventory_items, last_interaction=interaction, name=member, timeout=50)
 
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
+    
+    '''@app_commands.command(name="setfav", description="Set your favorite character")
+    async def setfav(self, interaction : discord.Interaction, favchar: str):
+        member=interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                #given name, grab ID
+                #given ID, check if user has matching ID
+                #set that character as user_fav_char
 
+                #check if they have the cookie
+                await cursor.execute("SELECT ITEM_INFO_ID FROM `ITEM_INFO` WHERE ITEM_NAME= %s%;", (favchar))
+                match_fav_exist = await cursor.fetchone()
+                await interaction.response.send_message("I pass setfav 1!", ephemeral=True)
+
+                if not match_fav_exist:
+                    interaction.response.send_message("This character does not exist! Try the command again.")
+                    return
+                else:
+                    await cursor.execute("SELECT ITEM_ID FROM `ITEM` WHERE ITEM_INFO_ID = %s AND USER_ID = %s;", (match_fav_exist, member.id))
+                    check_favchar = await cursor.fetchone()
+                    await interaction.response.send_message("I pass setfav 2!", ephemeral=True)
+
+                    
+                    if not check_favchar:
+                        interaction.response.send_message("You do not own this character. Explore other commands on Azalea like /pull.")
+                        return
+                    else:
+                        await interaction.response.send_message("I pass setfav 3!", ephemeral=True)
+                        #grab the current user_fav_chr
+                        await cursor.execute("SELECT USER_FAV_CHAR FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                        user_favorite_char = await cursor.fetchone()
+
+                        #grab the full name of the character use wants
+                        await cursor.execute("SELECT ITEM_NAME FROM `ITEM_INFO` WHERE ITEM_NAME= %s%;", (favchar))
+                        fav_fullname = await cursor.fetchone()
+
+                        if not user_favorite_char:
+                            interaction.response.send_message("Gain characters before doing this! Check the other commands.")
+                            return
+                        else:
+                            interaction.response.send_message("I pass setfav 4!", ephemeral=True)
+                            await cursor.execute("UPDATE USER SET USER_FAV_CHAR = '' WHERE USER_ID = %s;", (member.id, fav_fullname[0]))
+                            interaction.response.send_message(f"Success! Your new favorite character is {fav_fullname[0]}. Check /profile!")
+                            return'''
+
+    '''@app_commands.command(name="profile", description="View your profile")
+    async def profile(self, interaction : discord.Interaction, name: discord.User= None):
+        if name is None:
+            member = interaction.user
+        else:
+            member = name
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED, USER_FAV_CHAR FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                profile_1 = await cursor.fetchone()
+
+                if profile_1[4] == "NULL":
+                    try:
+                        await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                        no_favchar_set = await cursor.fetchone()
+                        em = discord.Embed(title=f"{member}'s Profile")
+                        em.set_thumbnail(url=interaction.user.avatar.url)
+                        em.add_field(name=f"You have **{no_favchar_set[1]}** :gem:, **{no_favchar_set[2]}**:essence:, and are currently level **{no_favchar_set[0]}** :exp_jelly:")
+                        em.add_field(name=f"You have {no_favchar_set[3]} characters :cookie_base:")
+                        em.set_footer(text=f"To set a favorite character, use /setfav")
+                        await interaction.response.send_message(embed=em, ephemeral=False)
+                        return
+                    except:
+                        interaction.response.send_message("Sorry! Please interact more with Azalea before doing this command.")
+                        return
+                else:
+                    #now, match fav char with an image to put as footer
+                    try:
+                        await cursor.execute("SELECT ITEM_IMAGE FROM `ITEM_INFO` WHERE ITEM_NAME LIKE '%s%'", (profile_1[4]))
+                        fav_char_pic = await cursor.fetchone()
+                        
+                        if not fav_char_pic:
+                            interaction.response.send_message("No image is set! Please DM @Sorakoi")
+                            return
+                        else:
+                            em = discord.Embed(title=f"{member}'s Profile")
+                            em.set_thumbnail(url=interaction.user.avatar.url)
+                            em.add_field(name=f"You have **{profile_1[1]}** :gem:, **{profile_1[2]}**:essence:, and are currently level **{profile_1[0]}** :exp_jelly:")
+                            em.add_field(name=f"You have {profile_1[3]} characters :cookie_base:")
+                            em.set_image(url=f"{fav_char_pic[0]}")
+                            em.set_footer(text=f"Your favorite character is {profile_1[4]}")
+                            await interaction.response.send_message(embed=em, ephemeral=False)
+                    except:
+                        await interaction.response.send_message("Error! No valid image is set, please DM/ping @Sorkaoi", ephemeral=False)
+                        return'''
+                    
     @app_commands.command(name="crumble", description="Crumble a cookie from your inventory for essence")
     async def crumble(self, interaction : discord.Interaction, cookie: str, amount: int):
         member = interaction.user
