@@ -502,13 +502,26 @@ class GachaInteraction(commands.Cog):
             member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
+
+                '''
+                FIX THIS FOR USERS WHO DONT EXIST
+                '''
+                #check if user exists
+                
+                await cursor.execute("SELECT USER_ID FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                check_user_exist = await cursor.fetchone()
+
+                if check_user_exist is None:
+                    await interaction.response.send_message("User does not exist... Try again?", ephemeral=True)
+                    return
+                
                 await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED, USER_FAV_CHAR FROM `USER` WHERE USER_ID = %s;", (member.id,))
                 profile_1 = await cursor.fetchone()
-                
+
                 if profile_1[4] is None:
                     try:
-                        #make capitial first letter? [capitalize() being weird]
-                        em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{member.display_name}'s Profile")
+                        formatted_name = member.display_name
+                        em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
                         em.set_thumbnail(url=member.avatar.url)
                         em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
                         em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
@@ -537,7 +550,7 @@ class GachaInteraction(commands.Cog):
                             em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295954897929240628>")
                             em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
                             em.set_image(url=fav_char_pic[0])
-                            em.set_footer(text=f"Your favorite character is: **__{profile_1[4]}__**")
+                            em.set_footer(text=f"Your favorite character is: {profile_1[4]}")
                             await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
                         await interaction.response.send_message("Error! No valid image is set, please DM/ping @Sorkaoi", ephemeral=False)
