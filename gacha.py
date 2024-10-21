@@ -58,7 +58,7 @@ class MultipullView(discord.ui.View):
                 emp2 += self.cookies[i]['rarity'] + "\n"
             em.add_field(name=f"Cookies:", value=f"{empty}", inline = True)
             em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
-            em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
+            em.add_field(name=f"Essence Gained:", value=f"{self.essence} <:essence:1295954897929240628>", inline = False)
             em.set_footer(text=f"To recycle cookies, do /crumble. Go back?")
             return em
 
@@ -262,6 +262,10 @@ class GachaInteraction(commands.Cog):
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="pull", description="Pull once for 300 gems.")
     async def pull(self, interaction : discord.Interaction):
+            
+    #ADD other games, like HSR
+    #async def pull(self, interaction : discord.Interaction, gachagame: Literal['Cookie Run', 'Honkai: Star Rail', 'All']):
+    
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
@@ -313,6 +317,10 @@ class GachaInteraction(commands.Cog):
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="multipull", description="Pull 11 times for 3000 gems.")
     async def multipull(self, interaction : discord.Interaction):
+
+    #ADD other games, like HSR
+    #async def pull(self, interaction : discord.Interaction, gachagame: Literal['Cookie Run', 'Honkai: Star Rail', 'All']):
+
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
@@ -383,7 +391,7 @@ class GachaInteraction(commands.Cog):
                 ebalance = await fetch_essence_balance(cursor, member, interaction)
                 em = discord.Embed(title=f"Essence Balance")
                 em.set_thumbnail(url=interaction.user.avatar.url)
-                em.add_field(name="You have collected:", value=f"**__{ebalance}__** :cookie:")
+                em.add_field(name="You have collected:", value=f"**__{ebalance}__** <:essence:1295954897929240628>")
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
     @balance.error
@@ -469,7 +477,6 @@ class GachaInteraction(commands.Cog):
                 #set that character as user_fav_char
 
                 #check if the character exists
-                #await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME FROM `ITEM_INFO` WHERE ITEM_NAME LIKE '%s%';", (favchar))
                 await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME FROM `ITEM_INFO` WHERE ITEM_NAME LIKE %s;", ('%' + favchar + '%',))
                 match_fav_exist = await cursor.fetchone()
 
@@ -503,11 +510,7 @@ class GachaInteraction(commands.Cog):
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
 
-                '''
-                FIX THIS FOR USERS WHO DONT EXIST
-                '''
                 #check if user exists
-                
                 await cursor.execute("SELECT USER_ID FROM `USER` WHERE USER_ID = %s;", (member.id,))
                 check_user_exist = await cursor.fetchone()
 
@@ -517,7 +520,8 @@ class GachaInteraction(commands.Cog):
                 
                 await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED, USER_FAV_CHAR FROM `USER` WHERE USER_ID = %s;", (member.id,))
                 profile_1 = await cursor.fetchone()
-
+                
+                #what to display if user has no favorite character set
                 if profile_1[4] is None:
                     try:
                         formatted_name = member.display_name
@@ -527,7 +531,7 @@ class GachaInteraction(commands.Cog):
                         em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
                         em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295954897929240628>")
                         em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
-                        em.set_footer(text=f"To set a favorite character, use /setfav. profile1 = {profile_1}")
+                        em.set_footer(text=f"To set a favorite character, use /setfav.")
                         await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
                         await interaction.response.send_message(f"Sorry! Please interact more with Azalea before doing this command.")
@@ -549,8 +553,28 @@ class GachaInteraction(commands.Cog):
                             em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
                             em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295954897929240628>")
                             em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
-                            em.set_image(url=fav_char_pic[0])
-                            em.set_footer(text=f"Your favorite character is: {profile_1[4]}")
+
+                            '''
+                            Custom Images for BOOSTERS of Nurture
+                            '''
+                            #User = thomasunex
+                            if member.id == 400443611105460234:
+                                em.set_image(url=f"https://media1.tenor.com/m/yx7pASaizeEAAAAC/robozz-electro-man.gif")
+                                em.set_footer(text=f"Brainrot-maxxing Thomas")
+                            #User = sorakoi
+                            if member.id == 836367313502208040:
+                                em.set_image(url=f"https://i.imgur.com/uW9PIib.gif")
+                                em.set_footer(text=f"Shoutout to Croissant")
+                            #User = technoblade_fan
+                            if member.id == 742498512398319625:
+                                em.set_image(url=f"https://i.imgur.com/Hkovwhu.gif")
+                                em.set_footer(text=f"DHIL is your character of choice. Thanks for boosting!")
+
+                            #Default Image
+                            else:
+                                em.set_image(url=fav_char_pic[0])
+                                em.set_footer(text=f"Your favorite character is: {profile_1[4]}! (Server boost to set custom images)")
+                                
                             await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
                         await interaction.response.send_message("Error! No valid image is set, please DM/ping @Sorkaoi", ephemeral=False)
@@ -566,7 +590,7 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
                 crumble_cookie = await cursor.fetchall()
                 if amount < 1:
-                    await interaction.response.send_message("Cannot crumble nothing or negative cookies. Silly!")
+                    await interaction.response.send_message("Cannot crumble nothing/negative cookies, silly!")
                 if len(crumble_cookie) < amount:
                     amount  = len(crumble_cookie)
 
@@ -612,7 +636,7 @@ class GachaInteraction(commands.Cog):
                 essence = await fetch_essence_balance(cursor, member, interaction)
                 
                 if essence <= EssenceCostEquation:
-                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} essence. Please gain more essence by gacha or crumbling.", ephemeral=True)
+                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} <:essence:1295954897929240628>. Please gain more essence by gacha or crumbling.", ephemeral=True)
                     return
                 else:
                     ExpandNewBalance = essence - EssenceCostEquation
@@ -625,13 +649,17 @@ class GachaInteraction(commands.Cog):
                     NewInvSlots = await cursor.fetchone()
 
                     em = discord.Embed(title="Inventory EXPANDED!")
-                    em.add_field(name=f"By spending {EssenceCostEquation} essence, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} essence and now have __{NewInvSlots[0]}__ inventory slots! ")
+                    em.add_field(name=f"By spending {EssenceCostEquation} <:essence:1295954897929240628>, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} <:essence:1295954897929240628> and now have __{NewInvSlots[0]}__ inventory slots! ")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/d/dd/Standard_cookie_gacha_reveal.png/revision/latest?cb=20221109024120")
                     NextExpand = (125*((TimesPurchased[0]+1)**2)) + 150
-                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} essence.")
+                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} <:essence:1295954897929240628>.")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
             await conn.commit()
+
+    '''
+    add command to set color for your profile's embed [/profilecolor]
+    '''
 
 class Gacha:
     '''
@@ -641,6 +669,8 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
+
+    #Cookie Run Gacha
     async def pull_cookie(self):
         probability = random.random()
         rarity = ""
@@ -682,6 +712,49 @@ class Gacha:
             rarity = 'Ancient'
     
         return rarity
+    
+    # Honkai Star Rail Gacha:
+    '''async def pull_hsr(self):
+        probability = random.random()
+        rarity = ""
+
+        if 0 <= probability < 0.35525:
+            # Give user essence
+            essence = await self.handle_essence()
+            return essence
+
+        elif 0.35525 <= probability < 0.62525:
+            # Give user a common cookie
+            rarity = 'Common'
+
+        elif 0.62525 <= probability < 0.86525:
+            # Give user a rare cookie
+            rarity = 'Rare'
+
+        elif 0.86525 <= probability < 0.96525:
+            # Give user a epic cookie
+            rarity = 'Epic'
+
+        elif 0.96525 <= probability < 0.99825:
+            #Give user a super epic cookie
+            rarity = 'Super Epic'
+
+        elif 0.99825 <= probability < .99950:
+            # Give user Legendary, Dragon, or Special cookie
+            with random.randrange(0,3) as r:
+                match r:
+                    case 0:
+                        rarity = 'Legendary'
+                    case 1:
+                        rarity = 'Dragon'
+                    case 2:
+                        rarity = 'Special'
+            
+        elif .99950 <= probability < 1:
+            # Give user Ancient cookie
+            rarity = 'Ancient'
+    
+        return rarity'''
     
     async def handle_essence(self):
         return random.randrange(25,51)
