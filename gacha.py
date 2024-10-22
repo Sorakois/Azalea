@@ -6,6 +6,10 @@ import datetime
 import random
 import math
 from typing import Literal
+import requests
+import json
+import asyncio
+from datetime import datetime, timedelta
 
 cookie_rarity_rankings = {
     'Common' : 1,
@@ -717,16 +721,17 @@ class GachaInteraction(commands.Cog):
 
             await conn.commit()
 
-    @app_commands.command(name="viewcharacter", description="View a character in the gacha pool! [!] INCLUDE 'COOKIE' [!]")
+    @app_commands.command(name="viewcharacter", description="View a character in the gacha pool!")
     async def viewcharacter(self, interaction: discord.Interaction, character: str):
 
-        #fix user's entry for DB
+        #fix user's entry for DB [capitalize each first letter and remove extra spaces]
         character = character.title().strip()
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT * FROM ITEM_INFO WHERE ITEM_NAME LIKE %s", (character + "%"))
                 ViewGachaChar = await cursor.fetchone()
 
+        #catch invalid entries
         if not ViewGachaChar:
             await interaction.response.send_message(f"{character} does not exist. Try again?", ephemeral=True)
             return
@@ -742,8 +747,59 @@ class GachaInteraction(commands.Cog):
             return
 
     '''
-    add command to set color for your profile's embed [/profilecolor]
+    Below are all ways to get gems!
     '''
+
+    #First Way (1), Trivia!
+    @discord.app_commands.checks.cooldown(1, 120)
+    @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
+    async def trivia(self, interaction: discord.Interaction):
+        member = interaction.user
+
+        '''
+        Get trivia [for now, only anime]
+        Later, make what type of question a prompt above: Literal['Anime', 'Science', etc.]
+        Then, return correct trivia from APIs
+
+        make later into a function
+
+        later, show user how much time left until cmd can be executed again
+        '''
+       
+        #grab API informatiom
+        anime_trivia = requests.get("https://opentdb.com/api.php?amount=1&category=31&type=boolean")
+        json_data = json.loads(anime_trivia.text)
+        trivia_question = json_data['results'][0]['question'].replace("&quot;", '"')
+        trivia_answer = json_data['results'][0]['correct_answer']
+        await interaction.response.send_message(f"**__True or False:__**\n{trivia_question}")
+
+        # Wait for the next message
+        def check(message: discord.Message):
+            return message.author.id == member.id and message.channel.id == interaction.channel.id
+    
+        try:
+            msg = await interaction.client.wait_for('message', check=check, timeout=15.0)
+
+            if msg.content.title() == trivia_answer:
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        correct_answer_gems = 150
+                        #grab user's current balance
+                        balance = await fetch_balance(cursor, member, interaction)
+                        if balance == 0:
+                            pass
+                        elif not balance:
+                            await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, correct_answer_gems,))
+
+                        balance += correct_answer_gems
+                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                    await conn.commit()
+                await interaction.channel.send(f"***Correct! :white_check_mark:***\n\nYou have gained __150 :gem:__! Your new balance is __**{balance}**__. Please wait 2 minutes before doing this command again!")
+                
+            else:
+                await interaction.channel.send(f"***Wrong! :x:***\n\nTry again in 2 minutes :alarm_clock:")
+        except asyncio.TimeoutError:
+            await interaction.channel.send("You didn't send a message in time!")     
 
 class Gacha:
     '''
