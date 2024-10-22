@@ -58,7 +58,7 @@ class MultipullView(discord.ui.View):
                 emp2 += self.cookies[i]['rarity'] + "\n"
             em.add_field(name=f"Cookies:", value=f"{empty}", inline = True)
             em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
-            em.add_field(name=f"Essence Gained:", value=f"{self.essence} <:essence:1295954897929240628>", inline = False)
+            em.add_field(name=f"Essence Gained:", value=f"{self.essence} <:essence:1295791325094088855>", inline = False)
             em.set_footer(text=f"To recycle cookies, do /crumble. Go back?")
             return em
 
@@ -186,7 +186,7 @@ class CrumbleView(discord.ui.View):
 
     async def embed(self):
         em = discord.Embed(title=f"Are you sure you want to crumble {self.amt} {self.crumble_data[0][2]}(s)?")
-        em.add_field(name=f"You will receive {self.add*self.amt} essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
+        em.add_field(name=f"You will receive {self.add*self.amt} <:essence:1295791325094088855> essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
         return em
 
@@ -194,7 +194,7 @@ class CrumbleView(discord.ui.View):
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         em = discord.Embed(title=f"Cookie Crumbled")
         em.set_thumbnail(url=interaction.user.avatar.url)
-        em.add_field(name=f"Essence Recieved: {self.add*self.amt}", value="Do /balance do check your new balance! :cookie:")
+        em.add_field(name=f"Essence Recieved: {self.add*self.amt}", value="Do /balance do check your new balance! <:essence:1295791325094088855>")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
 
         await self.last_interaction.delete_original_response()
@@ -391,7 +391,7 @@ class GachaInteraction(commands.Cog):
                 ebalance = await fetch_essence_balance(cursor, member, interaction)
                 em = discord.Embed(title=f"Essence Balance")
                 em.set_thumbnail(url=interaction.user.avatar.url)
-                em.add_field(name="You have collected:", value=f"**__{ebalance}__** <:essence:1295954897929240628>")
+                em.add_field(name="You have collected:", value=f"**__{ebalance}__** <:essence:1295791325094088855>")
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
     @balance.error
@@ -571,10 +571,10 @@ class GachaInteraction(commands.Cog):
                             em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
 
                         em.set_thumbnail(url=member.avatar.url)
-                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
-                        em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
-                        em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295954897929240628>")
-                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
+                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1298130609251684402>")
+                        em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} :gem:")
+                        em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
+                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295792901548281921>")
                         em.set_footer(text=f"To set a favorite character, use /setfav.")
                         await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
@@ -606,7 +606,7 @@ class GachaInteraction(commands.Cog):
                             em.set_thumbnail(url=member.avatar.url)
                             em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
                             em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
-                            em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295954897929240628>")
+                            em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
                             em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
 
                             '''
@@ -692,7 +692,7 @@ class GachaInteraction(commands.Cog):
                 essence = await fetch_essence_balance(cursor, member, interaction)
                 
                 if essence <= EssenceCostEquation:
-                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} <:essence:1295954897929240628>. Please gain more essence by gacha or crumbling.", ephemeral=True)
+                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} <:essence:1295791325094088855>. Please gain more essence by gacha or crumbling.", ephemeral=True)
                     return
                 else:
                     ExpandNewBalance = essence - EssenceCostEquation
@@ -705,10 +705,10 @@ class GachaInteraction(commands.Cog):
                     NewInvSlots = await cursor.fetchone()
 
                     em = discord.Embed(title="Inventory EXPANDED!")
-                    em.add_field(name=f"By spending {EssenceCostEquation} <:essence:1295954897929240628>, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} <:essence:1295954897929240628> and now have __{NewInvSlots[0]}__ inventory slots! ")
+                    em.add_field(name=f"By spending {EssenceCostEquation} <:essence:1295791325094088855>, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} <:essence:1295791325094088855> and now have __{NewInvSlots[0]}__ inventory slots! ")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/d/dd/Standard_cookie_gacha_reveal.png/revision/latest?cb=20221109024120")
                     NextExpand = (125*((TimesPurchased[0]+1)**2)) + 150
-                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} <:essence:1295954897929240628>.")
+                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} <:essence:1295791325094088855>.")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
             await conn.commit()
