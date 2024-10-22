@@ -717,6 +717,30 @@ class GachaInteraction(commands.Cog):
 
             await conn.commit()
 
+    @app_commands.command(name="viewcharacter", description="View a character in the gacha pool! [!] INCLUDE 'COOKIE' [!]")
+    async def viewcharacter(self, interaction: discord.Interaction, character: str):
+
+        #fix user's entry for DB
+        character = character.title().strip()
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT * FROM ITEM_INFO WHERE ITEM_NAME LIKE %s", (character + "%"))
+                ViewGachaChar = await cursor.fetchone()
+
+        if not ViewGachaChar:
+            await interaction.response.send_message(f"{character} does not exist. Try again?", ephemeral=True)
+            return
+        
+        try:
+            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=ViewGachaChar[2])
+            em.set_thumbnail(url=interaction.user.guild.icon.url)
+            em.set_image(url=ViewGachaChar[4])
+            em.set_footer(text="Brought to you by... discord.gg/nurture")
+            await interaction.response.send_message(embed=em)
+        except ValueError as e:
+            await interaction.response.send_message("No Image Exists! Ping <@836367313502208040>", ephemeral=False)
+            return
+
     '''
     add command to set color for your profile's embed [/profilecolor]
     '''

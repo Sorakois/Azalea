@@ -112,18 +112,16 @@ class MiscCMD(commands.Cog):
                     res = row
                     break
             try:
-                #add a hyphen for URL
+                #add a hyphen so that URL works
                 character = character.replace(" ", "-")
                 #embed for build
-                #maybe try capitilizaiton for each word later
                 if character.upper() == "TOPAZ-NUMBY":
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ TOPAZ")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {" ".join(character.split("-")).upper()}")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {" ".join(character.split("-")).title()}")
 
-                #grab server pfp
-                guild_icon_local = interaction.user.guild.icon.url
-                em.set_thumbnail(url=guild_icon_local)
+                #grab server pfp and set up base of embed
+                em.set_thumbnail(url=interaction.user.guild.icon.url)
                 em.add_field(name="Recommended Stats: ", value=f"{res[1]}", inline=True)
                 em.add_field(name="Trace Priority: ", value=f"{res[2]}", inline=False)
                 em.add_field(name="Best LCs: ", value=f"{res[3]}", inline=True)
