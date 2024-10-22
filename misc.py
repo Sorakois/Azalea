@@ -187,12 +187,15 @@ class MiscCMD(commands.Cog):
             return
 
         if game == "CRK":
-            character = character.replace(" ", "_")
+            '''character = character.replace(" ", "_")
             em = discord.Embed(title=f"{" ".join(character.split("_")).capitalize()}'s Ideal Build")
             em.set_thumbnail(url=interaction.user.avatar.url)
             em.set_image(url=f"https://www.noff.gg/cookie-run-kingdom/res/img/cookies-standing/{character}.png")
             #em.add_field(name="Your balance is:", value=f"**__{balance}__** :gem:")
-            await interaction.response.send_message(embed=em, ephemeral=False)
+            await interaction.response.send_message(embed=em, ephemeral=False)'''
+            await interaction.response.send_message(f"'Feature still in development! Try again later!", ephemeral=True)
+
+            
 
     #new ways to get gems
     '''@discord.app_commands.checks.cooldown(1, 60)
