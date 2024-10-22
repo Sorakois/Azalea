@@ -42,8 +42,11 @@ class MiscCMD(commands.Cog):
         character = character.lower()
         if game == "HSR":
             #Cleansing Queries
+
+            #symbols
             if character.upper() == "DR. RATIO" or character.upper() == "RATIO" or character.upper() == "DOCTOR RATIO":
                 character = "dr ratio"
+            #characters with abreviations or other names
             if character.upper() == "DHIL" or character.upper() == "DAN HENG IMBIBITOR LUNAE":
                 character = "imbibitor lunae"
             if character.upper() == "FEI XIAO":
@@ -53,27 +56,48 @@ class MiscCMD(commands.Cog):
                 return
             if character.upper() == "FUGUE"or character.upper() == "FUGUE TINGYUN":
                 character = "nihility tingyun"
-            if character.upper() == "TOPAZ" or character.upper() == "TOPAZ & NUMBY" or character.upper() == "TOPAZ AND NUMBY":
+            if character.upper() == "TOPAZ" or character.upper() == "TOPAZ & NUMBY" or character.upper() == "TOPAZ AND NUMBY" or character.upper() == "TOPASS":
                 character = "topaz numby"
-            if character.upper() == "SILVERWOLF":
+            if character.upper() == "SILVERWOLF" or character.upper() == "SW" or character.upper() == "WOLFIE" or character.upper() == "SWOLF" or character.upper() == "SILVER":
                 character = "silver wolf"
-
+            #pure abreviations
+            if character.upper() == "FF" or character.upper() == "SAM":
+                character = "firefly"
+            if character.upper() == "DTB":
+                character = "destruction trailblazer"
+            if character.upper() == "PTB":
+                character = "preservation trailblazer"
+            if character.upper() == "BS":
+                character = "black swan"
+            if character.upper() == "AVEN":
+                character = "aventurine"
+            if character.upper() == "BLADIE":
+                character = "blade"
+            if character.upper() == "GEPPIE":
+                character = "gepard"
+            if character.upper() == "GAMBLE" or character.upper() == "MAHJONG" or character.upper() == "CASINO":
+                character = "qingque"
+            if character.upper() == "RM":
+                character = "ruan mei"
+            if character.upper() == "MONDAY" or character.upper() == "SATURDAY":
+                character = "sunday"
+            #characters with multiple "branches"
             if character.upper() == "MARCH":
                 await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Hunt March' or 'Preservation March", ephemeral=True)
                 return
-            if character.upper () == "MARCH 8TH" or character.upper () == "MARCH 8" or character.upper() == "MARCH HUNT":
+            if character.upper () == "MARCH 8TH" or character.upper () == "MARCH 8" or character.upper() == "MARCH HUNT" or character.upper() == "3/8":
                 character = "hunt march"
-            if character.upper() == "MARCH 7TH" or character.upper () == "MARCH 7":
+            if character.upper() == "MARCH 7TH" or character.upper () == "MARCH 7" or character.upper() == "3/7":
                 character = "preservation march"
 
-            if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE":
+            if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE" or character.upper() == "RACCOON" or character.upper() == "TRASH" or character.upper() == "TRASHBLAZER":
                 await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Destruction Trailblazer', 'Preservation Trailblazer' or 'Harmony Trailblazer.", ephemeral=True)
                 return
-            if character.upper() == "HTB" or character.upper() == "HARMONY MC" or character.upper() == "HMC" or character.upper() == "HARMONY TB" or character.upper() == "TRAILBLAZER HARMONY":
+            if character.upper() == "HTB" or character.upper() == "HARMONY MC" or character.upper() == "HMC" or character.upper() == "HARMONY TB" or character.upper() == "TRAILBLAZER HARMONY" or character.upper() == "HATBLAZER" or character.upper() == "HARMBLAZER":
                 character = "harmony trailblazer"
-            if character.upper () == "Preservation MC" or character.upper() == "FIRE MC" or character.upper() == "FIRE TB" or character.upper() == "TRAILBLAZER PRESERVATION":
+            if character.upper () == "Preservation MC" or character.upper() == "FIREBLAZER" or character.upper() == "FMC"  or character.upper() == "FTB" or character.upper() == "FIRE MC" or character.upper() == "FIRE TB" or character.upper() == "TRAILBLAZER PRESERVATION":
                 character = "preservation trailblazer"
-            if character.upper() == "Destruction MC" or character.upper() == "DESTRUCTION TB" or character.upper() == "PHYSICAL TRAILBLAZER" or character.upper() == "TRAILBLAZER DESTRUCTION":
+            if character.upper() == "Destruction MC" or character.upper() == "DESTRUCTION TB" or character.upper() == "PHYSICAL TRAILBLAZER" or character.upper() == "TRAILBLAZER DESTRUCTION" or character.upper() == "PHYS MC" or character.upper() == "PHYS TB" or character.upper() == "DMC" or  character.upper() == "DTB":
                 character = "destruction trailblazer"
 
             async with self.bot.db.acquire() as conn:

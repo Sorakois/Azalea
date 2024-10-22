@@ -571,11 +571,11 @@ class GachaInteraction(commands.Cog):
                             em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
 
                         em.set_thumbnail(url=member.avatar.url)
-                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1298130609251684402>")
-                        em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} :gem:")
+                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
+                        em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
                         em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
-                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295792901548281921>")
-                        em.set_footer(text=f"To set a favorite character, use /setfav.")
+                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
+                        em.set_footer(text=f"To set a favorite character to appear here, use /setfav.")
                         await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
                         await interaction.response.send_message(f"Sorry! Please interact more with Azalea before doing this command.")
@@ -625,6 +625,10 @@ class GachaInteraction(commands.Cog):
                             elif member.id == 742498512398319625:
                                 em.set_image(url=f"https://i.imgur.com/Hkovwhu.gif")
                                 em.set_footer(text=f"DHIL is your character of choice. Thanks for boosting!")
+                            #User = flowerily
+                            elif member.id == 684946339259613302:
+                                em.set_image(url=f"https://static.wikia.nocookie.net/cookierunkingdom/images/5/50/Cookie0049-call_user.gif")
+                                em.set_footer(text=f"The REAL (enough) Moonlight Cookie!")
                             #Default Image
                             else:
                                 em.set_image(url=fav_char_pic[0])
