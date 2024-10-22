@@ -500,6 +500,39 @@ class GachaInteraction(commands.Cog):
                             return
                         
             await conn.commit()
+            
+    @app_commands.command(name="profilecolor", description="Set your profile's RGB color")
+    async def profilecolor(self, interaction: discord.Interaction, user_red_value: int, user_green_value: int, user_blue_value: int):
+        member = interaction.user
+
+        if not (0 <= user_red_value <= 255):
+            await interaction.response.send_message(f"Invalid RGB code! Currently False: 0<=Red Value<=255. Your Red Value is: {user_red_value}")
+            return
+        if not (0 <= user_green_value <= 255):
+            await interaction.response.send_message(f"Invalid RGB code! Currently False: 0<=Green Value<=255. Your Green Value is: {user_green_value}")
+            return
+        if not (0 <= user_blue_value <= 255):
+            await interaction.response.send_message(f"Invalid RGB code! Currently False: 0<=Blue Value<=255. Your Blue Value is: {user_blue_value}")
+            return
+        
+        new_fav_color = f'{user_red_value}, {user_green_value}, {user_blue_value}'
+
+        try:
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    await cursor.execute("UPDATE `USER` SET PROFILE_COLOR = %s WHERE USER_ID = %s;", (new_fav_color, member.id))
+                await conn.commit()
+
+            await interaction.response.send_message(f"Success <:white_check_mark:1298120271143895051>\nCheck out /profile !", ephemeral=True)
+        except:
+            await interaction.response.send_message(f"Error, Database issue! DM <@836367313502208040>", ephemeral=False)
+
+
+    '''
+    Add Command to change profile footer
+    or
+    keep booster only
+    '''
 
     @app_commands.command(name="profile", description="View your profile")
     async def profile(self, interaction : discord.Interaction, name: discord.User= None):
@@ -518,14 +551,25 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message("User does not exist... Try again?", ephemeral=True)
                     return
                 
-                await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED, USER_FAV_CHAR FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED, USER_FAV_CHAR, PROFILE_COLOR FROM `USER` WHERE USER_ID = %s;", (member.id,))
                 profile_1 = await cursor.fetchone()
-                
+
                 #what to display if user has no favorite character set
                 if profile_1[4] is None:
                     try:
                         formatted_name = member.display_name
-                        em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+
+                        #take string of RGB, break into 3 ints
+                        user_custom_rgb = profile_1[5]
+                        if user_custom_rgb is not None:
+                            rgb_values = list(map(int, user_custom_rgb.split(',')))
+                            if len(rgb_values) == 3:
+                                em = discord.Embed(color=discord.Colour.from_rgb(*rgb_values), title=f"{formatted_name}'s Profile")
+                            else:
+                                em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+                        else:
+                            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+
                         em.set_thumbnail(url=member.avatar.url)
                         em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
                         em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
@@ -543,11 +587,22 @@ class GachaInteraction(commands.Cog):
                         fav_char_pic = await cursor.fetchone()
                         
                         if fav_char_pic is None:
-                            await interaction.response.send_message("No image is set! Please DM @Sorakoi")
+                            await interaction.response.send_message("No image is set! Please DM <@836367313502208040>")
                             return
                         else:
                             formatted_name = member.display_name
-                            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+
+                            #take string of RGB, break into 3 ints
+                            user_custom_rgb = profile_1[5]
+                            if user_custom_rgb is not None:
+                                rgb_values = list(map(int, user_custom_rgb.split(',')))
+                                if len(rgb_values) == 3:
+                                    em = discord.Embed(color=discord.Colour.from_rgb(*rgb_values), title=f"{formatted_name}'s Profile")
+                                else:
+                                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+                            else:
+                                em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+
                             em.set_thumbnail(url=member.avatar.url)
                             em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
                             em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
@@ -557,27 +612,27 @@ class GachaInteraction(commands.Cog):
                             '''
                             Custom Images for BOOSTERS of Nurture
                             '''
+
                             #User = thomasunex
                             if member.id == 400443611105460234:
                                 em.set_image(url=f"https://media1.tenor.com/m/yx7pASaizeEAAAAC/robozz-electro-man.gif")
                                 em.set_footer(text=f"Brainrot-maxxing Thomas")
                             #User = sorakoi
-                            if member.id == 836367313502208040:
+                            elif member.id == 836367313502208040:
                                 em.set_image(url=f"https://i.imgur.com/uW9PIib.gif")
                                 em.set_footer(text=f"Shoutout to Croissant")
                             #User = technoblade_fan
-                            if member.id == 742498512398319625:
+                            elif member.id == 742498512398319625:
                                 em.set_image(url=f"https://i.imgur.com/Hkovwhu.gif")
                                 em.set_footer(text=f"DHIL is your character of choice. Thanks for boosting!")
-
                             #Default Image
                             else:
                                 em.set_image(url=fav_char_pic[0])
                                 em.set_footer(text=f"Your favorite character is: {profile_1[4]}! (Server boost to set custom images)")
-                                
+
                             await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
-                        await interaction.response.send_message("Error! No valid image is set, please DM/ping @Sorkaoi", ephemeral=False)
+                        await interaction.response.send_message(f"Error! No valid image is set, please DM/ping <@836367313502208040>. profile_1[5] is {profile_1[5]}", ephemeral=False)
                         #await interaction.response.send_message(f"Your current array is {profile_1}", ephemeral=False)
                         return
                     
@@ -621,6 +676,7 @@ class GachaInteraction(commands.Cog):
                 view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence, last_interaction=interaction, amt=amount)
                 em = discord.Embed()
                 await interaction.response.send_message(embed=await view.embed(), view = view, ephemeral=True)
+            await conn.commit()
 
     @app_commands.command(name="expand", description="Expand your inventory slots!")
     async def expand(self, interaction : discord.Interaction):
