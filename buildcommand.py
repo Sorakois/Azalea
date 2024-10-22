@@ -6,7 +6,7 @@ from typing import Literal
 import misc
 
 class HSRCharacter:
-  def __init__(self, name, stats, trapri, bestlc, bestrelics, bestplanar, bestteam):
+  def __init__(self, name, stats, trapri, bestlc, bestrelics, bestplanar, bestteam, buildauthor):
     self.name = name
     self.stats = stats
     self.trapri = trapri
@@ -14,8 +14,9 @@ class HSRCharacter:
     self.bestrelics = bestrelics
     self.bestplanar = bestplanar
     self.bestteam = bestteam
+    self.buildauthor = buildauthor
 
-HSRCharacterList = [
+'''HSRCharacterList = [
     HSRCharacter(
       "acheron",
       "3000 ATK, 70% Crit Rate, 140% Crit DMG",
@@ -34,9 +35,9 @@ HSRCharacterList = [
       "Inert Salsotto; Sigonia, the Unclaimed Desolation",
       "Sparkle, Tingyun, Huohuo, Robin, Aventurine"
     )
-]
+]'''
 
-Argenti = ""
+'''Argenti = ""
 Arlan = ""
 Asta = ""
 Aventurine = ""
@@ -97,17 +98,17 @@ Yukong = ""
 Yunli = ""
 
 #characterlist.append(Character(<name>, <stats>, <trapri>, <bestlc>, <bestrelics>, <bestteam>))
-'''Character = ["Recommended Stats", 
+''''''Character = ["Recommended Stats", 
               "Trace Priority",   
               "Best LCs", 
               "Best Relics", 
-              "Best Teams/Synergy"]'''
+              "Best Teams/Synergy"]''''''
 
     
         
 
 class CRKBuilds:
-    '''Common Rarity'''
+    ''''''Common Rarity''''''
     GingerBrave = ""
     Strawberry_Cookie = ""
     Ninja_Cookie = ""
@@ -115,7 +116,7 @@ class CRKBuilds:
     Muscle_Cookie = ""
     Wizard_Cookie = ""
     Beet_Cookie = ""
-    '''Rare Rarity'''
+    ''''''Rare Rarity''''''
     Devil_Cookie = ""
     Custard_Cookie_III = ""
     Clover_Cookie = ""
@@ -130,7 +131,7 @@ class CRKBuilds:
     Cherry_Cookie = ""
     Knight_Cookie = ""
     Princess_Cookie = ""
-    '''Special Rarity'''
+    ''''''Special Rarity''''''
     Cream_Ferret_Cookie = ""
     Icicle_Yeti_Cookie = ""
     Snapdragon_Cookie = ""
@@ -144,7 +145,7 @@ class CRKBuilds:
     RM_Cookie = ""
     Tails_Cookie = ""
     Sonic_Cookie = ""
-    '''Epic Rarity'''
+    ''''''''Epic Rarity''''''
     Star_Coral_Cookie = ""
     Peach_Blossom_Cookie = ""
     Cloud_Haetae_Cookie = ""
@@ -229,7 +230,7 @@ class CRKBuilds:
     Tiger_Lily_Cookie = ""
     Vampire_Cookie = ""
     Snow_Sugar_Cookie = ""
-    '''Super Epic Rarity'''
+    ''''''Super Epic Rarity''''''
     Elder_Faerie_Cookie = ""
     Crimson_Coral_Cookie = ""
     Shining_Glitter_Cookie = ""
@@ -238,21 +239,20 @@ class CRKBuilds:
     Sherbet_Cookie = ""
     Oyster_Cookie = ""
     Clotted_Cream_Cookie = ""
-    '''Dragon Rarity'''
+    ''''''Dragon Rarity''''''
     Pitaya_Dragon_Cookie = ""
-    '''Legendary Rarity'''
+    ''''''Legendary Rarity''''''
     Stormbringer_Cookie = ""
     Moonlight_Cookie = ""
     Black_Pearl_Cookie = ""
     Frost_Queen_Cookie = ""
     Sea_Fairy_Cookie = ""
     Wind_Archer_Cookie = ""
-    '''Ancient Rarity'''
+    ''''''Ancient Rarity''''''
     Pure_Vanilla_Cookie = ""
     Hollyberry_Cookie = ""
     Dark_Cacao_Cookie = ""
     Golden_Cheese_Cookie = ""
     White_Lily_Cookie = ""
-    '''Beast Rarity'''
-    Mystic_Flour_Cookie = ""
-    
+    ''''''Beast Rarity''''''
+    Mystic_Flour_Cookie = ""'''

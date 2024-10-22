@@ -6,6 +6,10 @@ import datetime
 import random
 import math
 from typing import Literal
+import requests
+import json
+import asyncio
+from datetime import datetime, timedelta
 
 cookie_rarity_rankings = {
     'Common' : 1,
@@ -58,7 +62,7 @@ class MultipullView(discord.ui.View):
                 emp2 += self.cookies[i]['rarity'] + "\n"
             em.add_field(name=f"Cookies:", value=f"{empty}", inline = True)
             em.add_field(name=f"Rarities:", value=f"{emp2}", inline = True)
-            em.add_field(name=f"Essence Gained:", value=f"{self.essence}", inline = False)
+            em.add_field(name=f"Essence Gained:", value=f"{self.essence} <:essence:1295791325094088855>", inline = False)
             em.set_footer(text=f"To recycle cookies, do /crumble. Go back?")
             return em
 
@@ -186,7 +190,7 @@ class CrumbleView(discord.ui.View):
 
     async def embed(self):
         em = discord.Embed(title=f"Are you sure you want to crumble {self.amt} {self.crumble_data[0][2]}(s)?")
-        em.add_field(name=f"You will receive {self.add*self.amt} essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
+        em.add_field(name=f"You will receive {self.add*self.amt} <:essence:1295791325094088855> essence if you do.", value="This process cannot be undone, so please take a moment to think about this.")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
         return em
 
@@ -194,7 +198,7 @@ class CrumbleView(discord.ui.View):
     async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         em = discord.Embed(title=f"Cookie Crumbled")
         em.set_thumbnail(url=interaction.user.avatar.url)
-        em.add_field(name=f"Essence Recieved: {self.add*self.amt}", value="Do /balance do check your new balance! :cookie:")
+        em.add_field(name=f"Essence Recieved: {self.add*self.amt}", value="Do /balance do check your new balance! <:essence:1295791325094088855>")
         em.set_footer(text=f"Reminder: Crumbling PERMANENTLY DELETES a cookie")
 
         await self.last_interaction.delete_original_response()
@@ -262,6 +266,10 @@ class GachaInteraction(commands.Cog):
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="pull", description="Pull once for 300 gems.")
     async def pull(self, interaction : discord.Interaction):
+            
+    #ADD other games, like HSR
+    #async def pull(self, interaction : discord.Interaction, gachagame: Literal['Cookie Run', 'Honkai: Star Rail', 'All']):
+    
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
@@ -313,6 +321,10 @@ class GachaInteraction(commands.Cog):
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="multipull", description="Pull 11 times for 3000 gems.")
     async def multipull(self, interaction : discord.Interaction):
+
+    #ADD other games, like HSR
+    #async def pull(self, interaction : discord.Interaction, gachagame: Literal['Cookie Run', 'Honkai: Star Rail', 'All']):
+
         member = interaction.user
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
@@ -383,7 +395,7 @@ class GachaInteraction(commands.Cog):
                 ebalance = await fetch_essence_balance(cursor, member, interaction)
                 em = discord.Embed(title=f"Essence Balance")
                 em.set_thumbnail(url=interaction.user.avatar.url)
-                em.add_field(name="You have collected:", value=f"**__{ebalance}__** :cookie:")
+                em.add_field(name="You have collected:", value=f"**__{ebalance}__** <:essence:1295791325094088855>")
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
     @balance.error
@@ -448,7 +460,7 @@ class GachaInteraction(commands.Cog):
             member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT ITEM_RARITY ,ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
+                await cursor.execute("SELECT ITEM_RARITY, ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
                 inventory_items = await cursor.fetchall()
 
                 if not inventory_items:
@@ -458,7 +470,180 @@ class GachaInteraction(commands.Cog):
         view = InventoryView(inventory=inventory_items, last_interaction=interaction, name=member, timeout=50)
 
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
+    
+    @app_commands.command(name="setfav", description="Set your favorite character")
+    async def setfav(self, interaction : discord.Interaction, favchar: str):
+        member=interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                #given name, grab ID
+                #given ID, check if user has matching ID
+                #set that character as user_fav_char
 
+                #check if the character exists
+                await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME FROM `ITEM_INFO` WHERE ITEM_NAME LIKE %s;", ('%' + favchar + '%',))
+                match_fav_exist = await cursor.fetchone()
+
+                if match_fav_exist is None:
+                    await interaction.response.send_message("This character does not exist! Try the command again.")
+                    return
+                else:
+                    #now, use the ID and check if user has character
+                    await cursor.execute("SELECT ITEM_ID FROM `ITEM` WHERE ITEM_INFO_ID = %s AND USER_ID = %s;", (match_fav_exist[0], member.id))
+                    check_favchar = await cursor.fetchone()
+                    
+                    if check_favchar is None:
+                        await interaction.response.send_message("You do not own this character. Explore other commands on Azalea like /pull.")
+                        return
+                    else:
+                        try:
+                            await cursor.execute("UPDATE USER SET USER_FAV_CHAR = %s WHERE USER_ID = %s;", (match_fav_exist[1], member.id))
+                            await interaction.response.send_message(f"Success! Your new favorite character is **__{match_fav_exist[1]}__**. Check /profile!")
+                        except:
+                            await interaction.response.send_message("Unable to set favorite character! This is a bug... Ping @Sorakoi!")
+                            return
+                        
+            await conn.commit()
+            
+    @app_commands.command(name="profilecolor", description="Set your profile's RGB color")
+    async def profilecolor(self, interaction: discord.Interaction, user_red_value: int, user_green_value: int, user_blue_value: int):
+        member = interaction.user
+
+        if not (0 <= user_red_value <= 255):
+            await interaction.response.send_message(f"Invalid RGB code! Currently False: 0<=Red Value<=255. Your Red Value is: {user_red_value}")
+            return
+        if not (0 <= user_green_value <= 255):
+            await interaction.response.send_message(f"Invalid RGB code! Currently False: 0<=Green Value<=255. Your Green Value is: {user_green_value}")
+            return
+        if not (0 <= user_blue_value <= 255):
+            await interaction.response.send_message(f"Invalid RGB code! Currently False: 0<=Blue Value<=255. Your Blue Value is: {user_blue_value}")
+            return
+        
+        new_fav_color = f'{user_red_value}, {user_green_value}, {user_blue_value}'
+
+        try:
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    await cursor.execute("UPDATE `USER` SET PROFILE_COLOR = %s WHERE USER_ID = %s;", (new_fav_color, member.id))
+                await conn.commit()
+
+            await interaction.response.send_message(f"Success <:white_check_mark:1298120271143895051>\nCheck out /profile !", ephemeral=True)
+        except:
+            await interaction.response.send_message(f"Error, Database issue! DM <@836367313502208040>", ephemeral=False)
+
+
+    '''
+    Add Command to change profile footer
+    or
+    keep booster only
+    '''
+
+    @app_commands.command(name="profile", description="View your profile")
+    async def profile(self, interaction : discord.Interaction, name: discord.User= None):
+        if name is None:
+            member = interaction.user
+        else:
+            member = name
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+
+                #check if user exists
+                await cursor.execute("SELECT USER_ID FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                check_user_exist = await cursor.fetchone()
+
+                if check_user_exist is None:
+                    await interaction.response.send_message("User does not exist... Try again?", ephemeral=True)
+                    return
+                
+                await cursor.execute("SELECT USER_LEVEL, USER_GEMS, USER_ESSENCE, USER_INV_SLOTS_USED, USER_FAV_CHAR, PROFILE_COLOR FROM `USER` WHERE USER_ID = %s;", (member.id,))
+                profile_1 = await cursor.fetchone()
+
+                #what to display if user has no favorite character set
+                if profile_1[4] is None:
+                    try:
+                        formatted_name = member.display_name
+
+                        #take string of RGB, break into 3 ints
+                        user_custom_rgb = profile_1[5]
+                        if user_custom_rgb is not None:
+                            rgb_values = list(map(int, user_custom_rgb.split(',')))
+                            if len(rgb_values) == 3:
+                                em = discord.Embed(color=discord.Colour.from_rgb(*rgb_values), title=f"{formatted_name}'s Profile")
+                            else:
+                                em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+                        else:
+                            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+
+                        em.set_thumbnail(url=member.avatar.url)
+                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
+                        em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
+                        em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
+                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
+                        em.set_footer(text=f"To set a favorite character to appear here, use /setfav.")
+                        await interaction.response.send_message(embed=em, ephemeral=False)
+                    except:
+                        await interaction.response.send_message(f"Sorry! Please interact more with Azalea before doing this command.")
+                        return
+                else:
+                    #now, match fav char with an image to put as footer
+                    try:
+                        await cursor.execute("SELECT ITEM_IMAGE FROM `ITEM_INFO` WHERE ITEM_NAME = %s", (profile_1[4]))
+                        fav_char_pic = await cursor.fetchone()
+                        
+                        if fav_char_pic is None:
+                            await interaction.response.send_message("No image is set! Please DM <@836367313502208040>")
+                            return
+                        else:
+                            formatted_name = member.display_name
+
+                            #take string of RGB, break into 3 ints
+                            user_custom_rgb = profile_1[5]
+                            if user_custom_rgb is not None:
+                                rgb_values = list(map(int, user_custom_rgb.split(',')))
+                                if len(rgb_values) == 3:
+                                    em = discord.Embed(color=discord.Colour.from_rgb(*rgb_values), title=f"{formatted_name}'s Profile")
+                                else:
+                                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+                            else:
+                                em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
+
+                            em.set_thumbnail(url=member.avatar.url)
+                            em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
+                            em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
+                            em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
+                            em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
+
+                            '''
+                            Custom Images for BOOSTERS of Nurture
+                            '''
+
+                            #User = thomasunex
+                            if member.id == 400443611105460234:
+                                em.set_image(url=f"https://media1.tenor.com/m/yx7pASaizeEAAAAC/robozz-electro-man.gif")
+                                em.set_footer(text=f"Brainrot-maxxing Thomas")
+                            #User = sorakoi
+                            elif member.id == 836367313502208040:
+                                em.set_image(url=f"https://i.imgur.com/uW9PIib.gif")
+                                em.set_footer(text=f"Shoutout to Croissant")
+                            #User = technoblade_fan
+                            elif member.id == 742498512398319625:
+                                em.set_image(url=f"https://i.imgur.com/Hkovwhu.gif")
+                                em.set_footer(text=f"DHIL is your character of choice. Thanks for boosting!")
+                            #User = flowerily
+                            elif member.id == 684946339259613302:
+                                em.set_image(url=f"https://static.wikia.nocookie.net/cookierunkingdom/images/5/50/Cookie0049-call_user.gif")
+                                em.set_footer(text=f"The REAL (enough) Moonlight Cookie!")
+                            #Default Image
+                            else:
+                                em.set_image(url=fav_char_pic[0])
+                                em.set_footer(text=f"Your favorite character is: {profile_1[4]}! (Server boost to set custom images)")
+
+                            await interaction.response.send_message(embed=em, ephemeral=False)
+                    except:
+                        await interaction.response.send_message(f"Error! No valid image is set, please DM/ping <@836367313502208040>. profile_1[5] is {profile_1[5]}", ephemeral=False)
+                        #await interaction.response.send_message(f"Your current array is {profile_1}", ephemeral=False)
+                        return
+                    
     @app_commands.command(name="crumble", description="Crumble a cookie from your inventory for essence")
     async def crumble(self, interaction : discord.Interaction, cookie: str, amount: int):
         member = interaction.user
@@ -468,7 +653,7 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
                 crumble_cookie = await cursor.fetchall()
                 if amount < 1:
-                    await interaction.response.send_message("Cannot crumble nothing or negative cookies. Silly!")
+                    await interaction.response.send_message("Cannot crumble nothing/negative cookies, silly!")
                 if len(crumble_cookie) < amount:
                     amount  = len(crumble_cookie)
 
@@ -499,6 +684,7 @@ class GachaInteraction(commands.Cog):
                 view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence, last_interaction=interaction, amt=amount)
                 em = discord.Embed()
                 await interaction.response.send_message(embed=await view.embed(), view = view, ephemeral=True)
+            await conn.commit()
 
     @app_commands.command(name="expand", description="Expand your inventory slots!")
     async def expand(self, interaction : discord.Interaction):
@@ -514,7 +700,7 @@ class GachaInteraction(commands.Cog):
                 essence = await fetch_essence_balance(cursor, member, interaction)
                 
                 if essence <= EssenceCostEquation:
-                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} essence. Please gain more essence by gacha or crumbling.", ephemeral=True)
+                    await interaction.response.send_message(f"You cannot expand your inventory at this time. You only have {essence}/{EssenceCostEquation} <:essence:1295791325094088855>. Please gain more essence by gacha or crumbling.", ephemeral=True)
                     return
                 else:
                     ExpandNewBalance = essence - EssenceCostEquation
@@ -527,13 +713,93 @@ class GachaInteraction(commands.Cog):
                     NewInvSlots = await cursor.fetchone()
 
                     em = discord.Embed(title="Inventory EXPANDED!")
-                    em.add_field(name=f"By spending {EssenceCostEquation} essence, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} essence and now have __{NewInvSlots[0]}__ inventory slots! ")
+                    em.add_field(name=f"By spending {EssenceCostEquation} <:essence:1295791325094088855>, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} <:essence:1295791325094088855> and now have __{NewInvSlots[0]}__ inventory slots! ")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/d/dd/Standard_cookie_gacha_reveal.png/revision/latest?cb=20221109024120")
                     NextExpand = (125*((TimesPurchased[0]+1)**2)) + 150
-                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} essence.")
+                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} <:essence:1295791325094088855>.")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
             await conn.commit()
+
+    @app_commands.command(name="viewcharacter", description="View a character in the gacha pool!")
+    async def viewcharacter(self, interaction: discord.Interaction, character: str):
+
+        #fix user's entry for DB [capitalize each first letter and remove extra spaces]
+        character = character.title().strip()
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT * FROM ITEM_INFO WHERE ITEM_NAME LIKE %s", (character + "%"))
+                ViewGachaChar = await cursor.fetchone()
+
+        #catch invalid entries
+        if not ViewGachaChar:
+            await interaction.response.send_message(f"{character} does not exist. Try again?", ephemeral=True)
+            return
+        
+        try:
+            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=ViewGachaChar[2])
+            em.set_thumbnail(url=interaction.user.guild.icon.url)
+            em.set_image(url=ViewGachaChar[4])
+            em.set_footer(text="Brought to you by... discord.gg/nurture")
+            await interaction.response.send_message(embed=em)
+        except ValueError as e:
+            await interaction.response.send_message("No Image Exists! Ping <@836367313502208040>", ephemeral=False)
+            return
+
+    '''
+    Below are all ways to get gems!
+    '''
+
+    #First Way (1), Trivia!
+    @discord.app_commands.checks.cooldown(1, 120)
+    @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
+    async def trivia(self, interaction: discord.Interaction):
+        member = interaction.user
+
+        '''
+        Get trivia [for now, only anime]
+        Later, make what type of question a prompt above: Literal['Anime', 'Science', etc.]
+        Then, return correct trivia from APIs
+
+        make later into a function
+
+        later, show user how much time left until cmd can be executed again
+        '''
+       
+        #grab API informatiom
+        anime_trivia = requests.get("https://opentdb.com/api.php?amount=1&category=31&type=boolean")
+        json_data = json.loads(anime_trivia.text)
+        trivia_question = json_data['results'][0]['question'].replace("&quot;", '"')
+        trivia_answer = json_data['results'][0]['correct_answer']
+        await interaction.response.send_message(f"**__True or False:__**\n{trivia_question}")
+
+        # Wait for the next message
+        def check(message: discord.Message):
+            return message.author.id == member.id and message.channel.id == interaction.channel.id
+    
+        try:
+            msg = await interaction.client.wait_for('message', check=check, timeout=15.0)
+
+            if msg.content.title() == trivia_answer:
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        correct_answer_gems = 150
+                        #grab user's current balance
+                        balance = await fetch_balance(cursor, member, interaction)
+                        if balance == 0:
+                            pass
+                        elif not balance:
+                            await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, correct_answer_gems,))
+
+                        balance += correct_answer_gems
+                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                    await conn.commit()
+                await interaction.channel.send(f"***Correct! :white_check_mark:***\n\nYou have gained __150 :gem:__! Your new balance is __**{balance}**__. Please wait 2 minutes before doing this command again!")
+                
+            else:
+                await interaction.channel.send(f"***Wrong! :x:***\n\nTry again in 2 minutes :alarm_clock:")
+        except asyncio.TimeoutError:
+            await interaction.channel.send("You didn't send a message in time!")     
 
 class Gacha:
     '''
@@ -543,6 +809,8 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
+
+    #Cookie Run Gacha
     async def pull_cookie(self):
         probability = random.random()
         rarity = ""
@@ -584,6 +852,49 @@ class Gacha:
             rarity = 'Ancient'
     
         return rarity
+    
+    # Honkai Star Rail Gacha:
+    '''async def pull_hsr(self):
+        probability = random.random()
+        rarity = ""
+
+        if 0 <= probability < 0.35525:
+            # Give user essence
+            essence = await self.handle_essence()
+            return essence
+
+        elif 0.35525 <= probability < 0.62525:
+            # Give user a common cookie
+            rarity = 'Common'
+
+        elif 0.62525 <= probability < 0.86525:
+            # Give user a rare cookie
+            rarity = 'Rare'
+
+        elif 0.86525 <= probability < 0.96525:
+            # Give user a epic cookie
+            rarity = 'Epic'
+
+        elif 0.96525 <= probability < 0.99825:
+            #Give user a super epic cookie
+            rarity = 'Super Epic'
+
+        elif 0.99825 <= probability < .99950:
+            # Give user Legendary, Dragon, or Special cookie
+            with random.randrange(0,3) as r:
+                match r:
+                    case 0:
+                        rarity = 'Legendary'
+                    case 1:
+                        rarity = 'Dragon'
+                    case 2:
+                        rarity = 'Special'
+            
+        elif .99950 <= probability < 1:
+            # Give user Ancient cookie
+            rarity = 'Ancient'
+    
+        return rarity'''
     
     async def handle_essence(self):
         return random.randrange(25,51)
