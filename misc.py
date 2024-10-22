@@ -48,6 +48,15 @@ class MiscCMD(commands.Cog):
                 character = "imbibitor lunae"
             if character.upper() == "FEI XIAO":
                 character = "feixiao"
+            if character.upper() == "TINGYUN":
+                await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Harmony Tingyun', 'Nihility Tingyun', or 'Fugue'", ephemeral=True)
+                return
+            if character.upper() == "FUGUE"or character.upper() == "FUGUE TINGYUN":
+                character = "nihility tingyun"
+            if character.upper() == "TOPAZ" or character.upper() == "TOPAZ & NUMBY" or character.upper() == "TOPAZ AND NUMBY":
+                character = "topaz numby"
+            if character.upper() == "SILVERWOLF":
+                character = "silver wolf"
 
             if character.upper() == "MARCH":
                 await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Hunt March' or 'Preservation March", ephemeral=True)
@@ -57,7 +66,7 @@ class MiscCMD(commands.Cog):
             if character.upper() == "MARCH 7TH" or character.upper () == "MARCH 7":
                 character = "preservation march"
 
-            if character.upper() == "TRAILBLAZER":
+            if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE":
                 await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Destruction Trailblazer', 'Preservation Trailblazer' or 'Harmony Trailblazer.", ephemeral=True)
                 return
             if character.upper() == "HTB" or character.upper() == "HARMONY MC" or character.upper() == "HMC" or character.upper() == "HARMONY TB" or character.upper() == "TRAILBLAZER HARMONY":
@@ -69,7 +78,7 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT * FROM HSR_BUILD") #WHERE name = %s", (character)
+                    await cursor.execute("SELECT * FROM HSR_BUILD")
                     HSRBuildInfo = await cursor.fetchall()
 
             res = ''
@@ -83,60 +92,78 @@ class MiscCMD(commands.Cog):
                 character = character.replace(" ", "-")
                 #embed for build
                 #maybe try capitilizaiton for each word later
-                em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"Ideal Build of: {" ".join(character.split("-")).upper()}")
-                em.add_field(name="Recommended Stats: ", value=f"{res[1]}")
-                em.add_field(name="Trace Priority: ", value=f"{res[2]}")
-                em.add_field(name="Best LCs: ", value=f"{res[3]}")
-                em.add_field(name="Best Relics: ", value=f"{res[4]}")
-                em.add_field(name="Best Planar Relics: ", value=f"{res[5]}")
-                em.add_field(name="Best Team Synergy: ", value=f"{res[6]}")
+                if character.upper() == "TOPAZ-NUMBY":
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ TOPAZ")
+                else:
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {" ".join(character.split("-")).upper()}")
+
+                #grab server pfp
+                guild_icon_local = interaction.user.guild.icon.url
+                em.set_thumbnail(url=guild_icon_local)
+                em.add_field(name="Recommended Stats: ", value=f"{res[1]}", inline=True)
+                em.add_field(name="Trace Priority: ", value=f"{res[2]}", inline=False)
+                em.add_field(name="Best LCs: ", value=f"{res[3]}", inline=True)
+                em.add_field(name="Best Relics: ", value=f"{res[4]}", inline=False)
+                em.add_field(name="Best Planar Relics: ", value=f"{res[5]}", inline=True)
+                em.add_field(name="Best Team Synergy: ", value=f"{res[6]}", inline=False)
 
                 #catch irregularities
                 character_image_check = character.upper()
 
                 #Characters with Multiple Paths
                 if character_image_check == "HUNT-MARCH":
-                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/march-7th-character-2_action_side_icon.webp?x30775")
+                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/march-7th-character-2_scpecial_action_icon.webp?x30775")
                 elif character_image_check == "PRESERVATION-MARCH":
-                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/march-7th-character_action_side_icon.webp?x30775")
+                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/march-7th-character_scpecial_action_icon.webp?x30775")
 
                 elif character_image_check == "DESTRUCTION-TRAILBLAZER":
                     trailblaze_decide = random.randint(1, 2)
                     if trailblaze_decide == 1:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character_action_side_icon.webp?x33576")
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character_gacha_result_bg.webp?x30775")
                     else:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-2_action_side_icon.webp?x33576")
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-2_gacha_result_bg.webp?x30775")
                 elif character_image_check == "PRESERVATION-TRAILBLAZER":
                     trailblaze_decide = random.randint(1, 2)
                     if trailblaze_decide == 1:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-3_action_side_icon.webp?x33576")
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-3_gacha_result_bg.webp?x30775")
                     else:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-4_action_side_icon.webp?x33576")
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-4_gacha_result_bg.webp?x30775")
                 elif character_image_check == "HARMONY-TRAILBLAZER":
                     trailblaze_decide = random.randint(1, 2)
                     if trailblaze_decide == 1:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-5_action_side_icon.webp?x33576")
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-5_shop_icon.webp?x30775")
                     else:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-6_action_side_icon.webp?x33576")
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-6_shop_icon.webp?x30775")
 
                 elif character_image_check == "IMBIBITOR-LUNAE":
-                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/dan-heng-imbibitor-lunae-character_action_side_icon.webp?x30775")
+                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/dan-heng-imbibitor-lunae-character_gacha_result_bg.webp?x30775")
+
+                elif character_image_check == "SUNDAY":
+                    em.set_image(url=f"https://static.wikia.nocookie.net/houkai-star-rail/images/2/21/Character_Sunday_Splash_Art.png")
+                elif character_image_check == "NIHILITY-TINGYUN":
+                    em.set_image(url=f"https://static.wikia.nocookie.net/houkai-star-rail/images/4/4c/Character_Fugue_Splash_Art.png")
+                elif character_image_check == "HARMONY-TINGYUN":
+                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/tingyun-character_gacha_result_bg.webp?x33576")
 
                 #Easter Eggs    
-                elif character_image_check == "HERTA":
-                    em.set_image(url=f"https://media1.tenor.com/m/VtFUW-durpoAAAAC/kururin-kuru-kuru.gif")
+                #elif character_image_check == "HERTA":
+                #    em.set_image(url=f"https://media1.tenor.com/m/VtFUW-durpoAAAAC/kururin-kuru-kuru.gif")
 
                 #default image
                 else:
-                    em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_action_side_icon.webp?x33576")
+                    try:
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_gacha_result_bg.webp?x30775")
+                    except ValueError as e:
+                        await interaction.response.send_message(f"'{character}'s image is messed up :(... PLEASE let @sorakoi know ASAP [<@836367313502208040>]", ephemeral=False)
+                        return
 
-                em.set_footer(text=f"Wrote by: {res[7].capitalize()}")
+
+                em.set_footer(text=f"Wrote by: {res[7].capitalize()}... in discord.gg/nurture")
                 await interaction.response.send_message(embed=em, ephemeral=False)
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{character}**__ , was not found. Please check the name and try again.", ephemeral=True)
             return
 
-        '''add what to do when error [invalid character], add meat'''
         if game == "CRK":
             character = character.replace(" ", "_")
             em = discord.Embed(title=f"{" ".join(character.split("_")).capitalize()}'s Ideal Build")
