@@ -113,12 +113,14 @@ class MiscCMD(commands.Cog):
                     break
             try:
                 #add a hyphen so that URL works
-
                 #embed for build
-                if character.upper() == "TOPAZ-NUMBY":
+                if character.upper() == "TOPAZ NUMBY":
                     em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {character}")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {character.title()}")
+                
+                #adjust later images
+                character = character.replace(" ", "-")
 
                 #grab server pfp and set up base of embed
                 em.set_thumbnail(url=interaction.user.guild.icon.url)
@@ -131,7 +133,7 @@ class MiscCMD(commands.Cog):
 
                 #catch irregularities
                 character_image_check = character.upper()
-                character = character.replace(" ", "-")
+                
 
                 #Characters with Multiple Paths
                 if character_image_check == "HUNT-MARCH":
