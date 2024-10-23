@@ -769,8 +769,8 @@ class GachaInteraction(commands.Cog):
         anime_trivia = requests.get("https://opentdb.com/api.php?amount=1&category=31&type=boolean")
         json_data = json.loads(anime_trivia.text)
         trivia_question = json_data['results'][0]['question'].replace("&quot;", '"')
-        trivia_question = json_data['results'][0]['question'].replace("&#039;", '\'')
-        trivia_question = json_data['results'][0]['question'].replace("&eacute;", 'é')
+        trivia_question = trivia_question.replace("&#039;", '\'')
+        trivia_question = trivia_question.replace("&eacute;", 'é')
         trivia_answer = json_data['results'][0]['correct_answer']
         await interaction.response.send_message(f"**__True or False:__**\n{trivia_question}")
 
