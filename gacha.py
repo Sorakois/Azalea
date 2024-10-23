@@ -779,7 +779,7 @@ class GachaInteraction(commands.Cog):
             return message.author.id == member.id and message.channel.id == interaction.channel.id
     
         try:
-            msg = await interaction.client.wait_for('message', check=check, timeout=15.0)
+            msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
 
             if msg.content.title() == trivia_answer:
                 async with self.bot.db.acquire() as conn:
