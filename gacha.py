@@ -750,10 +750,6 @@ class GachaInteraction(commands.Cog):
     '''
 
     #First Way (1), Trivia!
-    @balance.error
-    async def on_trivia_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(str(error))
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
     async def trivia(self, interaction: discord.Interaction):
