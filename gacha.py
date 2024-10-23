@@ -9,7 +9,6 @@ from typing import Literal
 import requests
 import json
 import asyncio
-from datetime import datetime, timedelta
 
 cookie_rarity_rankings = {
     'Common' : 1,
@@ -575,10 +574,10 @@ class GachaInteraction(commands.Cog):
                             em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
 
                         em.set_thumbnail(url=member.avatar.url)
-                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
+                        em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295791594204823562>")
                         em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
                         em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
-                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
+                        em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295792901548281921>")
                         em.set_footer(text=f"To set a favorite character to appear here, use /setfav.")
                         await interaction.response.send_message(embed=em, ephemeral=False)
                     except:
@@ -608,10 +607,10 @@ class GachaInteraction(commands.Cog):
                                 em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{formatted_name}'s Profile")
 
                             em.set_thumbnail(url=member.avatar.url)
-                            em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295954909371564033>")
+                            em.add_field(name=f"Level:", value= f"{profile_1[0]} <:exp_jelly:1295791594204823562>")
                             em.add_field(name=f"Gem Balanace:", value= f"{profile_1[1]} <:gem:1295956837241458749>")
                             em.add_field(name=f"Essence Balance:", value= f"{profile_1[2]} <:essence:1295791325094088855>")
-                            em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295954922562654229>")
+                            em.add_field(name=f"Characters Collected:", value= f"{profile_1[3]} <:cookie_base:1295792901548281921>")
 
                             '''
                             Custom Images for BOOSTERS of Nurture
@@ -751,6 +750,10 @@ class GachaInteraction(commands.Cog):
     '''
 
     #First Way (1), Trivia!
+    @balance.error
+    async def on_trivia_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
     async def trivia(self, interaction: discord.Interaction):
