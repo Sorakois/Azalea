@@ -20,10 +20,10 @@ cookie_rarity_rankings = {
     'Dragon' : 5,
     'Special' : 5,
     'Ancient' : 6,
-    'Feat_Four': 7,
     'Stand_Four': 7,
-    'Feat_Five': 8,
-    'Stand_Five': 8
+    'Feat_Four': 7,
+    'Stand_Five': 8,
+    'Feat_Five': 8
 }
 
 class MultipullView(discord.ui.View):
@@ -126,6 +126,8 @@ class InventoryView(discord.ui.View):
         if last_of_page > len(self.inventory):
             last_of_page = len(self.inventory)
 
+        sorted_inventory = sorted(self.inventory, key=lambda x: (cookie_rarity_rankings.get(x[0], 0), cleanse_name(x[1]).lower()), reverse=False)
+
         em = discord.Embed(title=f"{self.user.display_name}'s inventory")
         em.set_thumbnail(url=self.user.avatar.url)
         
@@ -134,11 +136,11 @@ class InventoryView(discord.ui.View):
         for item in range(first_of_page, last_of_page):
             '''if isinstance(names, str):
                 names = names.title()'''
-            if cleanse_name(self.inventory[item][1]).title() == "Topaz Numby":
+            if cleanse_name(sorted_inventory[item][1]).title() == "Topaz Numby":
                 names += "Topaz" + '\n'
             else:
-                names += cleanse_name(self.inventory[item][1]).title() + '\n'
-            raritys += fix_rarity(self.inventory[item][0]) + '\n'
+                names += cleanse_name(sorted_inventory[item][1]).title() + '\n'
+            raritys += fix_rarity(sorted_inventory[item][0]) + '\n'
         em.add_field(name="Name", value=names)
         em.add_field(name="Rarity", value=raritys)
         em.set_footer(text=f"{self.page}/{self.pages}")
