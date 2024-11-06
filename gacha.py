@@ -925,11 +925,11 @@ class Gacha:
             # Give user a rare cookie
             rarity = 'Rare'
 
-        elif 0.86525 <= probability < 0.96525:
+        elif 0.86525 <= probability < 0.98000:
             # Give user a epic cookie
             rarity = 'Epic'
 
-        elif 0.96525 <= probability < 0.99825:
+        elif 0.98000 <= probability < 0.99825:
             #Give user a super epic cookie
             rarity = 'Super Epic'
 
