@@ -824,6 +824,10 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message("No Image Exists! Ping <@836367313502208040>", ephemeral=False)
             return
         
+
+    '''
+    HSR Specific Gacha
+    '''    
     @app_commands.command(name="fiftyfifty", description="Check to see if you won your last 50/50!")
     async def fiftyfifty(self, interaction : discord.Interaction):
         member = interaction.user
@@ -842,7 +846,37 @@ class GachaInteraction(commands.Cog):
                 else:
                     await interaction.response.send_message(f"Invalid database structuring, please alert sorakoi.", ephemeral=True)
 
-    '''
+    @app_commands.command(name="featured", description="Check to see the current rate-up characters for HSR gacha!")
+    async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail']):
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                # Fetch featured five and four-star characters
+                await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five' LIMIT 1;")
+                top_featured_five = await cursor.fetchone()
+
+                await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five'")
+                featured_five = await cursor.fetchall()
+
+                await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Four'")
+                featured_four = await cursor.fetchall()
+
+                try:
+                    em = discord.Embed(color=discord.Colour.from_rgb(0, 255, 255), title="Featured Characters:")
+                    em.set_image(url=top_featured_five[0])
+                    # Add featured 5-star characters to the embed
+                    for character in featured_five:
+                        em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★★", inline=True)
+                        ##em.set_image(url={character[1]})
+                    # Add featured 4-star characters to the embed
+                    for character in featured_four:
+                        em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★", inline=True)
+                        ##em.set_image(url={character[1]})
+                    await interaction.response.send_message(embed=em)
+                except:
+                    await interaction.response.send_message("No featured characters currently.", ephemeral=False)
+                    return
+
+        '''
     Below are all ways to get gems!
     '''
 
