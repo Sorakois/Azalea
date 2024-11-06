@@ -329,11 +329,12 @@ class GachaInteraction(commands.Cog):
                         item_info = await cursor.fetchone() # item_info[2] = name, item_info[3] = image
 
                         #update 50/50 if needed
-                        if 'Feat_Five' in item_info:
+                        if 'Feat_Five' in res:
                             await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 0 WHERE USER_ID = %s ", (member.id,))
-                        elif 'Stand_Five' in item_info:
+                            await conn.commit() 
+                        elif 'Stand_Five' in res:
                             await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
-                            
+                            await conn.commit()
                         winner_gacha = item_info[2].title()
                         em = discord.Embed(title=f"Character Recieved: \n*__{winner_gacha}__*")
                         em.set_thumbnail(url=interaction.user.avatar.url)
@@ -408,10 +409,12 @@ class GachaInteraction(commands.Cog):
                             
                             await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res[i])
                             item_info = await cursor.fetchone()
-                            if 'Feat_Five' in item_info:
+                            if 'Feat_Five' in res:
                                 await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 0 WHERE USER_ID = %s ", (member.id,))
-                            elif 'Stand_Five' in item_info:
+                                await conn.commit() 
+                            elif 'Stand_Five' in res:
                                 await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
+                                await conn.commit()
                             cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : res[i]}
 
                             await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
@@ -428,8 +431,6 @@ class GachaInteraction(commands.Cog):
                 else:
                     await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
                     return
-                
-
             await conn.commit()
 
     @multipull.error
@@ -823,8 +824,23 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message("No Image Exists! Ping <@836367313502208040>", ephemeral=False)
             return
         
-    #@app_commands.command(name="5050", description="Check to see if you won your last 50/50!")
-    #async def profile(self, interaction : discord.Interaction, name: discord.User= None):
+    @app_commands.command(name="fiftyfifty", description="Check to see if you won your last 50/50!")
+    async def fiftyfifty(self, interaction : discord.Interaction):
+        member = interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT FIFTY_FIFTY FROM USER WHERE USER_ID = %s", (member.id,))
+                check_fifty = await cursor.fetchone()
+                
+                if check_fifty is None:
+                    await interaction.response.send_message(f"User data not found. Please make sure you have pulled before.", ephemeral=True)
+                    return
+                if check_fifty[0] == 1:
+                    await interaction.response.send_message(f"You have LOST your last 50/50. Your next HSR 5 star is guranteed to be a featured character!", ephemeral=True)
+                elif check_fifty[0] == 0:
+                    await interaction.response.send_message(f"You have WON your last 50/50. Your next HSR 5 star can be any character.", ephemeral=True)
+                else:
+                    await interaction.response.send_message(f"Invalid database structuring, please alert sorakoi.", ephemeral=True)
 
     '''
     Below are all ways to get gems!
@@ -835,7 +851,6 @@ class GachaInteraction(commands.Cog):
     @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
     async def trivia(self, interaction: discord.Interaction):
         member = interaction.user
-
         '''
         Get trivia [for now, only anime]
         Later, make what type of question a prompt above: Literal['Anime', 'Science', etc.]
