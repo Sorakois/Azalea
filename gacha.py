@@ -9,6 +9,7 @@ from typing import Literal
 import requests
 import json
 import asyncio
+from misc import cleanse_name, fix_rarity
 
 cookie_rarity_rankings = {
     'Common' : 1,
@@ -264,53 +265,58 @@ class GachaInteraction(commands.Cog):
 
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="pull", description="Pull once for 300 gems.")
-    async def pull(self, interaction : discord.Interaction):
-            
-    #ADD other games, like HSR
-    #async def pull(self, interaction : discord.Interaction, gachagame: Literal['Cookie Run', 'Honkai: Star Rail', 'All']):
-    
-        member = interaction.user
-        async with self.bot.db.acquire() as conn:
-            async with conn.cursor() as cursor:
+    async def pull(self, interaction : discord.Interaction, game: Literal['Cookie Run', 'Honkai: Star Rail']):            
 
-                if await check_full_inventory(cursor, member, 1):
-                    await interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
-                    return
-                
-                balance = await fetch_balance(cursor, member, interaction)
-                if balance is None:
-                    return
+        if game == 'Cookie Run':
+            member = interaction.user
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+
+                    if await check_full_inventory(cursor, member, 1):
+                        await interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
+                        return
                     
-                if balance >= 300:
-                    res = await Gacha().pull_cookie()
-                    balance -= 300
-                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                    balance = await fetch_balance(cursor, member, interaction)
+                    if balance is None:
+                        return
+                        
+                    if balance >= 300:
+                        res = await Gacha().pull_cookie()
+                        balance -= 300
+                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
 
-                    if isinstance(res, int): # If integer, must mean essence
-                        em = discord.Embed(title=f"Essence Recieved: \n***__{res}__***")
-                        em.set_thumbnail(url=interaction.user.avatar.url)
-                        em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/6/61/Common_soul_essence.png/revision/latest?cb=20220707172739")
-                        em.set_footer(text=f"Want to pull more? Do /pull or /multpull!")
-                        await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (res, member.id,))
-                    elif isinstance(res, str): # If string, must mean rarity
-                        await cursor.execute("SELECT ITEM_INFO_ID, ITEM_RARITY, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res)
-                        item_info = await cursor.fetchone() # item_info[1] = name, item_info[2] = image
-                        em = discord.Embed(title=f"Cookie Recieved: \n*__{item_info[2]}__*")
-                        em.set_thumbnail(url=interaction.user.avatar.url)
-                        em.add_field(name="Rarity:", value=f"{item_info[1]}")
-                        em.set_image(url=item_info[3])
-                        em.set_footer(text=f"To recycle cookies, do /crumble. Want to pull more? Do /pull or /multpull!")
+                        if isinstance(res, int): # If integer, must mean essence
+                            em = discord.Embed(title=f"Essence Recieved: \n***__{res}__***")
+                            em.set_thumbnail(url=interaction.user.avatar.url)
+                            em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/6/61/Common_soul_essence.png/revision/latest?cb=20220707172739")
+                            em.set_footer(text=f"Want to pull more? Do /pull or /multpull!")
+                            await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (res, member.id,))
+                        elif isinstance(res, str): # If string, must mean rarity
+                            await cursor.execute("SELECT ITEM_INFO_ID, ITEM_RARITY, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res)
+                            item_info = await cursor.fetchone() # item_info[1] = name, item_info[2] = image
+                            em = discord.Embed(title=f"Cookie Recieved: \n*__{item_info[2]}__*")
+                            em.set_thumbnail(url=interaction.user.avatar.url)
+                            em.add_field(name="Rarity:", value=f"{item_info[1]}")
+                            em.set_image(url=item_info[3])
+                            em.set_footer(text=f"To recycle cookies, do /crumble. Want to pull more? Do /pull or /multpull!")
 
-                        await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
-                        await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
+                            await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
 
-                else:
-                    await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
-                    return
+                    else:
+                        await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
+                        return
 
-                await interaction.response.send_message(embed=em)
+                    await interaction.response.send_message(embed=em)
 
-                await conn.commit()
+                    await conn.commit()
+
+        if game == 'Honkai: Star Rail':
+            a
+            a
+            a
+            a
+            a
 
     @pull.error
     async def on_pull_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -664,6 +670,7 @@ class GachaInteraction(commands.Cog):
                 
                 # Replace values with some sort of significance
                 try:
+                    #CRK and CROB
                     if crumble_cookie[0][3] == "Common":
                         crumble_essence = 30
                     elif crumble_cookie[0][3] == "Rare":
@@ -676,6 +683,11 @@ class GachaInteraction(commands.Cog):
                         crumble_essence = 3000
                     elif crumble_cookie[0][3] == "Ancient":
                         crumble_essence = 10000
+                    #HSR
+                    elif crumble_cookie[0][3] == "Stand_Four" or "Feat_Four":
+                        crumble_essence = 150
+                    elif crumble_cookie[0][3] == "Stand_Five" or "Feat_Five":
+                        crumble_essence = 250
                 except TypeError:
                     await interaction.response.send_message("Cookie does not exist", ephemeral=True)
                     return
@@ -723,8 +735,20 @@ class GachaInteraction(commands.Cog):
     @app_commands.command(name="viewcharacter", description="View a character in the gacha pool!")
     async def viewcharacter(self, interaction: discord.Interaction, character: str):
 
-        #fix user's entry for DB [capitalize each first letter and remove extra spaces]
-        character = character.title().strip()
+        #characters with multiple "branches"
+        if character.upper() == "TINGYUN":
+            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Harmony Tingyun', 'Nihility Tingyun', or 'Fugue'", ephemeral=True)
+            return 
+        if character.upper() == "MARCH":
+            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Hunt March' or 'Preservation March", ephemeral=True)
+            return
+        if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE" or character.upper() == "RACCOON" or character.upper() == "TRASH" or character.upper() == "TRASHBLAZER":
+            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Destruction/Preservation/Harmony Caelus/Stelle.", ephemeral=True)
+            return
+        
+        #fix name to db format
+        character = cleanse_name(character)
+        
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT * FROM ITEM_INFO WHERE ITEM_NAME LIKE %s", (character + "%"))
@@ -736,9 +760,14 @@ class GachaInteraction(commands.Cog):
             return
         
         try:
-            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=ViewGachaChar[2])
+            #make pretty for user
+            true_rarity = fix_rarity(ViewGachaChar[1])
+            fixed_name = ViewGachaChar[2].title()
+
+            em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=fixed_name)
             em.set_thumbnail(url=interaction.user.guild.icon.url)
             em.set_image(url=ViewGachaChar[4])
+            em.add_field(name="Rarity: ", value=true_rarity, inline=True)
             em.set_footer(text="Brought to you by... discord.gg/nurture")
             await interaction.response.send_message(embed=em)
         except ValueError as e:
@@ -854,48 +883,77 @@ class Gacha:
     
         return rarity
     
-    # Honkai Star Rail Gacha:
-    '''async def pull_hsr(self):
+    # Honkai Star Rail Gacha 1/2
+    '''
+    
+    WON LAST 50/50
+    
+    '''
+    async def won_fifty_hsr(self):
+        
         probability = random.random()
         rarity = ""
 
-        if 0 <= probability < 0.35525:
+        if 0 <= probability < 0.8:
             # Give user essence
             essence = await self.handle_essence()
             return essence
 
-        elif 0.35525 <= probability < 0.62525:
-            # Give user a common cookie
-            rarity = 'Common'
+        elif 0.8 <= probability < 0.90:
+            # Give user a standard ★★★★ charater
+            rarity = 'Stand_Four' 
 
-        elif 0.62525 <= probability < 0.86525:
-            # Give user a rare cookie
-            rarity = 'Rare'
+        elif 0.90 <= probability < 0.9700:
+            # Give user a featured ★★★★ charater
+            rarity = 'Feat_Four' 
+            # ★★★★
 
-        elif 0.86525 <= probability < 0.96525:
-            # Give user a epic cookie
-            rarity = 'Epic'
+        elif 0.9700 <= probability < 0.9850:
+            # Give user a standard ★★★★★ charater
+            rarity = 'Stand_Five'
+            # ★★★★★
 
-        elif 0.96525 <= probability < 0.99825:
-            #Give user a super epic cookie
-            rarity = 'Super Epic'
+        elif 0.9850 <= probability < 1:
+            # Give user a featured ★★★★★ charater
+            rarity = 'Feat_Five'
+            # ★★★★★
 
-        elif 0.99825 <= probability < .99950:
-            # Give user Legendary, Dragon, or Special cookie
-            with random.randrange(0,3) as r:
-                match r:
-                    case 0:
-                        rarity = 'Legendary'
-                    case 1:
-                        rarity = 'Dragon'
-                    case 2:
-                        rarity = 'Special'
-            
-        elif .99950 <= probability < 1:
-            # Give user Ancient cookie
-            rarity = 'Ancient'
+        return rarity
     
-        return rarity'''
+    async def handle_essence(self):
+        return random.randrange(25,51)
+
+    # Honkai Star Rail Gacha:
+    '''
+    
+    LOST LAST 50/50
+    
+    '''
+    async def lost_fifty_hsr(self):
+        
+        probability = random.random()
+        rarity = ""
+
+        if 0 <= probability < 0.8:
+            # Give user essence
+            essence = await self.handle_essence()
+            return essence
+
+        elif 0.8 <= probability < 0.90:
+            # Give user a standard ★★★★ charater
+            rarity = 'Stand_Four' 
+
+        elif 0.90 <= probability < 0.9700:
+            # Give user a featured ★★★★ charater
+            rarity = 'Feat_Four' 
+            # ★★★★
+
+        elif 0.9700 <= probability < 1:
+            # Give user a featured ★★★★★ charater
+            rarity = 'Feat_Five'
+            # ★★★★★
+
+        return rarity
     
     async def handle_essence(self):
         return random.randrange(25,51)
