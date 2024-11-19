@@ -9,7 +9,7 @@ from typing import Literal
 import requests
 import json
 import asyncio
-from misc import cleanse_name, fix_rarity
+from misc import cleanse_name, fix_rarity, chrono_image
 
 cookie_rarity_rankings = {
     'Common' : 1,
@@ -25,6 +25,8 @@ cookie_rarity_rankings = {
     'Stand_Five': 8,
     'Feat_Five': 8
 }
+
+
 
 class MultipullView(discord.ui.View):
     page = 1
@@ -106,7 +108,59 @@ class MultipullView(discord.ui.View):
         self.last_interaction = interaction
         await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
         button.disabled = False
+
+class HelpView(discord.ui.View):
+    page = 1
+    COMMANDS_PER_PAGE = 5
+
+    def __init__(self, com_and_info, last_interaction: discord.Interaction, name: discord.User, timeout: float | None = 180):
+        super().__init__(timeout=timeout)
+        self.com_and_info = com_and_info
+        self.page = 1
+        self.pages = math.ceil(len(self.com_and_info) / self.COMMANDS_PER_PAGE)
+        self.last_interaction = last_interaction
+        self.user = name
+        self.bot = discord.Client
+
+    async def view_page(self, page_num) -> discord.Embed:
+        first_of_page = (page_num - 1) * self.COMMANDS_PER_PAGE
+        last_of_page = self.COMMANDS_PER_PAGE * page_num
+        if last_of_page > len(self.com_and_info):
+            last_of_page = len(self.com_and_info)
+
+        sorted_commands = sorted(self.com_and_info, key=lambda x: x[0].lower())
+
+        em = discord.Embed(title=f"Azalea's Commands")
+        bot_pfp = self.last_interaction.client.user.avatar.url
+        em.set_thumbnail(url=bot_pfp)
+
         
+        commands = ''
+        descriptions = ''
+        
+        for item in range(first_of_page, last_of_page):
+            commands += sorted_commands[item][0] + '\n'
+            descriptions += sorted_commands[item][1] + '\n'
+
+        em.add_field(name="Command", value=commands)
+        em.add_field(name="Description", value=descriptions)
+        em.set_footer(text=f"Page {self.page}/{self.pages}")
+        
+        return em
+    
+    @discord.ui.button(label="◀", style=discord.ButtonStyle.blurple)
+    async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.page = self.pages if self.page == 1 else self.page - 1
+        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
+        await self.last_interaction.delete_original_response()
+        self.last_interaction = interaction
+
+    @discord.ui.button(label="▶", style=discord.ButtonStyle.blurple)
+    async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.page = 1 if self.page == self.pages else self.page + 1
+        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
+        await self.last_interaction.delete_original_response()
+        self.last_interaction = interaction
 
 class InventoryView(discord.ui.View):
 
@@ -126,13 +180,14 @@ class InventoryView(discord.ui.View):
         if last_of_page > len(self.inventory):
             last_of_page = len(self.inventory)
 
-        sorted_inventory = sorted(self.inventory, key=lambda x: (cookie_rarity_rankings.get(x[0], 0), cleanse_name(x[1]).lower()), reverse=False)
+        sorted_inventory = sorted(self.inventory, key=lambda x: (cookie_rarity_rankings.get(x[0], 0), cleanse_name(x[1]).lower(), -x[2]), reverse=False)
 
         em = discord.Embed(title=f"{self.user.display_name}'s inventory")
         em.set_thumbnail(url=self.user.avatar.url)
         
         names = ''
         raritys = ''
+        chronos = ''
         for item in range(first_of_page, last_of_page):
             '''if isinstance(names, str):
                 names = names.title()'''
@@ -141,8 +196,10 @@ class InventoryView(discord.ui.View):
             else:
                 names += cleanse_name(sorted_inventory[item][1]).title() + '\n'
             raritys += fix_rarity(sorted_inventory[item][0]) + '\n'
+            chronos += chrono_image(sorted_inventory[item][2]) + '\n'
         em.add_field(name="Name", value=names)
         em.add_field(name="Rarity", value=raritys)
+        em.add_field(name="Chrono", value=chronos)
         em.set_footer(text=f"{self.page}/{self.pages}")
         return em
 
@@ -521,7 +578,7 @@ class GachaInteraction(commands.Cog):
             member = name
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT ITEM_RARITY, ITEM_NAME FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
+                await cursor.execute("SELECT ITEM_RARITY, ITEM_NAME, PROMO FROM ITEM NATURAL JOIN ITEM_INFO WHERE USER_ID = %s ORDER BY CASE ITEM_RARITY WHEN 'Common' THEN 1 WHEN 'Rare' THEN 2 WHEN 'Epic' THEN 3 WHEN 'Super Epic' THEN 4 WHEN 'Dragon' THEN 5 WHEN 'Legendary' THEN 6 WHEN 'Ancient' THEN 7 ELSE 8 END, ITEM_NAME DESC", (member.id,))
                 inventory_items = await cursor.fetchall()
 
                 if not inventory_items:
@@ -777,7 +834,7 @@ class GachaInteraction(commands.Cog):
                     em.add_field(name=f"By spending {EssenceCostEquation} <:essence:1295791325094088855>, you have increased your inventory slots by 8!", value=f"Your new balance is {ExpandNewBalance} <:essence:1295791325094088855> and now have __{NewInvSlots[0]}__ inventory slots! ")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/d/dd/Standard_cookie_gacha_reveal.png/revision/latest?cb=20221109024120")
                     NextExpand = (125*((TimesPurchased[0]+1)**2)) + 150
-                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} <:essence:1295791325094088855>.")
+                    em.set_footer(text=f"Want more slots? Do the command again! Your next expand will cost {NextExpand} essence.")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
             await conn.commit()
@@ -824,6 +881,110 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message("No Image Exists! Ping <@836367313502208040>", ephemeral=False)
             return
         
+    @app_commands.command(name="promote", description="Promote the Chrono of your character!")
+    async def promote(self, interaction : discord.Interaction, character : str):
+        member = interaction.user
+        '''
+        Promotion System
+
+        Needed in DB:
+            ~> Column for "character promotion level", default it to 0 and incriment by 1 up to 10
+        
+        Promo Logic:
+            Amount of copies per promo level [once per level]:
+                ~> {0 -> 1 = +1 copy [1 total]}
+                ~> {1 -> 2 = +2 copies [3 total]}
+                ~> {2 -> 3 = +3 copies [6 total]}
+                ~> {3 -> 4 = +4 copies [10 total]}
+                ~> {4 -> 5 = +5 copies [15 total]}
+                ----------------------------------
+                ~> {5 -> 6 = +6 copies [21 total]}
+                ~> {6 -> 7 = +7 copies [28 total]}
+                ~> {7 -> 8 = +8 copies [36 total]}
+                ~> {8 -> 9 = +9 copies [45 total]}
+                ~> {9 -> 10 = +10 copies [55 total]}
+        Promo Process:
+            cleanse string
+            given string, check for highest promo and check for how many copies owned
+            increase promo level by corresponding units needed
+                if cant afford, say "you need X more copies to increase promo level to Y"
+            remove copies of characcter
+            say "Z is now Chrono Y"
+            
+        '''
+
+        #characters with multiple "branches"
+        if character.upper() == "TINGYUN":
+            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Harmony Tingyun', 'Nihility Tingyun', or 'Fugue'", ephemeral=True)
+            return 
+        if character.upper() == "MARCH":
+            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Hunt March' or 'Preservation March", ephemeral=True)
+            return
+        if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE" or character.upper() == "RACCOON" or character.upper() == "TRASH" or character.upper() == "TRASHBLAZER":
+            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Destruction/Preservation/Harmony Caelus/Stelle.", ephemeral=True)
+            return
+        
+        #fix name
+        character = cleanse_name(character)
+
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                #grab all copies
+                await cursor.execute("SELECT USER_ID, ITEM_INFO_ID, ITEM_NAME, ITEM_RARITY, PROMO FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE %s AND USER_ID = %s ORDER BY PROMO DESC;", (f'{character}%', member.id))
+                try:
+                    char_copies = await cursor.fetchall()
+                    if not char_copies:
+                        await interaction.response.send_message(f"No copies of {character} found in your inventory.", ephemeral=True)
+                        return
+
+                    #make an array of all promo levels in descending order (high -> low)
+                    character_id_p1 = [c_id[1] for c_id in char_copies]
+                    char_id = character_id_p1.pop(0) #just grab one ID
+
+                    namelist = [name[2] for name in char_copies]
+                    namechar =namelist.pop(0) #just grab one name
+
+                    all_promo_levels = [promo[4] for promo in char_copies]
+                    highest_promo = all_promo_levels.pop(0) #grab highest, wont be manipulated/deleted
+                    og_highest = highest_promo
+
+                    #logic for how many coppies needed for promotion
+                    promo_thresholds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+                    #see how many copies owned for calculation
+                    copies_owned = len(all_promo_levels)
+                    required_copies =  promo_thresholds[highest_promo]
+                    copies_needed = required_copies - copies_owned
+
+
+                    if highest_promo < len(promo_thresholds):
+
+                        if copies_owned >= required_copies:
+                                try:
+                                    highest_promo += 1
+                                    #debug
+                                    #await interaction.response.send_message(f"Highest Promo: {highest_promo}\nChar_id: {char_id}\nMember.id: {member.id}\nOG_highest: {og_highest}\nRequired Copies: {required_copies}", ephemeral=False)
+
+                                    await cursor.execute("UPDATE ITEM SET PROMO = %s WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = %s LIMIT 1;", ((highest_promo), char_id, member.id, og_highest))
+                                    await cursor.execute("DELETE FROM ITEM WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = 0 LIMIT %s;", (char_id, member.id, required_copies))
+                                    await conn.commit()
+                                    local_chrono_img = chrono_image(highest_promo)
+                                    await interaction.response.send_message(f"{namechar.title()} is now Chrono {highest_promo} {local_chrono_img}", ephemeral=False)
+                                except:
+                                    await interaction.response.send_message(f"ERROR! Please contact sorakoi, invalid code.", ephemeral=True)
+
+                        else:
+                            copies_needed = required_copies - copies_owned
+                            await interaction.response.send_message(
+                                f"{namechar.title()} is Chrono {highest_promo}. You need {copies_needed} more copies to further promote.", 
+                                ephemeral=True)
+                    else:
+                        await interaction.response.send_message(f"{character} is already Chrono 10. Please crumble remaining copies for essence.", ephemeral=True)
+
+                    await conn.commit()
+                except:
+                    await interaction.response.send_message(f"INVALID CODE:\nCharacter: {character}\nHighest Promo: {highest_promo}\nChar copies: {char_copies}", ephemeral=True)
+
 
     '''
     HSR Specific Gacha
@@ -946,30 +1107,34 @@ class Gacha:
         probability = random.random()
         rarity = ""
 
-        if 0 <= probability < 0.35525:
+        if 0 <= probability < 0.3750:
             # Give user essence
             essence = await self.handle_essence()
             return essence
 
-        elif 0.35525 <= probability < 0.62525:
+        elif 0.3750 <= probability < 0.6750:
             # Give user a common cookie
             rarity = 'Common'
 
-        elif 0.62525 <= probability < 0.86525:
+        elif 0.6750 <= probability < 0.8750:
             # Give user a rare cookie
             rarity = 'Rare'
 
-        elif 0.86525 <= probability < 0.98000:
+        elif 0.8750 <= probability < 0.9550:
             # Give user a epic cookie
             rarity = 'Epic'
 
-        elif 0.98000 <= probability < 0.99825:
+        elif 0.9550 <= probability < 0.9850:
             #Give user a super epic cookie
             rarity = 'Super Epic'
 
-        elif 0.99825 <= probability < .99950:
-            # Give user Legendary, Dragon, or Special cookie
-            with random.randrange(0,3) as r:
+            '''
+            WAY TOO LOW
+            '''
+
+        elif 0.9850 <= probability < 1:
+            # Give user Legendary, Dragon, Ancient, or Special cookie
+            with random.randrange(0,4) as r:
                 match r:
                     case 0:
                         rarity = 'Legendary'
@@ -977,10 +1142,8 @@ class Gacha:
                         rarity = 'Dragon'
                     case 2:
                         rarity = 'Special'
-            
-        elif .99950 <= probability < 1:
-            # Give user Ancient cookie
-            rarity = 'Ancient'
+                    case 3:
+                        rarity = 'Ancient'
     
         return rarity
     

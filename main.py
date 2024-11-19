@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from util.scrape_wiki import scrape_cookies as scrape_cookie1
 from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
-from gacha import GachaInteraction
+from gacha import GachaInteraction, HelpView
 import misc
 
 # load the enviroment variables
@@ -67,11 +67,32 @@ class General(commands.Cog):
         params:
             interaction (discord.Interaction) : slash command object
         '''
-        em = discord.Embed(title="Help")
-        em.add_field(name="", value="Need assistance?", inline=False)
-        em.add_field(name="Command", value="/help\n/level\n/leaderboard", inline=True)
-        em.add_field(name="Function", value="Assistance on commands\nDisplay the level of a user\nDisplay the leaderboard for this server", inline=True)
-        await interaction.response.send_message(embed=em, ephemeral=True)
+        com_and_info = [["/help", "See available commands"],
+                        ["/level", "Display the level of a user"],
+                        ["/leaderboard", "Display the leaderboard for this server"], 
+                        ["/wiki", "View wiki info for a character"], 
+                        ["/build", "View the best stats for a character"],
+                        ["/pull", "Spend gems, gain a character"], 
+                        ["/multipull", "Spend more gems, get multiplate characters"], 
+                        ["/profile", "View your overall gacha stats"], 
+                        ["/trivia", "Answer questions, get gems"], 
+                        ["/crumble", "Destory a character you own in return for essence"], 
+                        ["/featured", "View who is rate-up on /pull"], 
+                        ["/fiftyfifty", "See if you lost/won your last rate-up chance"], 
+                        ["/expand", "Spend essence, gain more inventory slots"], 
+                        ["/promote", "Lose dupes, gain Chrono level"], 
+                        ["/hug", "Recieve a warm hug"], 
+                        ["/setfav", "Set a character to appear on your profile"], 
+                        ["/balance", "View how many gems/essence you have"], 
+                        ["/profilecolor", "Change the embed color of your profile"], 
+                        ["/viewcharacter", "View any character in the gacha pool"], 
+                        ["/daily", "Recieve a large sum of gems every 24hrs"],
+                        ]
+
+
+        
+        view = HelpView(com_and_info=com_and_info, last_interaction=interaction, name=interaction.user)
+        await interaction.response.send_message(embed=await view.view_page(1), view=view, ephemeral=True)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -158,4 +179,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))
