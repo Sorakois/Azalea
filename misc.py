@@ -72,8 +72,18 @@ def fix_rarity(rarity):
     return rarity
 
 def chrono_image(chrono: int):
-    chrono_img_ids = ["<:promo0:1308240180817297499>","<a:promo1:1308240189713420399>","<a:promo2:1308240198240309331>","<a:promo3:1308240207434219570>","<a:promo4:1308240215793729548>","<a:promo5:1308240224987648060>",
-                    "<a:promo6:1308240234496135221>", "<a:promo7:1308240246663549061>", "<a:promo8:1308240256113573909>", "<a:promo9:1308240267182080113>", "<a:promo10:1308240277260996618>"]
+    chrono_img_ids = ["<a:Promo_0:1308482940669263994>", #0
+                      "<a:Promo_1_5:1308482953407631462>", #1
+                      "<a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #2
+                      "<a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #3
+                      "<a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #4
+                      "<a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #5
+                      "<a:Promo_6_10:1308482961888509972><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #6
+                      "<a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #7
+                      "<a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_1_5:1308482953407631462><a:Promo_1_5:1308482953407631462>", #8
+                      "<a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_1_5:1308482953407631462>", #9
+                      "<a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972><a:Promo_6_10:1308482961888509972>", #10
+                    ]
     if chrono > 10:
         return
     return chrono_img_ids[chrono]
@@ -194,6 +204,8 @@ class MiscCMD(commands.Cog):
 
                     elif character.upper() == "IMBIBITOR-LUNAE":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/dan-heng-imbibitor-lunae-character_gacha_result_bg.webp?x30775")
+                    elif character.upper() == "THE-HERTA":
+                        em.set_image(url=f"https://i.imgur.com/31AYOa2.png")
 
                     elif character.upper() == "NIHILITY-TINGYUN":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/fugue-character_gacha_result_bg.webp?x58483")
