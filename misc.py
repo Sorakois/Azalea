@@ -71,6 +71,13 @@ def fix_rarity(rarity):
 
     return rarity
 
+def chrono_image(chrono: int):
+    chrono_img_ids = ["<:promo0:1308240180817297499>","<a:promo1:1308240189713420399>","<a:promo2:1308240198240309331>","<a:promo3:1308240207434219570>","<a:promo4:1308240215793729548>","<a:promo5:1308240224987648060>",
+                    "<a:promo6:1308240234496135221>", "<a:promo7:1308240246663549061>", "<a:promo8:1308240256113573909>", "<a:promo9:1308240267182080113>", "<a:promo10:1308240277260996618>"]
+    if chrono > 10:
+        return
+    return chrono_img_ids[chrono]
+
 # Database of gifs (links)
 hugging_gifs = [
     "https://media1.tenor.com/m/8YhtDI2-uTQAAAAd/topaz-numby.gif",
