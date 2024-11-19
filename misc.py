@@ -194,6 +194,8 @@ class MiscCMD(commands.Cog):
 
                     elif character.upper() == "IMBIBITOR-LUNAE":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/dan-heng-imbibitor-lunae-character_gacha_result_bg.webp?x30775")
+                    elif character.upper() == "THE-HERTA":
+                        em.set_image(url=f"https://i.imgur.com/31AYOa2.png")
 
                     elif character.upper() == "NIHILITY-TINGYUN":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/fugue-character_gacha_result_bg.webp?x58483")

@@ -9,6 +9,7 @@ from typing import Literal
 import requests
 import json
 import asyncio
+from asyncio import Lock
 from misc import cleanse_name, fix_rarity, chrono_image
 
 cookie_rarity_rankings = {
@@ -315,6 +316,7 @@ class GachaInteraction(commands.Cog):
 
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.lock = Lock()
 
     async def crystalOnMessage(self, message: discord.Message, valid_time):
         if message.author.bot:
@@ -912,78 +914,92 @@ class GachaInteraction(commands.Cog):
             say "Z is now Chrono Y"
             
         '''
+        async with self.lock:
+            #characters with multiple "branches"
+            if character.upper() == "TINGYUN":
+                await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Harmony Tingyun', 'Nihility Tingyun', or 'Fugue'", ephemeral=True)
+                return 
+            if character.upper() == "MARCH":
+                await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Hunt March' or 'Preservation March", ephemeral=True)
+                return
+            if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE" or character.upper() == "RACCOON" or character.upper() == "TRASH" or character.upper() == "TRASHBLAZER":
+                await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Destruction/Preservation/Harmony Caelus/Stelle.", ephemeral=True)
+                return
+            
+            #fix name
+            character = cleanse_name(character)
 
-        #characters with multiple "branches"
-        if character.upper() == "TINGYUN":
-            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Harmony Tingyun', 'Nihility Tingyun', or 'Fugue'", ephemeral=True)
-            return 
-        if character.upper() == "MARCH":
-            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Hunt March' or 'Preservation March", ephemeral=True)
-            return
-        if character.upper() == "TRAILBLAZER" or character.upper() == "TB" or character.upper() == "MC" or character.upper() == "CAELUS" or character.upper() == "STELLE" or character.upper() == "RACCOON" or character.upper() == "TRASH" or character.upper() == "TRASHBLAZER":
-            await interaction.response.send_message(f"'{character}' is invalid. Please specify the path of this character: 'Destruction/Preservation/Harmony Caelus/Stelle.", ephemeral=True)
-            return
-        
-        #fix name
-        character = cleanse_name(character)
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    #grab all copies
+                    await cursor.execute("SELECT USER_ID, ITEM_INFO_ID, ITEM_NAME, ITEM_RARITY, PROMO FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE %s AND USER_ID = %s ORDER BY PROMO DESC;", (f'{character}%', member.id))
+                    try:
+                        char_copies = await cursor.fetchall()
 
-        async with self.bot.db.acquire() as conn:
-            async with conn.cursor() as cursor:
-                #grab all copies
-                await cursor.execute("SELECT USER_ID, ITEM_INFO_ID, ITEM_NAME, ITEM_RARITY, PROMO FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE %s AND USER_ID = %s ORDER BY PROMO DESC;", (f'{character}%', member.id))
-                try:
-                    char_copies = await cursor.fetchall()
-                    if not char_copies:
-                        await interaction.response.send_message(f"No copies of {character} found in your inventory.", ephemeral=True)
-                        return
+                        if not char_copies:
+                            await interaction.response.send_message(f"No copies of {character} found in your inventory.", ephemeral=True)
+                            return
 
-                    #make an array of all promo levels in descending order (high -> low)
-                    character_id_p1 = [c_id[1] for c_id in char_copies]
-                    char_id = character_id_p1.pop(0) #just grab one ID
+                        #make an array of all promo levels in descending order (high -> low)
+                        character_id_p1 = [c_id[1] for c_id in char_copies]
+                        char_id = character_id_p1.pop(0) #just grab one ID
 
-                    namelist = [name[2] for name in char_copies]
-                    namechar =namelist.pop(0) #just grab one name
+                        namelist = [name[2] for name in char_copies]
+                        namechar =namelist.pop(0) #just grab one name
 
-                    all_promo_levels = [promo[4] for promo in char_copies]
-                    highest_promo = all_promo_levels.pop(0) #grab highest, wont be manipulated/deleted
-                    og_highest = highest_promo
+                        all_promo_levels = [promo[4] for promo in char_copies]
+                        highest_promo = all_promo_levels.pop(0) #grab highest
+                        og_highest = highest_promo
 
-                    #logic for how many coppies needed for promotion
-                    promo_thresholds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        #logic for how many coppies needed for promotion
+                        promo_thresholds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    
+                        #DEBUGGING
+                        copies_returned = 0
+                        i = all_promo_levels[0]
+                        while i > 0:
+                            copies_returned += promo_thresholds[i]
+                            i-=1
 
-                    #see how many copies owned for calculation
-                    copies_owned = len(all_promo_levels)
-                    required_copies =  promo_thresholds[highest_promo]
-                    copies_needed = required_copies - copies_owned
+                        for promo in all_promo_levels:
+                            if promo != 0:
+                                #remove dupes that are more than promo 1 that isnt highest, and return coppies
+                                await cursor.execute("DELETE FROM ITEM WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = %s LIMIT 1;", (char_id, member.id, promo))
+                                
+                                #add dupes for each number of promo the character had
+                                for item in range(copies_returned):
+                                    await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID, PROMO) VALUES (%s, %s, 0)", (char_id, member.id,))
 
+                        if highest_promo == 10:
+                            await interaction.response.send_message(f"{character} is already Chrono 10. Please crumble remaining copies for essence.", ephemeral=True)
 
-                    if highest_promo < len(promo_thresholds):
+                        #see how many copies owned for calculation
+                        copies_owned = len(all_promo_levels)
+                        required_copies =  promo_thresholds[highest_promo]
 
-                        if copies_owned >= required_copies:
-                                try:
-                                    highest_promo += 1
-                                    #debug
-                                    #await interaction.response.send_message(f"Highest Promo: {highest_promo}\nChar_id: {char_id}\nMember.id: {member.id}\nOG_highest: {og_highest}\nRequired Copies: {required_copies}", ephemeral=False)
+                        if highest_promo < len(promo_thresholds):
 
-                                    await cursor.execute("UPDATE ITEM SET PROMO = %s WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = %s LIMIT 1;", ((highest_promo), char_id, member.id, og_highest))
-                                    await cursor.execute("DELETE FROM ITEM WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = 0 LIMIT %s;", (char_id, member.id, required_copies))
-                                    await conn.commit()
-                                    local_chrono_img = chrono_image(highest_promo)
-                                    await interaction.response.send_message(f"{namechar.title()} is now Chrono {highest_promo} {local_chrono_img}", ephemeral=False)
-                                except:
-                                    await interaction.response.send_message(f"ERROR! Please contact sorakoi, invalid code.", ephemeral=True)
+                            if copies_owned >= required_copies:
+                                    try:
+                                        highest_promo += 1
+                                        #debug
+                                        #await interaction.response.send_message(f"Highest Promo: {highest_promo}\nChar_id: {char_id}\nMember.id: {member.id}\nOG_highest: {og_highest}\nRequired Copies: {required_copies}", ephemeral=False)
 
-                        else:
-                            copies_needed = required_copies - copies_owned
-                            await interaction.response.send_message(
-                                f"{namechar.title()} is Chrono {highest_promo}. You need {copies_needed} more copies to further promote.", 
-                                ephemeral=True)
-                    else:
-                        await interaction.response.send_message(f"{character} is already Chrono 10. Please crumble remaining copies for essence.", ephemeral=True)
+                                        await cursor.execute("UPDATE ITEM SET PROMO = %s WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = %s LIMIT 1;", ((highest_promo), char_id, member.id, og_highest))
+                                        await cursor.execute("DELETE FROM ITEM WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = 0 LIMIT %s;", (char_id, member.id, required_copies))
+                                        await conn.commit()
+                                        local_chrono_img = chrono_image(highest_promo)
+                                        await interaction.response.send_message(f"{namechar.title()} is now Chrono {highest_promo} {local_chrono_img}", ephemeral=False)
+                                    except:
+                                        await interaction.response.send_message(f"ERROR! Please contact sorakoi, invalid code.", ephemeral=True)
 
-                    await conn.commit()
-                except:
-                    await interaction.response.send_message(f"INVALID CODE:\nCharacter: {character}\nHighest Promo: {highest_promo}\nChar copies: {char_copies}", ephemeral=True)
+                            else:
+                                copies_needed = required_copies - copies_owned
+                                await interaction.response.send_message(f"{namechar.title()} is Chrono {highest_promo}. You need {copies_needed} more copies to further promote.", ephemeral=True)
+
+                        await conn.commit()
+                    except:
+                        await interaction.response.send_message(f"INVALID CODE:\nCharacter: {character}\nHighest Promo: {highest_promo}\nChar copies: {char_copies}", ephemeral=True)
 
 
     '''
