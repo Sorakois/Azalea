@@ -730,7 +730,6 @@ class GachaInteraction(commands.Cog):
                             '''
                             Custom Images for BOOSTERS of Nurture
                             '''
-
                             #User = thomasunex
                             if member.id == 400443611105460234:
                                 em.set_image(url=f"https://media1.tenor.com/m/yx7pASaizeEAAAAC/robozz-electro-man.gif")
@@ -747,6 +746,9 @@ class GachaInteraction(commands.Cog):
                             elif member.id == 684946339259613302:
                                 em.set_image(url=f"https://static.wikia.nocookie.net/cookierunkingdom/images/5/50/Cookie0049-call_user.gif")
                                 em.set_footer(text=f"The REAL (enough) Moonlight Cookie!")
+                            elif member.id == 784169727043174410:
+                                em.set_image(url=f"https://static.wikia.nocookie.net/cookierunkingdom/images/a/ab/Shadow_milk_sing.png/revision/latest?cb=20240207163806")
+                                em.set_footer(text=f"All in vain, the looney in sane will face annihilation")
                             #Default Image
                             else:
                                 em.set_image(url=fav_char_pic[0])
