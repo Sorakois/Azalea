@@ -211,22 +211,22 @@ class MiscCMD(commands.Cog):
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/fugue-character_gacha_result_bg.webp?x58483")
                     elif character.upper() == "HARMONY-TINGYUN":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/tingyun-character_gacha_result_bg.webp?x33576")
+                    
+                    #temp until available on the site
+                    elif character.upper() == "AGLAEA":
+                        em.set_image(url=f"https://i.imgur.com/dNiSmlm.png")
+                    else:   #default images
+                        try:
+                            em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_gacha_result_bg.webp?x30775")
+                            #await interaction.response.send_message(f"{character}", ephemeral=False)
+
+                        except ValueError as e:
+                            await interaction.response.send_message(f"'{character}'s image is messed up :(... PLEASE let @sorakoi know ASAP [<@836367313502208040>]", ephemeral=False)
+                            return
+
                 except:
                     await interaction.response.send_message(f"The character you entered, __**{original_input}**__ , was not found. Please check the name and try again.", ephemeral=True)
 
-
-                #Easter Eggs    
-                #elif character == "HERTA":
-                #    em.set_image(url=f"https://media1.tenor.com/m/VtFUW-durpoAAAAC/kururin-kuru-kuru.gif")
-
-                #default image
-                    try:
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_gacha_result_bg.webp?x30775")
-                        #await interaction.response.send_message(f"{character}", ephemeral=False)
-
-                    except ValueError as e:
-                        await interaction.response.send_message(f"'{character}'s image is messed up :(... PLEASE let @sorakoi know ASAP [<@836367313502208040>]", ephemeral=False)
-                        return
 
 
                 em.set_footer(text=f"Wrote by: {res[7].capitalize()}... in discord.gg/nurture")
