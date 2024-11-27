@@ -166,7 +166,7 @@ class HelpView(discord.ui.View):
 class InventoryView(discord.ui.View):
 
     page = 1
-    COOKIE_PER_PAGE = 8
+    COOKIE_PER_PAGE = 5
 
     def __init__(self, inventory, last_interaction: discord.Interaction, name: discord.User, timeout: float | None = 180):
         super().__init__(timeout=timeout)
@@ -286,7 +286,7 @@ class CrumbleView(discord.ui.View):
             async with conn.cursor() as cursor:
                 for c in self.crumble_data:
                     await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (c[0], c[1],))
-                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - 1 WHERE USER_ID = %s", (self.add, c[0],))
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (self.add, len(self.crumble_data), c[0],))
 
             await conn.commit()
 
@@ -591,7 +591,7 @@ class GachaInteraction(commands.Cog):
 
         await interaction.response.send_message(embed=await view.view_page(1), view=view)
     
-    @app_commands.command(name="setfav", description="Set your favorite character")
+    @app_commands.command(name="set_fav", description="Set your favorite character")
     async def setfav(self, interaction : discord.Interaction, favchar: str):
         member=interaction.user
         async with self.bot.db.acquire() as conn:
@@ -625,7 +625,7 @@ class GachaInteraction(commands.Cog):
                         
             await conn.commit()
             
-    @app_commands.command(name="profilecolor", description="Set your profile's RGB color")
+    @app_commands.command(name="profile_color", description="Set your profile's RGB color")
     async def profilecolor(self, interaction: discord.Interaction, user_red_value: int, user_green_value: int, user_blue_value: int):
         member = interaction.user
 
@@ -769,12 +769,12 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
                 crumble_cookie = await cursor.fetchall()
                 if amount < 1:
-                    await interaction.response.send_message("Cannot crumble nothing/negative cookies, silly!")
+                    await interaction.response.send_message("Cannot crumble nothing/negative characters, silly!")
                 if len(crumble_cookie) < amount:
                     amount  = len(crumble_cookie)
 
                 if not crumble_cookie:
-                    await interaction.response.send_message("You currently do not own this cookie or it does not exist. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]", ephemeral=True)
+                    await interaction.response.send_message("You currently do not own this character or it does not exist. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]", ephemeral=True)
                     return
 
                 crumble_essence = 0
@@ -790,23 +790,76 @@ class GachaInteraction(commands.Cog):
                         crumble_essence = 80
                     elif crumble_cookie[0][3] == "Super Epic":
                         crumble_essence = 250
-                    elif crumble_cookie[0][3] == "Legendary" or "Special" or "Dragon":
+                    elif crumble_cookie[0][3] == "Legendary" or "Special" or "Dragon" or "Ancient":
                         crumble_essence = 3000
-                    elif crumble_cookie[0][3] == "Ancient":
-                        crumble_essence = 10000
                     #HSR
                     elif crumble_cookie[0][3] == "Stand_Four" or "Feat_Four":
                         crumble_essence = 150
                     elif crumble_cookie[0][3] == "Stand_Five" or "Feat_Five":
-                        crumble_essence = 250
+                        crumble_essence = 3000
                 except TypeError:
-                    await interaction.response.send_message("Cookie does not exist", ephemeral=True)
+                    await interaction.response.send_message("Character does not exist", ephemeral=True)
                     return
                     
                 view = CrumbleView(bot=self.bot, crumble_data=crumble_cookie, add=crumble_essence, last_interaction=interaction, amt=amount)
                 em = discord.Embed()
                 await interaction.response.send_message(embed=await view.embed(), view = view, ephemeral=True)
             await conn.commit()
+
+    @app_commands.command(name="mass_crumble", description="Expand your inventory slots!")
+    async def mass_crumble(self, interaction : discord.Interaction, rarity : str):
+        member = interaction.user
+        async with self.lock:
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_RARITY LIKE '{rarity}%' AND USER_ID = {member.id} AND PROMO = 0 LIMIT 20;")
+                    all_rarity_select = await cursor.fetchall()
+                    
+                    item_ids = []
+                    crumble_essence = 0
+                    for unique_item in all_rarity_select:
+                        char_id = unique_item[1]
+                        char_rarity = unique_item[3]
+                        
+                        #add id to list of ids to remove
+                        item_ids.append(char_id)
+
+                        #rarity to essence (crk)
+                        if char_rarity == "Common":
+                            crumble_essence += 30
+                        elif char_rarity == "Rare":
+                            crumble_essence += 35
+                        elif char_rarity == "Epic":
+                            crumble_essence += 80
+                        elif char_rarity == "Super Epic":
+                            crumble_essence += 250
+                        elif char_rarity == "Legendary" or char_rarity == "Special" or char_rarity == "Dragon" or char_rarity == "Ancient":
+                            crumble_essence += 750
+                        
+                        #rarity to essence (hsr)
+                        if char_rarity == "Stand_Four" or char_rarity == "Feat_Four":
+                            crumble_essence += 150
+                        elif char_rarity == "Stand_Five" or char_rarity == "Feat_Five":
+                            crumble_essence += 750
+                    
+                    #remove each item from database
+                    for id in item_ids:
+                        await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s and ITEM_ID = %s", (member.id, id))
+                        await conn.commit()
+
+                    #add essence
+                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (crumble_essence, len(item_ids), member.id))
+
+                    #grab new balance
+                    await cursor.execute("SELECT USER_ESSENCE FROM USER WHERE USER_ID = %s ", (member.id))
+                    new_bal = await cursor.fetchone()
+                    new_bal = new_bal[0] if new_bal else 0 
+
+                await conn.commit()
+                await interaction.response.send_message(f"Success!\n\nYou recieved {crumble_essence} essence by crumbling {len(all_rarity_select)} characters of rarity {char_rarity}.\nYou now have {new_bal} <:essence:1295791325094088855>", ephemeral=False)
+
+                    #debug line
+                    #await interaction.response.send_message(f"All item ids: {item_ids}", ephemeral=False)
 
     @app_commands.command(name="expand", description="Expand your inventory slots!")
     async def expand(self, interaction : discord.Interaction):
@@ -843,7 +896,7 @@ class GachaInteraction(commands.Cog):
 
             await conn.commit()
 
-    @app_commands.command(name="viewcharacter", description="View a character in the gacha pool!")
+    @app_commands.command(name="view_character", description="View a character in the gacha pool!")
     async def viewcharacter(self, interaction: discord.Interaction, character: str):
 
         #characters with multiple "branches"
@@ -967,6 +1020,8 @@ class GachaInteraction(commands.Cog):
                             if promo != 0:
                                 #remove dupes that are more than promo 1 that isnt highest, and return coppies
                                 await cursor.execute("DELETE FROM ITEM WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = %s LIMIT 1;", (char_id, member.id, promo))
+                                #update slots
+                                await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (1, member.id))
                                 
                                 #add dupes for each number of promo the character had
                                 for item in range(copies_returned):
@@ -989,6 +1044,7 @@ class GachaInteraction(commands.Cog):
 
                                         await cursor.execute("UPDATE ITEM SET PROMO = %s WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = %s LIMIT 1;", ((highest_promo), char_id, member.id, og_highest))
                                         await cursor.execute("DELETE FROM ITEM WHERE ITEM_INFO_ID = %s AND USER_ID = %s AND PROMO = 0 LIMIT %s;", (char_id, member.id, required_copies))
+                                        await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (1, member.id))
                                         await conn.commit()
                                         local_chrono_img = chrono_image(highest_promo)
                                         await interaction.response.send_message(f"{namechar.title()} is now Chrono {highest_promo} {local_chrono_img}", ephemeral=False)
@@ -1142,7 +1198,7 @@ class Gacha:
             # Give user a epic cookie
             rarity = 'Epic'
 
-        elif 0.9550 <= probability < 0.9850:
+        elif 0.9550 <= probability < 0.9800:
             #Give user a super epic cookie
             rarity = 'Super Epic'
 
@@ -1150,7 +1206,7 @@ class Gacha:
             WAY TOO LOW
             '''
 
-        elif 0.9850 <= probability < 1:
+        elif 0.9800 <= probability < 1:
             # Give user Legendary, Dragon, Ancient, or Special cookie
             with random.randrange(0,4) as r:
                 match r:

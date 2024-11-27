@@ -74,25 +74,9 @@ class CookieInfo(commands.Cog):
 
 		#Wiki for Cookie Run: Ovenbreak
 		if wikigame == "CROB":
+
 			await interaction.response.send_message("Feature still in development!")
-
-			#Reference code from CRK wiki
-			'''
-			em = discord.Embed(title=res[0])
-				em.set_image(url=row[6])
-				em.add_field(name='Pronouns', value=row[2], inline=True)
-				try:
-					em.add_field(name='Type', value=f'{self.emoji_ids2[row[4]]}{row[4]}', inline=True)
-				except KeyError:
-					em.add_field(name='Type', value=f'Unknown', inline=True)
-				try:
-					em.add_field(name='Position', value=f'{self.emoji_ids1[row[5]]}{row[5]}', inline=True)
-				except:
-					em.add_field(name='Type', value=f'Unknown', inline=True)
-				em.set_footer(text=f'Release Date: {row[3]}')
-
-				await interaction.response.send_message(embed=em)
-			'''
+			
 			#Page 1 (Cookie)
 			em = discord.Embed(title=res[0]) #res[0] = name of cookie
 			em.set_image(url=''''place of cookie url''')

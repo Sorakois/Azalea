@@ -14,6 +14,7 @@ from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
 from gacha import GachaInteraction, HelpView
 import misc
+import asyncio
 
 # load the enviroment variables
 load_dotenv()
@@ -124,6 +125,8 @@ class General(commands.Cog):
 
     @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
+        member = interaction.user
+        
         '''
         Admin commands for xp boosting and extra (more will be added later)
 
@@ -132,28 +135,62 @@ class General(commands.Cog):
             prompt (str) : the given prompt to run within the function
         '''
         # Experienced role
-        if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
-            split = prompt.split(' ')
+        #if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
+            #split = prompt.split(' ')
 
-            if split[0] == 'xp-boost':
-                boost = int(split[1])
-                days = int(split[2])
-                Leveling.MINEXP *= boost
-                Leveling.MAXEXP *= boost
-                await interaction.response.send_message(f"Double XP Started for {days} days")
-                print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
+        if prompt == 'xp-boost':
+            boost = int(split[1])
+            days = int(split[2])
+            Leveling.MINEXP *= boost
+            Leveling.MAXEXP *= boost
+            await interaction.response.send_message(f"Double XP Started for {days} days")
+            print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
-            if split[0] == 'scrape_cookie':
-                await interaction.response.defer()
-                res = await scrape_cookie1(self.bot)
-                await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
+        if prompt == 'SKOI_BUGFIX_scrape_cookie':
+            await interaction.response.defer()
+            res = await scrape_cookie1(self.bot)
+            await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
 
-            if split[0] == 'scrape_cookie_ob':
-                await interaction.response.defer()
-                res = await scrape_cookie2(self.bot)
-                await interaction.followup.send('updated cookies!', ephemeral=True)
-        else:
-            await interaction.response.send_message('You do not have permission to use this command', ephemeral=True)
+        if prompt == 'SKOI_BUGFIX_scrape_cookie_ob':
+            await interaction.response.defer()
+            res = await scrape_cookie2(self.bot)
+            await interaction.followup.send('updated cookies!', ephemeral=True)
+
+        if prompt == 'SKOI_BUGFIX_USER-INV-SPACE':
+
+            await interaction.response.defer()
+            await interaction.followup.send(f"Enter the USER_ID for who's inventory slot # needs fixed.")
+
+            # Wait for the next message
+            def check(message: discord.Message):
+                return message.author.id == member.id and message.channel.id == interaction.channel.id
+        
+            try:
+                msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                userid_to_fix = msg.content
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+
+                        #grab EVERY SINGLE entry to check the amount
+                        await cursor.execute("SELECT ITEM_ID FROM ITEM WHERE USER_ID = %s", (userid_to_fix,))
+                        all_owned_items = await cursor.fetchall()
+                        number_of_items = len(all_owned_items)
+
+                        #see the current amount for later reference
+                        await cursor.execute("SELECT USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (userid_to_fix,))
+                        original_set_slots = await cursor.fetchone()
+                        original_set_slots = original_set_slots[0]
+
+                        #if values are equal, return no issue
+                        if original_set_slots == number_of_items:
+                            await interaction.followup.send(f"No issue found for user with ID: {userid_to_fix}.\nOriginally, they had {original_set_slots} slots. They own {number_of_items} characters.")
+                        else:
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = %s WHERE USER_ID = %s", (number_of_items, userid_to_fix))
+                            await conn.commit()
+                            await interaction.followup.send(f"Good catch!\nUser with ID: {userid_to_fix} originally, they had {original_set_slots} slots set. However, they own {number_of_items} characters. They now have {number_of_items} slots to match the {number_of_items} characters they own.")
+                    await conn.commit()
+            except asyncio.TimeoutError:
+                await interaction.channel.send("You didn't send a message in time.")  
 
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
@@ -179,4 +216,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))
