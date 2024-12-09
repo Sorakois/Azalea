@@ -138,13 +138,14 @@ class General(commands.Cog):
         #if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
             #split = prompt.split(' ')
 
-        if prompt == 'xp-boost':
-            boost = int(split[1])
-            days = int(split[2])
-            Leveling.MINEXP *= boost
-            Leveling.MAXEXP *= boost
-            await interaction.response.send_message(f"Double XP Started for {days} days")
-            print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
+        '''fix this'''
+        #if prompt == 'xp-boost': 
+            #boost = int(split[1])
+            #days = int(split[2])
+            #Leveling.MINEXP *= boost
+            #Leveling.MAXEXP *= boost
+            #await interaction.response.send_message(f"Double XP Started for {days} days")
+            #print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
         if prompt == 'SKOI_BUGFIX_scrape_cookie':
             await interaction.response.defer()
@@ -191,6 +192,35 @@ class General(commands.Cog):
                     await conn.commit()
             except asyncio.TimeoutError:
                 await interaction.channel.send("You didn't send a message in time.")  
+            
+        if prompt == "SKOI_BUGFIX_GIVEGEMS_999-":
+            await interaction.response.defer()
+            await interaction.followup.send(f"Enter the USER_ID and gem amount for who's inventory slot # needs fixed.")
+
+            def check(message: discord.Message):
+                return message.author.id == member.id and message.channel.id == interaction.channel.id
+        
+            try:
+                msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                id_combo_gems = msg.content
+                gems_and_id = id_combo_gems.split()
+                gems = gems_and_id[1]
+                id_to_fix = gems_and_id[0]
+
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (id_to_fix,))
+                        gems_old = await cursor.fetchone()
+                        await cursor.execute("UPDATE USER SET USER_GEMS = USER_GEMS + %s WHERE USER_ID = %s", (gems,id_to_fix,))
+                        await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (id_to_fix,))
+                        gems_new = await cursor.fetchone()
+                        await interaction.followup.send(f"Old Gems: {gems_old[0]}.\nAdded {gems} gems to user with ID: {id_to_fix}.\nNew Gems: {gems_new[0]}.")
+                    await conn.commit()
+            except:
+                try:
+                    await interaction.followup.send(f"{gems_and_id}")
+                except:
+                    await interaction.followup.send(f"This does not work.")
 
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
@@ -216,4 +246,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))

@@ -1167,6 +1167,32 @@ class GachaInteraction(commands.Cog):
         except asyncio.TimeoutError:
             await interaction.channel.send("You didn't send a message in time!")     
 
+    @discord.app_commands.checks.cooldown(1, 120)
+    @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
+    async def trivia(self, interaction: discord.Interaction, other_user: discord.User):
+        if other_user is None:
+            await interaction.channel.send(f"Please enter another user's name.")
+        member = interaction.user
+        
+        
+        #user 2, the one pinged, goes first
+        await interaction.response.defer()
+        await interaction.followup.send(f"<@{other_user.id}>, answer the question.")
+        
+        def check(message: discord.Message):
+            return message.author.id == other_user.id and message.channel.id == interaction.channel.id
+        user2_msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+        user2_guess = user1_msg.content
+
+        #user 1, the person who did the command, goes second if user 2 wrong
+        await interaction.response.defer()
+        await interaction.followup.send(f"<@{member.id}>, answer the question.")
+        
+        def check(message: discord.Message):
+            return message.author.id == member.id and message.channel.id == interaction.channel.id
+        user1_msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+        user1_guess = user1_msg.content
+
 class Gacha:
     '''
     gacha logic and computations
