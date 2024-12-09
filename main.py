@@ -139,13 +139,13 @@ class General(commands.Cog):
             #split = prompt.split(' ')
 
         '''fix this'''
-        #if prompt == 'xp-boost': 
-            #boost = int(split[1])
-            #days = int(split[2])
-            #Leveling.MINEXP *= boost
-            #Leveling.MAXEXP *= boost
-            #await interaction.response.send_message(f"Double XP Started for {days} days")
-            #print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
+        if prompt == 'xp-boost': 
+            boost = int(split[1])
+            days = int(split[2])
+            Leveling.MINEXP *= boost
+            Leveling.MAXEXP *= boost
+            await interaction.response.send_message(f"Double XP Started for {days} days")
+            print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
         if prompt == 'SKOI_BUGFIX_scrape_cookie':
             await interaction.response.defer()

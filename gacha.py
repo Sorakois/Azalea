@@ -1149,7 +1149,7 @@ class GachaInteraction(commands.Cog):
             if msg.content.title() == trivia_answer:
                 async with self.bot.db.acquire() as conn:
                     async with conn.cursor() as cursor:
-                        correct_answer_gems = 150
+                        correct_answer_gems = 300
                         #grab user's current balance
                         balance = await fetch_balance(cursor, member, interaction)
                         if balance == 0:
@@ -1165,34 +1165,71 @@ class GachaInteraction(commands.Cog):
             else:
                 await interaction.channel.send(f"***Wrong! :x:***\n\nTry again in 2 minutes :alarm_clock:")
         except asyncio.TimeoutError:
-            await interaction.channel.send("You didn't send a message in time!")     
+            await interaction.channel.send("You didn't send a message in time! Try again in 2 minutes.")     
 
-    @discord.app_commands.checks.cooldown(1, 120)
+    #@discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
-    async def trivia(self, interaction: discord.Interaction, other_user: discord.User):
-        if other_user is None:
-            await interaction.channel.send(f"Please enter another user's name.")
-        member = interaction.user
-        
-        
-        #user 2, the one pinged, goes first
-        await interaction.response.defer()
-        await interaction.followup.send(f"<@{other_user.id}>, answer the question.")
-        
-        def check(message: discord.Message):
-            return message.author.id == other_user.id and message.channel.id == interaction.channel.id
-        user2_msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
-        user2_guess = user1_msg.content
+    async def guessing_game(self, interaction: discord.Interaction, other_user: discord.User):
+        if other_user.id == interaction.user.id:
+            await interaction.response.send_message(f"Please enter another user's name, not your own!", ephemeral=True)
+        elif other_user.id == 1160998311264796714 or other_user.id == 1082486461103878245:
+            await interaction.response.send_message(f"Azalea is busy :(", ephemeral=True)
+            
+        else:   
+            guess_this = random.randint(0,25)
+            await interaction.response.defer()
+            while True:
+                #user 2, the one pinged, goes first
+                await interaction.followup.send(f"TEST: correct number is {guess_this}\n<@{other_user.id}>, guess a whole number between 0 and 25.")
+                def check_user2(message: discord.Message):
+                    return message.author.id == other_user.id and message.channel.id == interaction.channel.id
 
-        #user 1, the person who did the command, goes second if user 2 wrong
-        await interaction.response.defer()
-        await interaction.followup.send(f"<@{member.id}>, answer the question.")
-        
-        def check(message: discord.Message):
-            return message.author.id == member.id and message.channel.id == interaction.channel.id
-        user1_msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
-        user1_guess = user1_msg.content
+                try:
+                    user2_msg = await interaction.client.wait_for('message', check=check_user2, timeout=45.0)
+                    user2_guess = int(user2_msg.content)
+                    if user2_guess == guess_this:
+                        user_correct = other_user.id
+                        break
+                    else:
+                        # Second user was incorrect, now let the first user guess
+                        await interaction.followup.send(f"TEST: correct number is {guess_this}\n<@{interaction.user.id}>, guess a whole number between 0 and 25.")
+                        
+                        def check_user1(message: discord.Message):
+                            return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
+                        
+                        try:
+                            user1_msg = await interaction.client.wait_for('message', check=check_user1, timeout=45.0)
+                            user1_guess = int(user1_msg.content)
+                            if user1_guess == guess_this:
+                                user_correct = interaction.user.id
+                                break
+                        except asyncio.TimeoutError:
+                            await interaction.followup.send(f"<@{interaction.user.id}> didn't send a message in time! Try again in 2 minutes.")
+                except asyncio.TimeoutError:
+                    await interaction.followup.send(f"<@{other_user.id}> didn't send a message in time! Try again in 2 minutes.")
 
+            #now loop is done, give gems!
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    correct_answer_gems = 1500
+                    #grab user's current balance
+                    balance_user1 = await fetch_balance(cursor, interaction.user.id, interaction)
+                    balance_user2 = await fetch_balance(cursor, other_user.id, interaction)
+                    
+                    if balance_user1 is None:
+                        await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (interaction.user.id, correct_answer_gems,))
+                    
+                    if balance_user2 is None:
+                        await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (other_user.id, correct_answer_gems,))
+
+                    balance_user1 += correct_answer_gems
+                    balance_user2 += correct_answer_gems
+                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance_user1, interaction.user.id,))
+                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance_user2, other_user.id,))
+
+                await conn.commit()
+            await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou both gained __1500 :gem:__! Please wait 2 minutes before doing this command again!")
+                
 class Gacha:
     '''
     gacha logic and computations
