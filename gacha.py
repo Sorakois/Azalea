@@ -1167,20 +1167,20 @@ class GachaInteraction(commands.Cog):
         except asyncio.TimeoutError:
             await interaction.channel.send("You didn't send a message in time! Try again in 2 minutes.")     
 
-    #@discord.app_commands.checks.cooldown(1, 120)
+    @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
     async def guessing_game(self, interaction: discord.Interaction, other_user: discord.User):
         if other_user.id == interaction.user.id:
             await interaction.response.send_message(f"Please enter another user's name, not your own!", ephemeral=True)
         elif other_user.id == 1160998311264796714 or other_user.id == 1082486461103878245:
             await interaction.response.send_message(f"Azalea is busy :(", ephemeral=True)
-            
+
         else:   
             guess_this = random.randint(0,25)
             await interaction.response.defer()
             while True:
                 #user 2, the one pinged, goes first
-                await interaction.followup.send(f"TEST: correct number is {guess_this}\n<@{other_user.id}>, guess a whole number between 0 and 25.")
+                await interaction.followup.send(f"<@{other_user.id}>, guess a whole number between 0 and 25.\n(Will keep repeating until correct).")
                 def check_user2(message: discord.Message):
                     return message.author.id == other_user.id and message.channel.id == interaction.channel.id
 
@@ -1192,7 +1192,7 @@ class GachaInteraction(commands.Cog):
                         break
                     else:
                         # Second user was incorrect, now let the first user guess
-                        await interaction.followup.send(f"TEST: correct number is {guess_this}\n<@{interaction.user.id}>, guess a whole number between 0 and 25.")
+                        await interaction.followup.send(f"<@{interaction.user.id}>, guess a whole number between 0 and 25.\n(Will keep repeating until correct)")
                         
                         def check_user1(message: discord.Message):
                             return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
@@ -1213,8 +1213,11 @@ class GachaInteraction(commands.Cog):
                 async with conn.cursor() as cursor:
                     correct_answer_gems = 1500
                     #grab user's current balance
-                    balance_user1 = await fetch_balance(cursor, interaction.user.id, interaction)
-                    balance_user2 = await fetch_balance(cursor, other_user.id, interaction)
+                    balance_user1 = await fetch_balance(cursor, interaction.user, interaction)
+                    balance_user2 = await fetch_balance(cursor, other_user, interaction)
+                    
+                    #await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
+                    #balance = await cursor.fetchone()
                     
                     if balance_user1 is None:
                         await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (interaction.user.id, correct_answer_gems,))
@@ -1225,10 +1228,12 @@ class GachaInteraction(commands.Cog):
                     balance_user1 += correct_answer_gems
                     balance_user2 += correct_answer_gems
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance_user1, interaction.user.id,))
+                    await conn.commit()
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance_user2, other_user.id,))
+                    await conn.commit()
 
                 await conn.commit()
-            await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou both gained __1500 :gem:__! Please wait 2 minutes before doing this command again!")
+            await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou both gained __1500 :gem:__!\nPlease wait 2 minutes before doing this command again!")
                 
 class Gacha:
     '''
