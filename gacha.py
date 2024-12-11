@@ -1167,6 +1167,11 @@ class GachaInteraction(commands.Cog):
         except asyncio.TimeoutError:
             await interaction.channel.send("You didn't send a message in time! Try again in 2 minutes.")     
 
+    @trivia.error
+    async def on_trivia_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
+
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
     async def guessing_game(self, interaction: discord.Interaction, other_user: discord.User):
@@ -1180,7 +1185,7 @@ class GachaInteraction(commands.Cog):
                 #make number for random guessing, make it be 25 gap always
                 lower_guess = 0
                 higher_guess = 25
-                guess_this_rangerandomizer = random.randit(0,100)
+                guess_this_rangerandomizer = random.randint(0,100)
                 lower_guess += guess_this_rangerandomizer
                 higher_guess += guess_this_rangerandomizer
                 guess_this = random.randit(lower_guess,higher_guess)
@@ -1244,7 +1249,12 @@ class GachaInteraction(commands.Cog):
 
                     await conn.commit()
                 await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou and {other_correct} both gained __1500 :gem:__!\nPlease wait 2 minutes before doing this command again!")
-                
+    
+    @guessing_game.error
+    async def on_guessing_game_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
+
 class Gacha:
     '''
     gacha logic and computations
