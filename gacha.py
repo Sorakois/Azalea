@@ -1219,8 +1219,10 @@ class GachaInteraction(commands.Cog):
                                     break
                             except asyncio.TimeoutError:
                                 await interaction.followup.send(f"<@{interaction.user.id}> didn't send a message in time! Try again in 2 minutes.")
+                                break
                     except asyncio.TimeoutError:
                         await interaction.followup.send(f"<@{other_user.id}> didn't send a message in time! Try again in 2 minutes.")
+                        break
             
             async with self.lock:
                 #now loop is done, give gems!
