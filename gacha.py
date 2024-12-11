@@ -1222,7 +1222,7 @@ class GachaInteraction(commands.Cog):
                     except asyncio.TimeoutError:
                         await interaction.followup.send(f"<@{other_user.id}> didn't send a message in time! Try again in 2 minutes.")
             
-            async with self.lock:
+            #async with self.lock:
                 #now loop is done, give gems!
                 async with self.bot.db.acquire() as conn:
                     async with conn.cursor() as cursor:
