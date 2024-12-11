@@ -1172,7 +1172,7 @@ class GachaInteraction(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
 
-    #@discord.app_commands.checks.cooldown(1, 120)
+    @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
     async def guessing_game(self, interaction : discord.Interaction, other_user : discord.User):
             if other_user.id == interaction.user.id:
