@@ -1160,7 +1160,7 @@ class GachaInteraction(commands.Cog):
                         balance += correct_answer_gems
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await conn.commit()
-                await interaction.channel.send(f"***Correct! :white_check_mark:***\n\nYou have gained __150 :gem:__! Your new balance is __**{balance}**__. Please wait 2 minutes before doing this command again!")
+                await interaction.channel.send(f"***Correct! :white_check_mark:***\n\nYou have gained __{correct_answer_gems} :gem:__! Your new balance is __**{balance}**__. Please wait 2 minutes before doing this command again!")
                 
             else:
                 await interaction.channel.send(f"***Wrong! :x:***\n\nTry again in 2 minutes :alarm_clock:")
@@ -1219,8 +1219,10 @@ class GachaInteraction(commands.Cog):
                                     break
                             except asyncio.TimeoutError:
                                 await interaction.followup.send(f"<@{interaction.user.id}> didn't send a message in time! Try again in 2 minutes.")
+                                break
                     except asyncio.TimeoutError:
                         await interaction.followup.send(f"<@{other_user.id}> didn't send a message in time! Try again in 2 minutes.")
+                        break
             
             async with self.lock:
                 #now loop is done, give gems!
@@ -1248,7 +1250,7 @@ class GachaInteraction(commands.Cog):
                         await conn.commit()
 
                     await conn.commit()
-                await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou and <@{other_correct}> both gained __1500 :gem:__!\nPlease wait 2 minutes before doing this command again!")
+                await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou and <@{other_correct}> both gained __{correct_answer_gems} :gem:__!\nPlease wait 2 minutes before doing this command again!")
     
     @guessing_game.error
     async def on_guessing_game_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
