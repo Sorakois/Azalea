@@ -1175,9 +1175,9 @@ class GachaInteraction(commands.Cog):
     #@discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
     async def guessing_game(self, interaction : discord.Interaction, other_user : discord.User):
-            #if other_user.id == interaction.user.id:
-            #    await interaction.response.send_message(f"Please enter another user's name, not your own!", ephemeral=True)
-            if other_user.id == 1160998311264796714 or other_user.id == 1082486461103878245:
+            if other_user.id == interaction.user.id:
+                await interaction.response.send_message(f"Please enter another user's name, not your own!", ephemeral=True)
+            elif other_user.id == 1160998311264796714 or other_user.id == 1082486461103878245:
                 await interaction.response.send_message(f"Azalea is busy :(", ephemeral=True)
 
             else:   
