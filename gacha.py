@@ -207,6 +207,7 @@ class CrumbleView(discord.ui.View):
                     await cursor.execute("DELETE FROM ITEM WHERE USER_ID = %s AND ITEM_ID = %s", (c[0], c[1],))
                     await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - 1 WHERE USER_ID = %s", (self.add, c[0]))
 
+                await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s, USER_INV_SLOTS_USED = USER_INV_SLOTS_USED - %s WHERE USER_ID = %s", (self.add, self.amt, c[0],))
 
             await conn.commit()
 
@@ -214,7 +215,6 @@ class CrumbleView(discord.ui.View):
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.last_interaction.delete_original_response()
         await interaction.response.send_message("Crumble canceled.", ephemeral=True) 
-        pass
 
 
 class GachaInteraction(commands.Cog):
