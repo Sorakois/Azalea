@@ -259,7 +259,7 @@ class General(commands.Cog):
                                     '''
                                     returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
                                     await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (returnEssence,personID,))
-                                    fixedEssencePPL.append(f"<{personID}> gained {returnEssence} essence back. They had expanded {person_expandAMT} times.")
+                                    fixedEssencePPL.append(f"<@{personID}> gained {returnEssence} essence back. They had expanded {person_expandAMT} times.")
                                     await conn.commit()
                             
                             #format response out
