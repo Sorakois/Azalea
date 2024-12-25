@@ -60,6 +60,7 @@ if data['xp_modifier']['enabled']:
 class General(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.lock = Lock()
 
     @app_commands.command(name="help", description="Need assistance?")
     async def help(self, interaction : discord.Interaction):
@@ -222,32 +223,51 @@ class General(commands.Cog):
                     await interaction.followup.send(f"{gems_and_id} is invalid.")
                 except:
                     await interaction.followup.send(f"This does not work.")
+
         if prompt == "SKOI_BUGFIX_COMPENSATE-EXPAND":
-
-            '''Since essence to expand now costs 15x less, 
+            '''
+            Since essence to expand now costs 15x less, 
             compensate users who spent essence to expand already
-            
-            Give back essence in correlation to current expand times'''
-            #async with self.lock:
-            async with self.bot.db.acquire() as conn:
-                async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT EXPAND_PURCHASES, USER_ID FROM USER")
-                    expand_data = await cursor.fetchall()
-                    
-                    fixedEssencePPL = []
 
-                    for person in expand_data:
-                        person_expandAMT = person[0]
-                        personID = person[1]
-                        if person_expandAMT != 0:
-                            returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
+            Give back essence in correlation to current expand times
+            '''
+            await interaction.response.defer() #let it cook
 
-                            #await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (returnEssence,personID,))
-                        
-                            fixedEssencePPL.append(f"<@{personID}> gained {returnEssence} essence back.")
-                            #await conn.commit()
-                #await conn.commit()
-                await interaction.followup.send(f"Fixed Essences for users:\n {len(fixedEssencePPL)} need fixed.")
+            async with self.lock:
+                try:
+                    async with self.bot.db.acquire() as conn:
+                        async with conn.cursor() as cursor:
+                            await cursor.execute("SELECT EXPAND_PURCHASES, USER_ID FROM USER;")
+                            expand_data = await cursor.fetchall()
+                           
+                            fixedEssencePPL = []
+
+                            for person in expand_data:
+                                person_expandAMT = person[0]
+                                personID = person[1]
+                                if person_expandAMT != 0:
+                                    '''
+                                    This equation currently compensates:
+                                    EssenceCostEquation = (125*(TimesPurchased[0]**2)) + 150
+
+                                    Changed to (Dec 25, 2024):
+                                    EssenceCostEquation = (8*(TimesPurchased[0]**2)) + 60
+
+                                    This is changed by a factor of 1/15.
+                                    The equation compensates the difference between each sum as the return value:
+                                    returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
+                                    '''
+                                    returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
+                                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (returnEssence,personID,))
+                                    fixedEssencePPL.append(f"<{personID}> gained {returnEssence} essence back. They had expanded {person_expandAMT} times.")
+                                    await conn.commit()
+                            
+                            #format response out
+                            response_message = "\n".join(fixedEssencePPL)
+                            await interaction.followup.send(f"Fixed Essences for users:\n{response_message}")
+                except Exception as e:
+                    await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
+
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
 
