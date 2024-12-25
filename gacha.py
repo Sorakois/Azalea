@@ -870,7 +870,7 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute("SELECT EXPAND_PURCHASES FROM USER WHERE USER_ID = %s", (member.id,))
                 TimesPurchased = await cursor.fetchone()
 
-                EssenceCostEquation = (125*(TimesPurchased[0]**2)) + 150
+                EssenceCostEquation = (8*(TimesPurchased[0]**2)) + 60
 
                 essence = await fetch_essence_balance(cursor, member, interaction)
                 
