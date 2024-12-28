@@ -1200,7 +1200,7 @@ class GachaInteraction(commands.Cog):
             else:   
                 #make number for random guessing, make it be 25 gap always
                 lower_guess = 0
-                higher_guess = 25
+                higher_guess = 10
                 guess_this_rangerandomizer = random.randint(0,100)
                 lower_guess += guess_this_rangerandomizer
                 higher_guess += guess_this_rangerandomizer
@@ -1215,8 +1215,15 @@ class GachaInteraction(commands.Cog):
                             return message.author.id == other_user.id and message.channel.id == interaction.channel.id
 
                         try:
-                            user2_msg = await interaction.client.wait_for('message', check=check_user2, timeout=45.0)
-                            user2_guess = int(user2_msg.content)
+                            while True:
+                                try:
+                                    user2_msg = await interaction.client.wait_for('message', check=check_user2, timeout=45.0)
+                                    user2_guess = int(user2_msg.content)
+                                    break
+                                except:
+                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n")
+  
+                            
                             if user2_guess == guess_this:
                                 user_correct = other_user.id
                                 other_correct = interaction.user.id
@@ -1229,8 +1236,14 @@ class GachaInteraction(commands.Cog):
                                     return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
                                 
                                 try:
-                                    user1_msg = await interaction.client.wait_for('message', check=check_user1, timeout=45.0)
-                                    user1_guess = int(user1_msg.content)
+                                    while True:
+                                        try:
+                                            user1_msg = await interaction.client.wait_for('message', check=check_user1, timeout=45.0)
+                                            user1_guess = int(user1_msg.content)
+                                            break
+                                        except:
+                                            await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n")
+
                                     if user1_guess == guess_this:
                                         user_correct = interaction.user.id
                                         other_correct = other_user.id
@@ -1246,8 +1259,13 @@ class GachaInteraction(commands.Cog):
                         def check_user1(message: discord.Message):
                             return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
                         try:
-                            user1_msg = await interaction.client.wait_for('message', check=check_user1, timeout=45.0)
-                            user1_guess = int(user1_msg.content)
+                            while True:
+                                try:
+                                    user1_msg = await interaction.client.wait_for('message', check=check_user1, timeout=45.0)
+                                    user1_guess = int(user1_msg.content)
+                                    break
+                                except:
+                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n")
                             if user1_guess == guess_this:
                                 user_correct = interaction.user.id
                                 other_correct = other_user.id
@@ -1288,8 +1306,11 @@ class GachaInteraction(commands.Cog):
                             await conn.commit()
 
                     await conn.commit()
-                await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou and <@{other_correct}> both gained __{correct_answer_gems} :gem:__!\nPlease wait 2 minutes before doing this command again!")
-    
+                if interaction.user.id != other_user.id:
+                    await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou and <@{other_correct}> both gained __{correct_answer_gems} :gem:__!\nPlease wait 2 minutes before doing this command again!")
+                else:
+                    await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou gained __{correct_answer_gems} :gem:__!\nPlease wait 2 minutes before doing this command again!")
+
     @guessing_game.error
     async def on_guessing_game_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
