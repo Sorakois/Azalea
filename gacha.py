@@ -552,7 +552,7 @@ class GachaInteraction(commands.Cog):
                 #quick bug check and fix
                 if current_streak < 0:
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
-                    
+
                 #range = 0 day to 1 week
                 if current_streak <= 7:
                     dailyAmount += ((current_streak/10 * dailyAmount) * 1.5)
@@ -566,7 +566,8 @@ class GachaInteraction(commands.Cog):
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = DAILY_STREAK + 1 WHERE USER_ID = %s", (member.id))
-                    em = discord.Embed(title="Daily Reward Claimed!")
+                    em = discord.Embed(title=f"Daily Reward Claimed!")
+                    em.add_field(name=f"Current Streak:", value= f"{current_streak} days!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
                     em.set_footer(text=f"Return in 24 hours to recieve another!")
