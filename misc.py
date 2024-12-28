@@ -244,18 +244,6 @@ class MiscCMD(commands.Cog):
             await interaction.response.send_message(embed=em, ephemeral=False)'''
             await interaction.response.send_message(f"'Feature still in development! Try again later!", ephemeral=True)
 
-            
-
-    #new ways to get gems
-    '''@discord.app_commands.checks.cooldown(1, 60)
-    @app_commands.command(name="build", description="Check the optimal build for each character!")
-    async def build(self, interaction : discord.Interaction):
-        member = interaction.user'''
-    
-    '''
-    Make user do an action repeatedly... maybe use modulus 5 -> gems?
-    '''
-
     @build.error
     async def OnBuildError(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
