@@ -545,12 +545,27 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute("SELECT USER_LAST_DAILY FROM USER WHERE USER_ID = %s", (member.id,))
                 last_message_sent = await cursor.fetchone()
 
+                #See how long [in days] user's /daily streak is, then multiply!
+                await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
+                current_streak = await cursor.fetchone()
+                
+                #quick bug check and fix
+                if current_streak < 0:
+                    await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
+                    
+                #range = 0 day to 1 week
+                if current_streak <= 7:
+                    dailyAmount += ((current_streak/10 * dailyAmount) * 1.5)
+                #range = 8 day to 15 day
+                else:
+                    dailyAmount += ((current_streak/10 * dailyAmount) * 1.25)
+
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
                     balance += dailyAmount
                 
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
-                
+                    await cursor.execute("UPDATE USER SET DAILY_STREAK = DAILY_STREAK + 1 WHERE USER_ID = %s", (member.id))
                     em = discord.Embed(title="Daily Reward Claimed!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
@@ -1172,6 +1187,7 @@ class GachaInteraction(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
 
+    #Second way, Guess a random number!
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
     async def guessing_game(self, interaction : discord.Interaction, other_user : discord.User):
@@ -1275,6 +1291,11 @@ class GachaInteraction(commands.Cog):
     async def on_guessing_game_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
+
+    #Third way, do a thing!
+    '''@discord.app_commands.checks.cooldown(1, 120)
+    @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
+    async def guessing_game(self, interaction : discord.Interaction, other_user : discord.User):'''
 
 class Gacha:
     '''
