@@ -542,7 +542,7 @@ class GachaInteraction(commands.Cog):
                 last_message_sent = await cursor.fetchone()
 
                 #reset streak if needed!
-                if last_message_sent[0] == None or last_message_sent > 
+                #if last_message_sent[0] == None or last_message_sent > 
 
                 #See how long [in days] user's /daily streak is, then multiply!
                 await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
