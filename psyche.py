@@ -9,3 +9,7 @@ code
 code
 prompt(f"Write a response to the following in this mindset: {prompt}")
 '''
+
+# Ideas:
+# Randomly talk in gen chat?
+# Be able to join voice chat on command and be able to talk
