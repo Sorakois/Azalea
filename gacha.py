@@ -542,7 +542,12 @@ class GachaInteraction(commands.Cog):
                 last_message_sent = await cursor.fetchone()
 
                 #reset streak if needed!
-                #if last_message_sent[0] == None or last_message_sent > 
+                last_daily = (currentTime - last_message_sent).total_seconds()
+                max_daily_miss = (60 * 60) * 48 #48 hours into seconds
+                if last_daily > max_daily_miss:
+                    await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
+                    await interaction.followup.send(f"Your streak was broken! :(", ephemeral=True)
+
 
                 #See how long [in days] user's /daily streak is, then multiply!
                 await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
@@ -551,7 +556,7 @@ class GachaInteraction(commands.Cog):
                 current_streak = current_streak[0]
                 
                 #quick bug check and fix
-                if current_streak < 0:
+                if current_streak < 0 or last_message_sent[0] == None:
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
 
                 #range = 0 day to 1 week
@@ -1220,7 +1225,7 @@ class GachaInteraction(commands.Cog):
                                     user2_guess = int(user2_msg.content)
                                     break
                                 except ValueError:
-                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n", ephemeral=True)
+                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!", ephemeral=True)
   
                             
                             if user2_guess == guess_this:
@@ -1241,7 +1246,7 @@ class GachaInteraction(commands.Cog):
                                             user1_guess = int(user1_msg.content)
                                             break
                                         except ValueError:
-                                            await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n", ephemeral=True)
+                                            await interaction.followup.send(f"Please only enter numbers! Try guessing again!", ephemeral=True)
 
                                     if user1_guess == guess_this:
                                         user_correct = interaction.user.id
@@ -1264,7 +1269,7 @@ class GachaInteraction(commands.Cog):
                                     user1_guess = int(user1_msg.content)
                                     break
                                 except ValueError:
-                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n", ephemeral=True)
+                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!", ephemeral=True)
                             if user1_guess == guess_this:
                                 user_correct = interaction.user.id
                                 other_correct = other_user.id
