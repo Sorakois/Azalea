@@ -542,7 +542,7 @@ class GachaInteraction(commands.Cog):
                 last_message_sent = await cursor.fetchone()
 
                 #reset streak if needed!
-                last_daily = (currentTime - last_message_sent).total_seconds()
+                last_daily = (currentTime - last_message_sent[0]).total_seconds()
                 max_daily_miss = (60 * 60) * 48 #48 hours into seconds
                 if last_daily > max_daily_miss:
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
