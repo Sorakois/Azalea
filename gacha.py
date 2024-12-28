@@ -1221,7 +1221,7 @@ class GachaInteraction(commands.Cog):
                                     user2_guess = int(user2_msg.content)
                                     break
                                 except:
-                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n")
+                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n", ephemeral=True)
   
                             
                             if user2_guess == guess_this:
@@ -1242,7 +1242,7 @@ class GachaInteraction(commands.Cog):
                                             user1_guess = int(user1_msg.content)
                                             break
                                         except:
-                                            await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n")
+                                            await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n", ephemeral=True)
 
                                     if user1_guess == guess_this:
                                         user_correct = interaction.user.id
@@ -1265,7 +1265,7 @@ class GachaInteraction(commands.Cog):
                                     user1_guess = int(user1_msg.content)
                                     break
                                 except:
-                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n")
+                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!\n", ephemeral=True)
                             if user1_guess == guess_this:
                                 user_correct = interaction.user.id
                                 other_correct = other_user.id
