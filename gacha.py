@@ -553,7 +553,7 @@ class GachaInteraction(commands.Cog):
                 await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
                 current_streak = await cursor.fetchone()
                 #fix logic quickly
-                current_streak = current_streak[0]
+                current_streak = current_streak[0] + 1
                 
                 #quick bug check and fix
                 if current_streak < 0 or last_message_sent[0] == None:
@@ -571,9 +571,9 @@ class GachaInteraction(commands.Cog):
                 
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
-                    await cursor.execute("UPDATE USER SET DAILY_STREAK = DAILY_STREAK + 1 WHERE USER_ID = %s", (member.id))
+                    await cursor.execute("UPDATE USER SET DAILY_STREAK = %s WHERE USER_ID = %s", (current_streak, member.id,))
                     em = discord.Embed(title=f"Daily Reward Claimed!")
-                    em.add_field(name=f"Current Streak:", value= f"{current_streak+1} day(s)!")
+                    em.add_field(name=f"Current Streak:", value= f"{current_streak} day(s)!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
                     em.set_footer(text=f"Return in 24 hours to recieve another!")
