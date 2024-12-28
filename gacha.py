@@ -548,6 +548,8 @@ class GachaInteraction(commands.Cog):
                 #See how long [in days] user's /daily streak is, then multiply!
                 await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
                 current_streak = await cursor.fetchone()
+                #fix logic quickly
+                current_streak = current_streak[0]
                 
                 #quick bug check and fix
                 if current_streak < 0:
