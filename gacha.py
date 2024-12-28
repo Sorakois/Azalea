@@ -582,7 +582,7 @@ class GachaInteraction(commands.Cog):
                     else:
                         time_remaining_str = f'{time_remaining} seconds'
                     em = discord.Embed()
-                    em.add_field(name="Daily has recently been claimed.", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
+                    em.add_field(name=f"Daily has recently been claimed. You currently have a streak of {current_streak} days!", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Common_witch_gacha.png/revision/latest?cb=20221112035138")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
