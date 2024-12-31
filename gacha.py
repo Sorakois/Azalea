@@ -546,14 +546,12 @@ class GachaInteraction(commands.Cog):
                 max_daily_miss = (60 * 60) * 48 #48 hours into seconds
                 if last_daily > max_daily_miss:
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
-                    await interaction.followup.send(f"Your streak was broken! :(", ephemeral=True)
-
 
                 #See how long [in days] user's /daily streak is, then multiply!
                 await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
                 current_streak = await cursor.fetchone()
                 #fix logic quickly
-                current_streak = current_streak[0]
+                current_streak = current_streak[0] + 1
                 
                 #quick bug check and fix
                 if current_streak < 0 or last_message_sent[0] == None:
@@ -571,9 +569,9 @@ class GachaInteraction(commands.Cog):
                 
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
-                    await cursor.execute("UPDATE USER SET DAILY_STREAK = DAILY_STREAK + 1 WHERE USER_ID = %s", (member.id))
+                    await cursor.execute("UPDATE USER SET DAILY_STREAK = %s WHERE USER_ID = %s", (current_streak, member.id,))
                     em = discord.Embed(title=f"Daily Reward Claimed!")
-                    em.add_field(name=f"Current Streak:", value= f"{current_streak} day(s)!")
+                    em.add_field(name=f"Current Streak:", value= f"{current_streak+1} day(s)!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
                     em.set_footer(text=f"Return in 24 hours to recieve another!")
@@ -588,7 +586,7 @@ class GachaInteraction(commands.Cog):
                     else:
                         time_remaining_str = f'{time_remaining} seconds'
                     em = discord.Embed()
-                    em.add_field(name=f"Already Claimed! You currently have a streak of {current_streak} days.", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
+                    em.add_field(name=f"Already Claimed! You currently have a streak of {current_streak} day(s).", value=f"Sorry, you have already collected your daily login bonus today. Try again in **__{time_remaining_str}__**!")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Common_witch_gacha.png/revision/latest?cb=20221112035138")
                     await interaction.response.send_message(embed=em, ephemeral=False)
 
@@ -1133,11 +1131,13 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message("No featured characters currently.", ephemeral=False)
                     return
 
-        '''
+
+
+    '''
     Below are all ways to get gems!
     '''
 
-    #First Way (1), Trivia!
+    #First Way (1), [general] Trivia!
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
     async def trivia(self, interaction: discord.Interaction):
@@ -1146,10 +1146,6 @@ class GachaInteraction(commands.Cog):
         Get trivia [for now, only anime]
         Later, make what type of question a prompt above: Literal['Anime', 'Science', etc.]
         Then, return correct trivia from APIs
-
-        make later into a function
-
-        later, show user how much time left until cmd can be executed again
         '''
        
         #grab API informatiom
@@ -1196,8 +1192,8 @@ class GachaInteraction(commands.Cog):
 
     #Second way, Guess a random number!
     @discord.app_commands.checks.cooldown(1, 120)
-    @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
-    async def guessing_game(self, interaction : discord.Interaction, other_user : discord.User):
+    @app_commands.command(name="number_guess", description="Guess the number correctly, get gems!")
+    async def number_guess(self, interaction : discord.Interaction, other_user : discord.User):
             #bot cant be teammate... yet?
             if other_user.id == 1160998311264796714 or other_user.id == 1082486461103878245:
                 await interaction.response.send_message(f"Azalea is busy :(", ephemeral=True)
@@ -1315,15 +1311,42 @@ class GachaInteraction(commands.Cog):
                 else:
                     await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou gained __{correct_answer_gems} :gem:__!\nPlease wait 2 minutes before doing this command again!")
 
-    @guessing_game.error
-    async def on_guessing_game_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+    @number_guess.error
+    async def on_number_guess_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
 
-    #Third way, do a thing!
-    '''@discord.app_commands.checks.cooldown(1, 120)
-    @app_commands.command(name="guessing_game", description="Guess correctly, get gems!")
-    async def guessing_game(self, interaction : discord.Interaction, other_user : discord.User):'''
+    #Third way, guess the character! Specialized Game Trivia
+    @discord.app_commands.checks.cooldown(1, 60)
+    @app_commands.command(name="guess_who", description="Guess who the character is!")
+    async def guess_who(self, interaction : discord.Interaction, game : Literal["HSR", "CRK"]):
+        '''
+        General formatting:
+            CRK:
+                Randomize the following questions:
+                    > Release Date / Update Name
+                    > What games they are in
+                    > What rarity? (collab?)
+                    > Fun Fact #1
+                    > Fun Fact #2
+                    > Fun Fact #3
+                    > Position/Type
+                    > Voice Actor
+            HSR:
+                Randomize the following questions:
+                    > Release Date / Update Name
+                    > What rarity
+                    > Fun Fact #1
+                    > Fun Fact #2
+                    > Fun Fact #3
+                    > Voice Actor
+                    > World they belong to
+                    > Factions they are part of
+                    > What path they follow / What element or type are they
+        ''' 
+
+        #put all questions in database?
+    
 
 class Gacha:
     '''
@@ -1360,10 +1383,6 @@ class Gacha:
             #Give user a super epic cookie
             rarity = 'Super Epic'
 
-            '''
-            WAY TOO LOW
-            '''
-
         elif 0.9800 <= probability < 1:
             # Give user Legendary, Dragon, Ancient, or Special cookie
             with random.randrange(0,4) as r:
@@ -1380,11 +1399,7 @@ class Gacha:
         return rarity
     
     # Honkai Star Rail Gacha 1/2
-    '''
-    
-    WON LAST 50/50
-    
-    '''
+    '''WON LAST 50/50'''
     async def won_fifty_hsr(self):
         probability = random.random()
         rarity = ""
@@ -1415,11 +1430,7 @@ class Gacha:
         return rarity
 
     # Honkai Star Rail Gacha:
-    '''
-    
-    LOST LAST 50/50
-    
-    '''
+    '''LOST LAST 50/50'''
     async def lost_fifty_hsr(self):
         probability = random.random()
         rarity = ""
