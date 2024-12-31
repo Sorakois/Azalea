@@ -546,6 +546,7 @@ class GachaInteraction(commands.Cog):
                 max_daily_miss = (60 * 60) * 48 #48 hours into seconds
                 if last_daily > max_daily_miss:
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
+                    
 
                 #See how long [in days] user's /daily streak is, then multiply!
                 await cursor.execute("SELECT DAILY_STREAK FROM USER WHERE USER_ID = %s", (member.id,))
@@ -570,6 +571,7 @@ class GachaInteraction(commands.Cog):
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = %s WHERE USER_ID = %s", (current_streak, member.id,))
+                    await conn.commit()
                     em = discord.Embed(title=f"Daily Reward Claimed!")
                     em.add_field(name=f"Current Streak:", value= f"{current_streak+1} day(s)!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
