@@ -14,6 +14,7 @@ from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
 from gacha import GachaInteraction, HelpView
 import misc
+import psyche
 import asyncio
 from asyncio import Lock
 
@@ -48,6 +49,7 @@ cogs = {
     'cookie_info' : CookieInfo(bot),
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
+    'psyche' : psyche.Persona(bot)
     }
 
 # bot settings
