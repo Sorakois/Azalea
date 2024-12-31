@@ -573,7 +573,7 @@ class GachaInteraction(commands.Cog):
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = %s WHERE USER_ID = %s", (current_streak, member.id,))
                     await conn.commit()
                     em = discord.Embed(title=f"Daily Reward Claimed!")
-                    em.add_field(name=f"Current Streak:", value= f"{current_streak+1} day(s)!")
+                    em.add_field(name=f"Current Streak:", value= f"{current_streak} day(s)!")
                     em.add_field(name=f"You have recieved ***{dailyAmount}*** crystals!", value="Your new balance is: __" + str(balance) + "__")
                     em.set_image(url="https://static.wikia.nocookie.net/cookierunkingdom/images/b/bd/Daily_gift.png/revision/latest?cb=20221112035115")
                     em.set_footer(text=f"Return in 24 hours to recieve another!")
