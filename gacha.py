@@ -43,7 +43,6 @@ class MultipullView(discord.ui.View):
         self.best_cookie = ''
         best_cookie_rarity = ''
         for c in self.cookies.keys():
-            c = fix_rarity(c)
             if best_cookie_rarity == '':
                 self.best_cookie = c
                 best_cookie_rarity = self.cookies[c]['rarity']
@@ -475,7 +474,7 @@ class GachaInteraction(commands.Cog):
                             elif 'Stand_Five' in res:
                                 await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
                                 await conn.commit()
-                            cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : res[i]}
+                            cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : fix_rarity(res[i])}
 
                             await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                             await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
