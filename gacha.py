@@ -474,7 +474,7 @@ class GachaInteraction(commands.Cog):
                             elif 'Stand_Five' in res:
                                 await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
                                 await conn.commit()
-                            cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : res[i]}
+                            cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : fix_rarity(res[i])}
 
                             await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                             await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
@@ -1104,34 +1104,61 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message(f"Invalid database structuring, please alert sorakoi.", ephemeral=True)
 
     @app_commands.command(name="featured", description="Check to see the current rate-up characters for HSR gacha!")
-    async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail']):
+    async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run']):
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                # Fetch featured five and four-star characters
-                await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five' LIMIT 1;")
-                top_featured_five = await cursor.fetchone()
+                if game == 'Honkai: Star Rail':
+                    # Fetch featured five and four-star characters
+                    await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five' LIMIT 1;")
+                    top_featured_five = await cursor.fetchone()
 
-                await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five'")
-                featured_five = await cursor.fetchall()
+                    await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five'")
+                    featured_five = await cursor.fetchall()
 
-                await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Four'")
-                featured_four = await cursor.fetchall()
+                    await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Four'")
+                    featured_four = await cursor.fetchall()
 
-                try:
-                    em = discord.Embed(color=discord.Colour.from_rgb(0, 255, 255), title="Featured Characters:")
-                    em.set_image(url=top_featured_five[0])
-                    # Add featured 5-star characters to the embed
-                    for character in featured_five:
-                        em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★★", inline=True)
-                        ##em.set_image(url={character[1]})
-                    # Add featured 4-star characters to the embed
-                    for character in featured_four:
-                        em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★", inline=True)
-                        ##em.set_image(url={character[1]})
-                    await interaction.response.send_message(embed=em)
-                except:
-                    await interaction.response.send_message("No featured characters currently.", ephemeral=False)
-                    return
+                    try:
+                        em = discord.Embed(color=discord.Colour.from_rgb(0, 255, 255), title="Featured Characters:")
+                        em.set_image(url=top_featured_five[0])
+                        # Add featured 5-star characters to the embed
+                        for character in featured_five:
+                            em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★★", inline=True)
+                            ##em.set_image(url={character[1]})
+                        # Add featured 4-star characters to the embed
+                        for character in featured_four:
+                            em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★", inline=True)
+                            ##em.set_image(url={character[1]})
+                        await interaction.response.send_message(embed=em)
+                    except:
+                        await interaction.response.send_message("No featured characters currently.", ephemeral=False)
+                        return
+                    
+                if game == "Cookie Run":
+                    #do featured in a different manner
+                    await cursor.execute("SELECT ITEM_NAME FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Leg';")
+                    featured_cr_legen = await cursor.fetchone()
+
+                    await cursor.execute("SELECT ITEM_NAME FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Epic';")
+                    featured_cr_epic = await cursor.fetchall()
+
+                    await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Leg';")
+                    cr_leg_rateupimg = await cursor.fetchone()
+
+                    try:
+                        em = discord.Embed(color=discord.Colour.from_rgb(0, 125, 175), title="Featured Characters:")
+                        em.set_image(url=cr_leg_rateupimg[0])
+      
+                        #add all epics
+                        for character in featured_cr_epic:
+                            em.add_field(name=f"{character[0]}", value=f"Epic", inline=True)
+                        #add leg
+                        em.add_field(name=f"{featured_cr_legen[0]}", value=f"Legendary", inline=True)
+
+                        await interaction.response.send_message(embed=em)
+                    except:
+                        await interaction.response.send_message(f"No featured characters currently.\n cr_leg_rateupimg = {cr_leg_rateupimg}\n\nfeatured_cr_legen = {featured_cr_legen}\nfeatured_cr_epic = {featured_cr_epic}", ephemeral=False)
+                        return
 
 
 
@@ -1358,7 +1385,6 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-
     #Cookie Run Gacha
     async def pull_cookie(self):
         probability = random.random()
@@ -1377,9 +1403,13 @@ class Gacha:
             # Give user a rare cookie
             rarity = 'Rare'
 
-        elif 0.8750 <= probability < 0.9550:
+        elif 0.8750 <= probability < 0.9350:
             # Give user a epic cookie
             rarity = 'Epic'
+
+        elif 0.9350 <= probability < 0.9550:
+            #give user featured epic cookie
+            rarity = 'Feat_Epic'
 
         elif 0.9550 <= probability < 0.9800:
             #Give user a super epic cookie
@@ -1390,7 +1420,12 @@ class Gacha:
             with random.randrange(0,4) as r:
                 match r:
                     case 0:
-                        rarity = 'Legendary'
+                        with random.randrange(0,3) as rateup:
+                            match rateup:
+                                case 0 | 1 | 2:
+                                    rarity = 'Legendary'
+                                case 3:
+                                    rarity = 'Feat_Leg'
                     case 1:
                         rarity = 'Dragon'
                     case 2:
