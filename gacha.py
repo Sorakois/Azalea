@@ -1104,34 +1104,58 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message(f"Invalid database structuring, please alert sorakoi.", ephemeral=True)
 
     @app_commands.command(name="featured", description="Check to see the current rate-up characters for HSR gacha!")
-    async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail']):
+    async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run']):
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                # Fetch featured five and four-star characters
-                await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five' LIMIT 1;")
-                top_featured_five = await cursor.fetchone()
+                if game == 'Honkai: Star Rail':
+                    # Fetch featured five and four-star characters
+                    await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five' LIMIT 1;")
+                    top_featured_five = await cursor.fetchone()
 
-                await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five'")
-                featured_five = await cursor.fetchall()
+                    await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Five'")
+                    featured_five = await cursor.fetchall()
 
-                await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Four'")
-                featured_four = await cursor.fetchall()
+                    await cursor.execute("SELECT ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Four'")
+                    featured_four = await cursor.fetchall()
 
-                try:
-                    em = discord.Embed(color=discord.Colour.from_rgb(0, 255, 255), title="Featured Characters:")
-                    em.set_image(url=top_featured_five[0])
-                    # Add featured 5-star characters to the embed
-                    for character in featured_five:
-                        em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★★", inline=True)
-                        ##em.set_image(url={character[1]})
-                    # Add featured 4-star characters to the embed
-                    for character in featured_four:
-                        em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★", inline=True)
-                        ##em.set_image(url={character[1]})
-                    await interaction.response.send_message(embed=em)
-                except:
-                    await interaction.response.send_message("No featured characters currently.", ephemeral=False)
-                    return
+                    try:
+                        em = discord.Embed(color=discord.Colour.from_rgb(0, 255, 255), title="Featured Characters:")
+                        em.set_image(url=top_featured_five[0])
+                        # Add featured 5-star characters to the embed
+                        for character in featured_five:
+                            em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★★", inline=True)
+                            ##em.set_image(url={character[1]})
+                        # Add featured 4-star characters to the embed
+                        for character in featured_four:
+                            em.add_field(name=f"{cleanse_name(character[0]).title()}", value=f"★★★★", inline=True)
+                            ##em.set_image(url={character[1]})
+                        await interaction.response.send_message(embed=em)
+                    except:
+                        await interaction.response.send_message("No featured characters currently.", ephemeral=False)
+                        return
+                    
+                if game == "Cookie Run":
+                    #do featured in a different manner
+                    featured_cr_legen = await Gacha.featured_cookies("Legendary")
+                    featured_cr_epic = await Gacha.featured_cookies("Epic") #list
+
+                    await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_NAME LIKE %s;", featured_cr_legen)
+                    cr_leg_rateupimg = await cursor.fetchone()
+
+                    try:
+                        em = discord.Embed(color=discord.Colour.from_rgb(0, 125, 175), title="Featured Characters:")
+                        em.set_image(url=cr_leg_rateupimg[0])
+      
+                        #add all epics
+                        for character in featured_cr_epic:
+                            em.add_field(name=f"{character}", value=f"Epic", inline=True)
+                        #add leg
+                        em.add_field(name=f"{featured_cr_legen}", value=f"Legendary", inline=True)
+
+                        await interaction.response.send_message(embed=em)
+                    except:
+                        await interaction.response.send_message(f"No featured characters currently.\n cr_leg_rateupimg = {cr_leg_rateupimg}\n\nfeatured_cr_legen = {featured_cr_legen}\nfeatured_cr_epic = {featured_cr_epic}", ephemeral=False)
+                        return
 
 
 
@@ -1358,7 +1382,13 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-
+       
+    async def featured_cookies(rarity):
+        if rarity == "Legendary":
+            return "Moonlight Cookie"
+        if rarity == "Epic":
+            return ["Milky Way Cookie", "Buckwheat Cookie", "Strawberry Cream Cookie"]
+    
     #Cookie Run Gacha
     async def pull_cookie(self):
         probability = random.random()
