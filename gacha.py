@@ -43,6 +43,7 @@ class MultipullView(discord.ui.View):
         self.best_cookie = ''
         best_cookie_rarity = ''
         for c in self.cookies.keys():
+            c = fix_rarity(c)
             if best_cookie_rarity == '':
                 self.best_cookie = c
                 best_cookie_rarity = self.cookies[c]['rarity']
@@ -1136,10 +1137,13 @@ class GachaInteraction(commands.Cog):
                     
                 if game == "Cookie Run":
                     #do featured in a different manner
-                    featured_cr_legen = await Gacha.featured_cookies("Legendary")
-                    featured_cr_epic = await Gacha.featured_cookies("Epic") #list
+                    await cursor.execute("SELECT ITEM_NAME FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Leg';")
+                    featured_cr_legen = await cursor.fetchone()
 
-                    await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_NAME LIKE %s;", featured_cr_legen)
+                    await cursor.execute("SELECT ITEM_NAME FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Epic';")
+                    featured_cr_epic = await cursor.fetchall()
+
+                    await cursor.execute("SELECT ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = 'Feat_Leg';")
                     cr_leg_rateupimg = await cursor.fetchone()
 
                     try:
@@ -1148,9 +1152,9 @@ class GachaInteraction(commands.Cog):
       
                         #add all epics
                         for character in featured_cr_epic:
-                            em.add_field(name=f"{character}", value=f"Epic", inline=True)
+                            em.add_field(name=f"{character[0]}", value=f"Epic", inline=True)
                         #add leg
-                        em.add_field(name=f"{featured_cr_legen}", value=f"Legendary", inline=True)
+                        em.add_field(name=f"{featured_cr_legen[0]}", value=f"Legendary", inline=True)
 
                         await interaction.response.send_message(embed=em)
                     except:
@@ -1382,13 +1386,6 @@ class Gacha:
         - a pull function for gacha (cost, check if can afford, result)
 
     '''
-       
-    async def featured_cookies(rarity):
-        if rarity == "Legendary":
-            return "Moonlight Cookie"
-        if rarity == "Epic":
-            return ["Milky Way Cookie", "Buckwheat Cookie", "Strawberry Cream Cookie"]
-    
     #Cookie Run Gacha
     async def pull_cookie(self):
         probability = random.random()
@@ -1407,9 +1404,13 @@ class Gacha:
             # Give user a rare cookie
             rarity = 'Rare'
 
-        elif 0.8750 <= probability < 0.9550:
+        elif 0.8750 <= probability < 0.9350:
             # Give user a epic cookie
             rarity = 'Epic'
+
+        elif 0.9350 <= probability < 0.9550:
+            #give user featured epic cookie
+            rarity = 'Feat_Epic'
 
         elif 0.9550 <= probability < 0.9800:
             #Give user a super epic cookie
@@ -1420,7 +1421,12 @@ class Gacha:
             with random.randrange(0,4) as r:
                 match r:
                     case 0:
-                        rarity = 'Legendary'
+                        with random.randrange(0,3) as rateup:
+                            match rateup:
+                                case 0 | 1 | 2:
+                                    rarity = 'Legendary'
+                                case 3:
+                                    rarity = 'Feat_Leg'
                     case 1:
                         rarity = 'Dragon'
                     case 2:

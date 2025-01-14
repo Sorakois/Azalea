@@ -68,6 +68,10 @@ def fix_rarity(rarity):
         rarity = "★★★★"
     if rarity == "Feat_Five" or rarity == "Stand_Five":
         rarity = "★★★★★"
+    if rarity == "Feat_Epic":
+        rarity = "Epic"
+    if rarity == "Feat_Leg":
+        rarity == "Legendary"
 
     return rarity
 
