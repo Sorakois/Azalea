@@ -233,7 +233,7 @@ class MiscCMD(commands.Cog):
 
 
 
-                em.set_footer(text=f"Wrote by: {res[7].capitalize()}... in discord.gg/nurture")
+                em.set_footer(text=f"Created by: {res[7].capitalize()} in discord.gg/nurture")
                 await interaction.response.send_message(embed=em, ephemeral=False)
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)
