@@ -25,4 +25,7 @@ import logging
 
 class Persona(commands.Cog):
     #wow!
-     a = 1
+    '''
+    watch an ollama video
+    '''
+    a = 1
