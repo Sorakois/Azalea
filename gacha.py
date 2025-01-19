@@ -1390,48 +1390,57 @@ class Gacha:
         probability = random.random()
         rarity = ""
 
-        if 0 <= probability < 0.3750:
+        if 0.0000 <= probability < 0.2500:
             # Give user essence
             essence = await self.handle_essence()
             return essence
 
-        elif 0.3750 <= probability < 0.6750:
+        elif 0.2500 <= probability < 0.4900:
             # Give user a common cookie
             rarity = 'Common'
 
-        elif 0.6750 <= probability < 0.8750:
+        elif 0.4900 <= probability < 0.6400:
             # Give user a rare cookie
             rarity = 'Rare'
 
-        elif 0.8750 <= probability < 0.9350:
+        elif 0.6400 <= probability < 0.8000:
             # Give user a epic cookie
-            rarity = 'Epic'
+            rateup = random.randrange(0,4)
+            match rateup:
+                case 0 | 1 | 2:
+                    # Give user a random epic cookie (not featured)
+                    rarity = 'Epic'
+                case 3:
+                    # Give user a featured epic cookie
+                    rarity = 'Feat_Epic'
 
-        elif 0.9350 <= probability < 0.9550:
-            #give user featured epic cookie
-            rarity = 'Feat_Epic'
-
-        elif 0.9550 <= probability < 0.9800:
-            #Give user a super epic cookie
+        elif 0.8000 <= probability < 0.8800:
+            # Give user a super epic cookie
             rarity = 'Super Epic'
+        
+        elif 0.8800 <= probability < 0.9400:
+            # Give user a special cookie
+            rarity = 'Special'
 
-        elif 0.9800 <= probability < 1:
-            # Give user Legendary, Dragon, Ancient, or Special cookie
-            with random.randrange(0,4) as r:
-                match r:
-                    case 0:
-                        with random.randrange(0,3) as rateup:
-                            match rateup:
-                                case 0 | 1 | 2:
-                                    rarity = 'Legendary'
-                                case 3:
-                                    rarity = 'Feat_Leg'
-                    case 1:
-                        rarity = 'Dragon'
-                    case 2:
-                        rarity = 'Special'
-                    case 3:
-                        rarity = 'Ancient'
+        elif 0.9400 <= probability < 0.9900:
+            # Give user Legendary or Dragon cookie
+            rateup = random.randrange(0,6)
+            match rateup:
+                case 0 | 1 | 2:
+                    rarity = 'Legendary'
+                case 3:
+                    rarity = 'Feat_Leg'
+                case 4 | 5:
+                    rarity = 'Dragon'
+
+        elif 0.9900 <= probability < 1.0000:
+            # Give user Ancient or Beast cookie
+            r = random.randrange(0,2)
+            match r:
+                case 0:
+                    rarity = 'Ancient'
+                case 1:
+                    rarity = 'Beast'
     
         return rarity
     
@@ -1492,5 +1501,25 @@ class Gacha:
             # ★★★★★
         return rarity
     
+    #amount of essence to give
     async def handle_essence(self):
         return random.randrange(25,51)
+
+    '''
+    Pity! A way to make up for bad luck.
+    '''
+    async def cr_pity_gacha(self, rarity, pity):
+
+        rarity_to_num = ['Common',
+                        'Rare',
+                        'Epic', 'Feat_Epic',
+                        'Super Epic',
+                        'Legendary', 'Feat_Leg', 
+                        'Dragon', 
+                        'Ancient',
+                        'Beast',
+                        'Special'
+                        ]
+        #if no pity, no rarity change
+        if pity == 0:
+            return rarity
