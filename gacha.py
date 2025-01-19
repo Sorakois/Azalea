@@ -13,14 +13,21 @@ from asyncio import Lock
 from misc import cleanse_name, fix_rarity, chrono_image
 
 cookie_rarity_rankings = {
+    # CR
     'Common' : 1,
     'Rare' : 2,
     'Epic' : 3,
+    'Feat_Epic' : 3,
     'Super Epic': 4,
-    'Legendary' : 5,
-    'Dragon' : 5,
     'Special' : 5,
-    'Ancient' : 6,
+    'Legendary' : 6,
+    'Feat_Leg' : 6,
+    'Dragon' : 6,
+    'Ancient' : 7,
+    'Awakened Ancient' : 7,
+    'Beast' : 7,
+
+    # HSR
     'Stand_Four': 7,
     'Feat_Four': 7,
     'Stand_Five': 8,
@@ -1438,7 +1445,12 @@ class Gacha:
             r = random.randrange(0,2)
             match r:
                 case 0:
-                    rarity = 'Ancient'
+                    awake = random.randrange(0,4)
+                    match awake:
+                        case 0 | 1:
+                            rarity = 'Ancient'
+                        case 2 | 3:
+                            rarity = 'Awakened Ancient'
                 case 1:
                     rarity = 'Beast'
     
@@ -1509,17 +1521,31 @@ class Gacha:
     Pity! A way to make up for bad luck.
     '''
     async def cr_pity_gacha(self, rarity, pity):
+        #amount of pulls to guarantee a high pull
+        cr_pity = 80
 
-        rarity_to_num = ['Common',
-                        'Rare',
-                        'Epic', 'Feat_Epic',
-                        'Super Epic',
-                        'Legendary', 'Feat_Leg', 
-                        'Dragon', 
-                        'Ancient',
-                        'Beast',
-                        'Special'
+        rarity_to_num = ['Legendary + Feat Leg + Dragon' #1
+                        'Ancient + Beast' #2
                         ]
-        #if no pity, no rarity change
-        if pity == 0:
+
+        #if less pity than needed, no rarity change
+        if pity > cr_pity:
             return rarity
+
+        pity_probability = random.random()
+        new_rarity = ""
+
+        if 0 <= pity_probability < 0.3000:
+            new_rarity = 'Legendary'
+        
+        if 0.3000 <= pity_probability < 0.5000:
+            new_rarity = 'Feat_Leg'
+        
+        if 0.5000 <= pity_probability < 0.7500:
+            new_rarity = 'Dragon'
+        
+        if 0.7500 <= pity_probability < 0.8750:
+            new_rarity = 'Ancient'
+        
+        if 0.8750 <= pity_probability < 1.0000:
+            new_rarity = 'Beast'
