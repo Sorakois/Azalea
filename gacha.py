@@ -373,7 +373,17 @@ class GachaInteraction(commands.Cog):
                     
                 if balance >= 300:
                     if game == 'Cookie Run':
-                        res = await Gacha().pull_cookie()
+                        await cursor.execute("SELECT CR_PITY FROM USER WHERE USER_ID = %s", (member.id,))
+                        current_pity = await cursor.fetchone()
+                        rarity_pull = await Gacha().pull_cookie()
+                        if isinstance(rarity_pull, str):
+                            resulting = await Gacha().cr_pity_gacha(rarity_pull, current_pity[0])
+                            new_rar = resulting[0]
+                            new_pity = resulting[1]
+                        if isinstance(rarity_pull, int):
+                            new_pity = current_pity + 1                        
+                        res = new_rar
+                        await cursor.execute("UPDATE USER SET CR_PITY = %s WHERE USER_ID = %s", (new_pity, member.id,))
                     if game == 'Honkai: Star Rail':
                         if fifty_fifty_value == 0:
                             res = await Gacha().won_fifty_hsr()
@@ -430,74 +440,96 @@ class GachaInteraction(commands.Cog):
     async def multipull(self, interaction : discord.Interaction, game: Literal['Cookie Run', 'Honkai: Star Rail']):
     #ADD other games, like HSR
     #async def pull(self, interaction : discord.Interaction, gachagame: Literal['Cookie Run', 'Honkai: Star Rail', 'All']):
+        async with self.lock:
+            member = interaction.user
+            #await interaction.response.defer()
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
 
-        member = interaction.user
-        async with self.bot.db.acquire() as conn:
-            async with conn.cursor() as cursor:
-
-                if await check_full_inventory(cursor, member, 11):
-                    await interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
-                    return
-
-                balance = await fetch_balance(cursor, member, interaction)
-                if balance is None:
-                    return
-
-                if balance >= 3000:
-                    res = []
-                    cookies_received = {}
-                    essence_add = 0
-
-                    await cursor.execute("SELECT FIFTY_FIFTY FROM USER WHERE USER_ID = %s", (member.id,))
-                    fifty_fifty = await cursor.fetchone()
-                    if not fifty_fifty:
-                        await interaction.response.send_message("Error: Could not fetch fifty_fifty value.", ephemeral=True)
+                    if await check_full_inventory(cursor, member, 11):
+                        await interaction.response.send_message("Sorry, you do not have enough inventory slots to do another pull.")
                         return
-                    fifty_fifty_value = fifty_fifty[0]
 
-                    for i in range(0, 11):    
-                        if game == 'Cookie Run':
-                            res.append(await Gacha().pull_cookie())
-                        if game == 'Honkai: Star Rail':
-                            if fifty_fifty_value == 0:
-                                res.append(await Gacha().won_fifty_hsr())
-                            elif fifty_fifty_value == 1:
-                                res.append(await Gacha().lost_fifty_hsr())
-                            else:
-                                await interaction.response.send_message("Error: invalid 50.", ephemeral=True)
+                    balance = await fetch_balance(cursor, member, interaction)
+                    if balance is None:
+                        return
 
+                    if balance >= 3000:
+                        res = []
+                        cookies_received = {}
+                        essence_add = 0
 
+                        await cursor.execute("SELECT FIFTY_FIFTY FROM USER WHERE USER_ID = %s", (member.id,))
+                        fifty_fifty = await cursor.fetchone()
+                        if not fifty_fifty:
+                            await interaction.response.send_message("Error: Could not fetch fifty_fifty value.", ephemeral=True)
+                            return
+                        fifty_fifty_value = fifty_fifty[0]
+
+                        # grab current pity
+                        await cursor.execute("SELECT CR_PITY FROM USER WHERE USER_ID = %s", (member.id,))
+                        current_pity = await cursor.fetchone()
+                        current_pity = current_pity[0]
+                        max_pity = 100
+
+                        for i in range(0, 11):    
+                            if game == 'Cookie Run':
+                                rarity_pull = await Gacha().pull_cookie()
+                                if isinstance(rarity_pull, str) and (current_pity > max_pity):
+                                    rarity_recieved = await Gacha().cr_pity_gacha(rarity_pull, current_pity)
+                                    rarity_pull = rarity_recieved[0]
+                                    current_pity_pity = rarity_recieved[1]
+                                #essence should be handled 
+                                else:
+                                    current_pity = await Gacha.check_pity(current_pity, rarity_pull)
+                                res.append(rarity_pull)
+                                
+                            if game == 'Honkai: Star Rail':
+                                if fifty_fifty_value == 0:
+                                    res.append(await Gacha().won_fifty_hsr())
+                                elif fifty_fifty_value == 1:
+                                    res.append(await Gacha().lost_fifty_hsr())
+                                else:
+                                    await interaction.response.send_message("Error: invalid 50.", ephemeral=True)
+                                    
+                            if isinstance(res[i], int): # If integer, must mean essence
+                                essence_add += res[i]
+                            elif isinstance(res[i], str): # If string, must mean rarity
+                                
+                                await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res[i])
+                                item_info = await cursor.fetchone()
+                                if 'Feat_Five' in res:
+                                    await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 0 WHERE USER_ID = %s ", (member.id,))
+                                    await conn.commit() 
+                                elif 'Stand_Five' in res:
+                                    await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
+                                    await conn.commit()
+                                cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : fix_rarity(res[i])}
+
+                                await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
+                                await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
+                        
+                        '''
+                        loop end
+                        '''
+                        #await interaction.response.send_message(f"Res is: {res}")
+                        await cursor.execute("UPDATE USER SET CR_PITY = %s WHERE USER_ID = %s", (new_pity, member.id,))
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                        await conn.commit()
 
-                        if isinstance(res[i], int): # If integer, must mean essence
-                            essence_add += res[i]
-                        elif isinstance(res[i], str): # If string, must mean rarity
-                            
-                            await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res[i])
-                            item_info = await cursor.fetchone()
-                            if 'Feat_Five' in res:
-                                await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 0 WHERE USER_ID = %s ", (member.id,))
-                                await conn.commit() 
-                            elif 'Stand_Five' in res:
-                                await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
-                                await conn.commit()
-                            cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : fix_rarity(res[i])}
+                        balance -= 3000
+                        await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
+                        if essence_add != 0:
+                            await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
 
-                            await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
-                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
-                    balance -= 3000
-                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
-                    if essence_add != 0:
-                        await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
+                        view = MultipullView(last_interaction=interaction, essence=essence_add, cookies=cookies_received)
+                        await view.eval_best_cookie()
 
-                    view = MultipullView(last_interaction=interaction, essence=essence_add, cookies=cookies_received)
-                    await view.eval_best_cookie()
-
-                    await interaction.response.send_message(embed=await view.view_page(1) ,view=view)
-                else:
-                    await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
-                    return
-            await conn.commit()
+                        await interaction.response.send_message(embed=await view.view_page(1) ,view=view)
+                    else:
+                        await interaction.response.send_message(f"Not enough crystals. Current Balance: {balance}")
+                        return
+                await conn.commit()
 
     @multipull.error
     async def on_multipull_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -1090,7 +1122,7 @@ class GachaInteraction(commands.Cog):
 
 
     '''
-    HSR Specific Gacha
+    Pity Checking
     '''    
     @app_commands.command(name="fiftyfifty", description="Check to see if you won your last 50/50!")
     async def fiftyfifty(self, interaction : discord.Interaction):
@@ -1102,7 +1134,6 @@ class GachaInteraction(commands.Cog):
                 
                 if check_fifty is None:
                     await interaction.response.send_message(f"User data not found. Please make sure you have pulled before.", ephemeral=True)
-                    return
                 if check_fifty[0] == 1:
                     await interaction.response.send_message(f"You have LOST your last 50/50. Your next HSR 5 star is guranteed to be a featured character!", ephemeral=True)
                 elif check_fifty[0] == 0:
@@ -1110,6 +1141,24 @@ class GachaInteraction(commands.Cog):
                 else:
                     await interaction.response.send_message(f"Invalid database structuring, please alert sorakoi.", ephemeral=True)
 
+    @app_commands.command(name="crpity", description="Check how high your Cookie Run pity is.")
+    async def fiftyfifty(self, interaction : discord.Interaction):
+        member = interaction.user
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute("SELECT CR_PITY FROM USER WHERE USER_ID = %s", (member.id,))
+                check_crpity = await cursor.fetchone()
+                check_crpity = check_crpity[0]
+                max_pity = 100
+                if check_crpity is None:
+                    await interaction.response.send_message(f"User data not found. Please make sure you have pulled before.", ephemeral=True)
+                else:
+                    await interaction.response.send_message(f"You currently have pulled {check_crpity} cookies without receiving a legendary+\nKeep trying! Pity is {max_pity - check_crpity} pulls away!", ephemeral=True)
+
+
+    '''
+    HSR Specific Gacha
+    '''    
     @app_commands.command(name="featured", description="Check to see the current rate-up characters for HSR gacha!")
     async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run']):
         async with self.bot.db.acquire() as conn:
@@ -1353,9 +1402,9 @@ class GachaInteraction(commands.Cog):
             await interaction.response.send_message(str(error))
 
     #Third way, guess the character! Specialized Game Trivia
-    @discord.app_commands.checks.cooldown(1, 60)
-    @app_commands.command(name="guess_who", description="Guess who the character is!")
-    async def guess_who(self, interaction : discord.Interaction, game : Literal["HSR", "CRK"]):
+    # @discord.app_commands.checks.cooldown(1, 60)
+    # @app_commands.command(name="guess_who", description="Guess who the character is!")
+    # async def guess_who(self, interaction : discord.Interaction, game : Literal["HSR", "CRK"]):
         '''
         General formatting:
             CRK:
@@ -1517,35 +1566,66 @@ class Gacha:
     async def handle_essence(self):
         return random.randrange(25,51)
 
+
     '''
     Pity! A way to make up for bad luck.
     '''
     async def cr_pity_gacha(self, rarity, pity):
         #amount of pulls to guarantee a high pull
-        cr_pity = 80
+        cr_pity = 100
+        user_pity = pity
 
-        rarity_to_num = ['Legendary + Feat Leg + Dragon' #1
-                        'Ancient + Beast' #2
-                        ]
+        # filter
+        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'Awakened Ancient', 'Beast']
 
-        #if less pity than needed, no rarity change
-        if pity > cr_pity:
-            return rarity
+        # ensure rarity != a number
+        if isinstance(rarity, int):
+            return
 
-        pity_probability = random.random()
-        new_rarity = ""
+        # if less pity than needed, no rarity change and stop early
+        # make sure rarity param isnt above legendary already
+        elif pity < cr_pity or rarity in rarity_filter:
+            return [rarity, user_pity]
+        else:
+            pity_probability = random.random()
+            new_rarity = ""
 
-        if 0 <= pity_probability < 0.3000:
-            new_rarity = 'Legendary'
-        
-        if 0.3000 <= pity_probability < 0.5000:
-            new_rarity = 'Feat_Leg'
-        
-        if 0.5000 <= pity_probability < 0.7500:
-            new_rarity = 'Dragon'
-        
-        if 0.7500 <= pity_probability < 0.8750:
-            new_rarity = 'Ancient'
-        
-        if 0.8750 <= pity_probability < 1.0000:
-            new_rarity = 'Beast'
+            if 0 <= pity_probability < 0.3000:
+                #Instead of what they got, get a legendary!
+                new_rarity = 'Legendary'
+                user_pity = 0
+            
+            if 0.3000 <= pity_probability < 0.5000:
+                new_rarity = 'Feat_Leg'
+                user_pity = 0
+            
+            if 0.5000 <= pity_probability < 0.7500:
+                new_rarity = 'Dragon'
+                user_pity = 0
+            
+            if 0.7500 <= pity_probability < 0.8350:
+                new_rarity = 'Ancient'
+                user_pity = 0
+            
+            if 0.8350 <= pity_probability <= 0.8750:
+                new_rarity = 'Awakened Ancient'
+                user_pity = 0
+            
+            if 0.8750 <= pity_probability < 1.0000:
+                new_rarity = 'Beast'
+                user_pity = 0
+                
+        return [new_rarity, user_pity]
+    
+    async def check_pity(self, pity: int, rarity) -> int:
+        #Given the user's pull and current pity, return what their pity number should be corrected to.
+        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'Awakened Ancient', 'Beast']
+
+        if isinstance(rarity, int):
+            pity += 1
+        elif rarity in rarity_filter:
+            pity = 0
+        else:
+            pity += 1
+
+        return pity
