@@ -23,15 +23,16 @@ cookie_rarity_rankings = {
     'Legendary' : 6,
     'Feat_Leg' : 6,
     'Dragon' : 6,
+    'First' : 6,
     'Ancient' : 7,
     'Awakened Ancient' : 7,
     'Beast' : 7,
 
     # HSR
-    'Stand_Four': 7,
-    'Feat_Four': 7,
-    'Stand_Five': 8,
-    'Feat_Five': 8
+    'Stand_Four': 8,
+    'Feat_Four': 8,
+    'Stand_Five': 9,
+    'Feat_Five': 9
 }
 
 
@@ -52,10 +53,10 @@ class MultipullView(discord.ui.View):
         for c in self.cookies.keys():
             if best_cookie_rarity == '':
                 self.best_cookie = c
-                best_cookie_rarity = self.cookies[c]['rarity']
+                best_cookie_rarity = fix_rarity(self.cookies[c]['rarity'])
             elif cookie_rarity_rankings[self.cookies[c]['rarity']] > cookie_rarity_rankings[best_cookie_rarity]:
                 self.best_cookie = c
-                best_cookie_rarity = self.cookies[c]['rarity']
+                best_cookie_rarity = fix_rarity(self.cookies[c]['rarity'])
         return
 
     async def view_page(self, page_num):
@@ -64,7 +65,7 @@ class MultipullView(discord.ui.View):
                 em = discord.Embed(title=f"Best Character Recieved: \n*__{cleanse_name(self.best_cookie).title()}__*")
                 em.set_thumbnail(url=self.user.avatar.url)
                 local_fix_rar = fix_rarity(self.cookies[self.best_cookie]['rarity'])
-                em.add_field(name="Rarity:", value=f"{local_fix_rar}")
+                em.add_field(name="Rarity:", value=f"{fix_rarity(local_fix_rar)}")
                 em.set_image(url=self.cookies[self.best_cookie]['image'])
                 em.set_footer(text=f"Check the next page to see everything else you pulled! To recycle characters, do /crumble.")
             except:
@@ -207,7 +208,7 @@ class InventoryView(discord.ui.View):
             chronos += chrono_image(sorted_inventory[item][2]) + '\n'
         em.add_field(name="Name", value=names)
         em.add_field(name="Rarity", value=raritys)
-        em.add_field(name="Chrono", value=chronos)
+        em.add_field(name="Chrono/Promo", value=chronos)
         em.set_footer(text=f"{self.page}/{self.pages}")
         return em
 
@@ -857,12 +858,14 @@ class GachaInteraction(commands.Cog):
                         crumble_essence = 30
                     elif crumble_cookie[0][3] == "Rare":
                         crumble_essence = 35
-                    elif crumble_cookie[0][3] == "Epic":
+                    elif crumble_cookie[0][3] == "Epic" or "Feat_Epic":
                         crumble_essence = 80
                     elif crumble_cookie[0][3] == "Super Epic":
                         crumble_essence = 250
-                    elif crumble_cookie[0][3] == "Legendary" or "Special" or "Dragon" or "Ancient":
+                    elif crumble_cookie[0][3] == "Legendary" or "Special" or "Dragon" or "Feat_Leg":
                         crumble_essence = 3000
+                    elif crumble_cookie[0][3] == "Ancient" or "Awakened Ancient" or "Beast":
+                        crumble_essence = 10000
                     #HSR
                     elif crumble_cookie[0][3] == "Stand_Four" or "Feat_Four":
                         crumble_essence = 150
@@ -967,8 +970,8 @@ class GachaInteraction(commands.Cog):
 
             await conn.commit()
 
-    @app_commands.command(name="view_character", description="View a character in the gacha pool!")
-    async def viewcharacter(self, interaction: discord.Interaction, character: str):
+    @app_commands.command(name="viewchar", description="View a character in the gacha pool!")
+    async def viewchar(self, interaction: discord.Interaction, character: str):
 
         #characters with multiple "branches"
         if character.upper() == "TINGYUN":
@@ -1490,7 +1493,7 @@ class Gacha:
 
         elif 0.9700 <= probability < 0.9900:
             # Give user Legendary or Dragon cookie
-            rateup = random.randrange(0,6)
+            rateup = random.randrange(0,8)
             match rateup:
                 case 0 | 1 | 2:
                     rarity = 'Legendary'
@@ -1498,6 +1501,8 @@ class Gacha:
                     rarity = 'Feat_Leg'
                 case 4 | 5:
                     rarity = 'Dragon'
+                case 6 | 7:
+                    rarity = 'First'
 
         elif 0.9900 <= probability < 1.0000:
             # Give user Ancient or Beast cookie

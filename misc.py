@@ -22,7 +22,6 @@ def cleanse_name(character:str):
     #characters with abreviations or other names
     if character == "DHIL" or character == "DAN HENG IMBIBITOR LUNAE":
         character = "imbibitor lunae"
-        
     if character == "FEI XIAO":
         character = "feixiao"
     if character == "FUGUE"or character == "FUGUE TINGYUN":
@@ -31,6 +30,8 @@ def cleanse_name(character:str):
         character = "topaz numby"
     if character == "SILVERWOLF" or character == "SW" or character == "WOLFIE" or character == "SWOLF" or character == "SILVER":
         character = "silver wolf"
+    if character == "THERTA" or  character == "Madam Herta":
+        character = "the herta"
 
     #pure abreviations
     if character == "FF" or character == "SAM":
@@ -71,10 +72,11 @@ def fix_rarity(rarity):
         rarity = "★★★★"
     if rarity == "Feat_Five" or rarity == "Stand_Five":
         rarity = "★★★★★"
+
     if rarity == "Feat_Epic":
         rarity = "Epic"
     if rarity == "Feat_Leg":
-        rarity == "Legendary"
+        rarity = "Legendary"
 
     return rarity
 
