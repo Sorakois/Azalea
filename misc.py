@@ -13,6 +13,9 @@ def cleanse_name(character:str):
     character = character.strip()
     character = character.replace('-', ' ')
 
+    #quick CRK fix
+    if character.upper == "CUSTARD COOKIE III":
+        character = "Custard Cookie III"
     #fix weird characters
     if character == "DR. RATIO" or character == "RATIO" or character == "DOCTOR RATIO":
         character = "dr ratio"

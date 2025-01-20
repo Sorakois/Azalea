@@ -471,19 +471,24 @@ class GachaInteraction(commands.Cog):
                         current_pity = await cursor.fetchone()
                         current_pity = current_pity[0]
                         max_pity = 100
+                        new_pity = current_pity
+                        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'Awakened Ancient', 'Beast']
 
                         for i in range(0, 11):    
                             if game == 'Cookie Run':
                                 rarity_pull = await Gacha().pull_cookie()
-                                if isinstance(rarity_pull, str) and (current_pity > max_pity):
+                                if current_pity > max_pity:
                                     rarity_recieved = await Gacha().cr_pity_gacha(rarity_pull, current_pity)
                                     rarity_pull = rarity_recieved[0]
-                                    current_pity_pity = rarity_recieved[1]
-                                #essence should be handled 
-                                else:
-                                    current_pity = await Gacha.check_pity(current_pity, rarity_pull)
+                                    new_pity = rarity_recieved[1]
+                                if isinstance(rarity_pull, str):
+                                    if rarity_pull in rarity_filter:
+                                            new_pity = 0
+                                    else:
+                                            new_pity += 1
+                                elif isinstance(rarity_pull, int):
+                                    new_pity += 1
                                 res.append(rarity_pull)
-                                
                             if game == 'Honkai: Star Rail':
                                 if fifty_fifty_value == 0:
                                     res.append(await Gacha().won_fifty_hsr())
@@ -495,7 +500,6 @@ class GachaInteraction(commands.Cog):
                             if isinstance(res[i], int): # If integer, must mean essence
                                 essence_add += res[i]
                             elif isinstance(res[i], str): # If string, must mean rarity
-                                
                                 await cursor.execute("SELECT ITEM_INFO_ID, ITEM_NAME, ITEM_IMAGE FROM ITEM_INFO WHERE ITEM_RARITY = %s ORDER BY RAND() LIMIT 1", res[i])
                                 item_info = await cursor.fetchone()
                                 if 'Feat_Five' in res:
@@ -504,7 +508,7 @@ class GachaInteraction(commands.Cog):
                                 elif 'Stand_Five' in res:
                                     await cursor.execute("UPDATE USER SET FIFTY_FIFTY = 1 WHERE USER_ID = %s ", (member.id,))
                                     await conn.commit()
-                                cookies_received[item_info[1]] = {'image': item_info[2], 'rarity' : fix_rarity(res[i])}
+                                cookies_received[cleanse_name(item_info[1])] = {'image': item_info[2], 'rarity' : fix_rarity(res[i])}
 
                                 await cursor.execute("INSERT INTO ITEM (ITEM_INFO_ID, USER_ID) VALUES (%s, %s)", (item_info[0], member.id,))
                                 await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = USER_INV_SLOTS_USED + 1 WHERE USER_ID = %s", (member.id,))
@@ -512,7 +516,8 @@ class GachaInteraction(commands.Cog):
                         '''
                         loop end
                         '''
-                        #await interaction.response.send_message(f"Res is: {res}")
+                        # debug
+                        # await interaction.response.send_message(f"Res is: {res}")
                         await cursor.execute("UPDATE USER SET CR_PITY = %s WHERE USER_ID = %s", (new_pity, member.id,))
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                         await conn.commit()
@@ -521,6 +526,11 @@ class GachaInteraction(commands.Cog):
                         await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                         if essence_add != 0:
                             await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (essence_add, member.id,))
+
+                        #clean rarities for display purposes
+                        for character in res:
+                                if not isinstance(character, int):
+                                    fix_rarity(character)
 
                         view = MultipullView(last_interaction=interaction, essence=essence_add, cookies=cookies_received)
                         await view.eval_best_cookie()
@@ -1446,20 +1456,20 @@ class Gacha:
         probability = random.random()
         rarity = ""
 
-        if 0.0000 <= probability < 0.2500:
+        if 0.0000 <= probability < 0.3500:
             # Give user essence
             essence = await self.handle_essence()
             return essence
 
-        elif 0.2500 <= probability < 0.4900:
+        elif 0.3500 <= probability < 0.5500:
             # Give user a common cookie
             rarity = 'Common'
 
-        elif 0.4900 <= probability < 0.6400:
+        elif 0.5500 <= probability < 0.7500:
             # Give user a rare cookie
             rarity = 'Rare'
 
-        elif 0.6400 <= probability < 0.8000:
+        elif 0.7500 <= probability < 0.8800:
             # Give user a epic cookie
             rateup = random.randrange(0,4)
             match rateup:
@@ -1470,15 +1480,15 @@ class Gacha:
                     # Give user a featured epic cookie
                     rarity = 'Feat_Epic'
 
-        elif 0.8000 <= probability < 0.8800:
+        elif 0.8800 <= probability < 0.9400:
             # Give user a super epic cookie
             rarity = 'Super Epic'
         
-        elif 0.8800 <= probability < 0.9400:
+        elif 0.9400 <= probability < 0.9700:
             # Give user a special cookie
             rarity = 'Special'
 
-        elif 0.9400 <= probability < 0.9900:
+        elif 0.9700 <= probability < 0.9900:
             # Give user Legendary or Dragon cookie
             rateup = random.randrange(0,6)
             match rateup:
@@ -1570,7 +1580,7 @@ class Gacha:
     '''
     Pity! A way to make up for bad luck.
     '''
-    async def cr_pity_gacha(self, rarity, pity):
+    async def cr_pity_gacha(self, rarity, pity: int):
         #amount of pulls to guarantee a high pull
         cr_pity = 100
         user_pity = pity
@@ -1584,7 +1594,7 @@ class Gacha:
 
         # if less pity than needed, no rarity change and stop early
         # make sure rarity param isnt above legendary already
-        elif pity < cr_pity or rarity in rarity_filter:
+        if pity < cr_pity or rarity in rarity_filter:
             return [rarity, user_pity]
         else:
             pity_probability = random.random()
@@ -1616,16 +1626,3 @@ class Gacha:
                 user_pity = 0
                 
         return [new_rarity, user_pity]
-    
-    async def check_pity(self, pity: int, rarity) -> int:
-        #Given the user's pull and current pity, return what their pity number should be corrected to.
-        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'Awakened Ancient', 'Beast']
-
-        if isinstance(rarity, int):
-            pity += 1
-        elif rarity in rarity_filter:
-            pity = 0
-        else:
-            pity += 1
-
-        return pity
