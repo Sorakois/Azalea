@@ -13,13 +13,15 @@ def cleanse_name(character:str):
     character = character.strip()
     character = character.replace('-', ' ')
 
+    #quick CRK fix
+    if character.upper == "CUSTARD COOKIE III":
+        character = "Custard Cookie III"
     #fix weird characters
     if character == "DR. RATIO" or character == "RATIO" or character == "DOCTOR RATIO":
         character = "dr ratio"
     #characters with abreviations or other names
     if character == "DHIL" or character == "DAN HENG IMBIBITOR LUNAE":
         character = "imbibitor lunae"
-        
     if character == "FEI XIAO":
         character = "feixiao"
     if character == "FUGUE"or character == "FUGUE TINGYUN":
@@ -28,6 +30,8 @@ def cleanse_name(character:str):
         character = "topaz numby"
     if character == "SILVERWOLF" or character == "SW" or character == "WOLFIE" or character == "SWOLF" or character == "SILVER":
         character = "silver wolf"
+    if character == "THERTA" or  character == "Madam Herta":
+        character = "the herta"
 
     #pure abreviations
     if character == "FF" or character == "SAM":
@@ -68,10 +72,11 @@ def fix_rarity(rarity):
         rarity = "★★★★"
     if rarity == "Feat_Five" or rarity == "Stand_Five":
         rarity = "★★★★★"
+
     if rarity == "Feat_Epic":
         rarity = "Epic"
     if rarity == "Feat_Leg":
-        rarity == "Legendary"
+        rarity = "Legendary"
 
     return rarity
 
@@ -233,7 +238,7 @@ class MiscCMD(commands.Cog):
 
 
 
-                em.set_footer(text=f"Wrote by: {res[7].capitalize()}... in discord.gg/nurture")
+                em.set_footer(text=f"Created by: {res[7].capitalize()} in discord.gg/nurture")
                 await interaction.response.send_message(embed=em, ephemeral=False)
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)

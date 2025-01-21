@@ -14,7 +14,7 @@ from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
 from gacha import GachaInteraction, HelpView
 import misc
-import psyche
+from psyche import Persona
 import asyncio
 from asyncio import Lock
 
@@ -49,7 +49,7 @@ cogs = {
     'cookie_info' : CookieInfo(bot),
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
-    'psyche' : psyche.Persona(bot)
+    'psyche' : Persona(bot)
     }
 
 # bot settings
@@ -270,6 +270,76 @@ class General(commands.Cog):
                 except Exception as e:
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
 
+        if prompt == "SKOI_UPDATE_BUILD-HSR":
+            await interaction.response.defer()
+            async with self.lock:
+                await interaction.followup.send(f"Enter the name of the character to update info for [/build cmd update].")
+
+                def check(message: discord.Message):
+                    return message.author.id == member.id and message.channel.id == interaction.channel.id
+            
+                try:
+                    msg = await interaction.client.wait_for('message', check=check, timeout=90.0)
+                    characterB = msg.content
+
+                    async with self.bot.db.acquire() as conn:
+                            async with conn.cursor() as cursor:
+                                await cursor.execute("SELECT * FROM HSR_BUILD WHERE name LIKE %s;", (characterB,))
+                                
+                                characterB_data = await cursor.fetchone()
+
+                                #make the info make sense
+                                characterB_name = characterB_data[0]
+                                characterB_stats = characterB_data[1]
+                                characterB_trapri = characterB_data[2]
+                                characterB_bestlc = characterB_data[3]
+                                characterB_bestrelics = characterB_data[4]
+                                characterB_bestplanar = characterB_data[5]
+                                characterB_bestteam = characterB_data[6]
+                                characterB_author = characterB_data[7]
+
+                                #show the current version (allow copy pasting)
+                                await interaction.followup.send(f"Currently, {characterB_name} has the following info set:\n\nStat Prio = {characterB_stats}\nTrace Prio = {characterB_trapri}\nBest LC = {characterB_bestlc}\nBest Relics = {characterB_bestrelics}\nBest Planar = {characterB_bestplanar}\nBest Team = {characterB_bestteam}\nAuthor = {characterB_author}")
+
+                                await interaction.followup.send(f"Enter the updated stat focus for {characterB_name}:")
+                                stat_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_stats = stat_msg.content
+
+                                await interaction.followup.send(f"Enter the updated trace prio for {characterB}:")
+                                trace_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_traceprio = trace_msg.content
+
+                                await interaction.followup.send(f"Enter the updated best LC(s) for {characterB}:")
+                                LC_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_LC = LC_msg.content
+
+                                await interaction.followup.send(f"Enter the updated best relic(s) for {characterB}:")
+                                relic_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_relics = relic_msg.content
+
+                                await interaction.followup.send(f"Enter the updated best planar(s) for {characterB}:")
+                                planar_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_planar = planar_msg.content
+
+                                await interaction.followup.send(f"Enter the updated team for {characterB}:")
+                                team_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_team = team_msg.content
+
+                                await interaction.followup.send(f"Enter the updated author for {characterB}:")
+                                author_msg = await bot.wait_for('message', check=check, timeout=60.0)
+                                updated_author = author_msg.content
+
+                                #now we have all the info... insert it!
+                                await cursor.execute(
+                                    "UPDATE HSR_BUILD SET stats = %s, trapri = %s, bestlc = %s, bestrelics = %s, bestplanar = %s, bestteam = %s, buildauthor = %s;",
+                                    (updated_stats, updated_traceprio, updated_LC, updated_relics, updated_planar, updated_team, updated_author)
+                                )                            
+                                await interaction.followup.send(f"Done! {characterB} has been updated.")
+                            await conn.commit()
+                except ValueError as e:
+                    await interaction.followup.send(f"Error! {e}")
+
+                
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
 
