@@ -473,15 +473,19 @@ class GachaInteraction(commands.Cog):
                         current_pity = current_pity[0]
                         max_pity = 100
                         new_pity = current_pity
-                        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'Awakened Ancient', 'Beast']
+                        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'First', 'Awakened Ancient', 'Beast']
 
                         for i in range(0, 11):    
                             if game == 'Cookie Run':
+                                # do a normal pull
                                 rarity_pull = await Gacha().pull_cookie()
+
+                                # check if user pity has reached max pity
                                 if current_pity > max_pity:
-                                    rarity_recieved = await Gacha().cr_pity_gacha(rarity_pull, current_pity)
-                                    rarity_pull = rarity_recieved[0]
-                                    new_pity = rarity_recieved[1]
+                                    rarity_pull = await Gacha().cr_pity_gacha(rarity_pull, current_pity)
+                                    new_pity = 0
+
+                                # reset pity if high rarity recieved, else add one to pity
                                 if isinstance(rarity_pull, str):
                                     if rarity_pull in rarity_filter:
                                             new_pity = 0
@@ -489,7 +493,10 @@ class GachaInteraction(commands.Cog):
                                             new_pity += 1
                                 elif isinstance(rarity_pull, int):
                                     new_pity += 1
+
+                                # add final result to pull total
                                 res.append(rarity_pull)
+
                             if game == 'Honkai: Star Rail':
                                 if fifty_fifty_value == 0:
                                     res.append(await Gacha().won_fifty_hsr())
@@ -593,7 +600,7 @@ class GachaInteraction(commands.Cog):
 
                 #reset streak if needed!
                 last_daily = (currentTime - last_message_sent[0]).total_seconds()
-                max_daily_miss = (60 * 60) * 48 #48 hours into seconds
+                max_daily_miss = (60 * 60) * 36 #36 hours into seconds
                 if last_daily > max_daily_miss:
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = 0 WHERE USER_ID = %s", (member.id))
                     
@@ -610,10 +617,13 @@ class GachaInteraction(commands.Cog):
 
                 #range = 0 day to 1 week
                 if current_streak <= 7:
-                    dailyAmount += round(((current_streak/10 * dailyAmount) * 1.5))
-                #range = 8 day+
-                else:
                     dailyAmount += round(((current_streak/10 * dailyAmount) * 1.25))
+                #range = week 1 to week 2
+                elif current_streak <= 14:
+                    dailyAmount += round(((current_streak/10 * dailyAmount) * 1.10))
+                #range = week 2+
+                else:
+                    dailyAmount += round(((current_streak/10 * dailyAmount) * 1.05))
 
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
                     balance += dailyAmount
@@ -1591,16 +1601,11 @@ class Gacha:
         user_pity = pity
 
         # filter
-        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'Awakened Ancient', 'Beast']
-
-        # ensure rarity != a number
-        if isinstance(rarity, int):
-            return
+        rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'First', 'Ancient', 'Awakened Ancient', 'Beast']
 
         # if less pity than needed, no rarity change and stop early
-        # make sure rarity param isnt above legendary already
-        if pity < cr_pity or rarity in rarity_filter:
-            return [rarity, user_pity]
+        if user_pity < cr_pity:
+            return rarity
         else:
             pity_probability = random.random()
             new_rarity = ""
@@ -1608,26 +1613,23 @@ class Gacha:
             if 0 <= pity_probability < 0.3000:
                 #Instead of what they got, get a legendary!
                 new_rarity = 'Legendary'
-                user_pity = 0
             
-            if 0.3000 <= pity_probability < 0.5000:
+            if 0.3000 <= pity_probability < 0.4000:
                 new_rarity = 'Feat_Leg'
-                user_pity = 0
+
+            if 0.4000 <= pity_probability < 0.5500:
+                new_rarity = 'First'
             
-            if 0.5000 <= pity_probability < 0.7500:
+            if 0.5500 <= pity_probability < 0.7500:
                 new_rarity = 'Dragon'
-                user_pity = 0
             
             if 0.7500 <= pity_probability < 0.8350:
                 new_rarity = 'Ancient'
-                user_pity = 0
             
             if 0.8350 <= pity_probability <= 0.8750:
                 new_rarity = 'Awakened Ancient'
-                user_pity = 0
             
             if 0.8750 <= pity_probability < 1.0000:
                 new_rarity = 'Beast'
-                user_pity = 0
                 
-        return [new_rarity, user_pity]
+        return new_rarity
