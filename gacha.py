@@ -604,9 +604,7 @@ class GachaInteraction(commands.Cog):
                 currentTime = datetime.datetime.utcnow()
 
                 balance = await fetch_balance(cursor, member, interaction)
-                if balance == 0:
-                    pass
-                elif not balance:
+                if not balance:
                     await cursor.execute("INSERT INTO USER (USER_ID, USER_GEMS) VALUES (%s, %s)", (member.id, dailyAmount,))
 
                 await cursor.execute("SELECT USER_LAST_DAILY FROM USER WHERE USER_ID = %s", (member.id,))
@@ -641,7 +639,7 @@ class GachaInteraction(commands.Cog):
 
                 if last_message_sent[0] == None or (currentTime - last_message_sent[0]).total_seconds() > self.DAILYCOOLDOWN:
                     balance += dailyAmount
-                
+                    current_streak += 1
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (balance, member.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_DAILY = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), member.id,))
                     await cursor.execute("UPDATE USER SET DAILY_STREAK = %s WHERE USER_ID = %s", (current_streak, member.id,))
