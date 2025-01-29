@@ -1320,6 +1320,12 @@ class GachaInteraction(commands.Cog):
             if other_user.id == 1160998311264796714 or other_user.id == 1082486461103878245:
                 await interaction.response.send_message(f"Azalea is busy :(", ephemeral=True)
             else:   
+                # user will guess in the thread
+                try:
+                    initial_message = await interaction.channel.send("Guess the Number in the thread!")
+                    thread = await initial_message.channel.create_thread(name=f"{interaction.user.display_name}, Guess the Number!",message=initial_message)
+                except Exception as e:
+                    await interaction.followup.send(f"An error occurred: {e}")
                 #make number for random guessing, make it be 25 gap always
                 lower_guess = 0
                 higher_guess = 10
@@ -1332,9 +1338,9 @@ class GachaInteraction(commands.Cog):
                 while True:
                     if other_user.id != interaction.user.id:
                         #user 2, the one pinged, goes first
-                        await interaction.followup.send(f"<@{other_user.id}>, guess a whole number between {lower_guess} and {higher_guess} :game_die:\n[Will keep repeating until correct].")
+                        await thread.send(f"<@{other_user.id}>, guess a whole number between {lower_guess} and {higher_guess} :game_die:\n[Will keep repeating until correct].")
                         def check_user2(message: discord.Message):
-                            return message.author.id == other_user.id and message.channel.id == interaction.channel.id
+                            return message.author.id == other_user.id and message.channel.id == thread.id
 
                         try:
                             while True:
@@ -1343,7 +1349,7 @@ class GachaInteraction(commands.Cog):
                                     user2_guess = int(user2_msg.content)
                                     break
                                 except ValueError:
-                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!", ephemeral=True)
+                                    await thread.send("Please only enter numbers! Try guessing again.", ephemeral=True)
   
                             
                             if user2_guess == guess_this:
@@ -1352,10 +1358,10 @@ class GachaInteraction(commands.Cog):
                                 break
                             else:
                                 # Second user was incorrect, now let the first user guess
-                                await interaction.followup.send(f"<@{interaction.user.id}>, guess a whole number between {lower_guess} and {higher_guess} :game_die:\n[Will keep repeating until correct]")
+                                await thread.send(f"<@{interaction.user.id}>, guess a whole number between {lower_guess} and {higher_guess} :game_die:\n[Will keep repeating until correct]")
                                 
                                 def check_user1(message: discord.Message):
-                                    return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
+                                    return message.author.id == interaction.user.id and message.channel.id == thread.id
                                 
                                 try:
                                     while True:
@@ -1364,22 +1370,26 @@ class GachaInteraction(commands.Cog):
                                             user1_guess = int(user1_msg.content)
                                             break
                                         except ValueError:
-                                            await interaction.followup.send(f"Please only enter numbers! Try guessing again!", ephemeral=True)
+                                            await thread.send("Please only enter numbers! Try guessing again.", ephemeral=True)
 
                                     if user1_guess == guess_this:
                                         user_correct = interaction.user.id
                                         other_correct = other_user.id
                                         break
                                 except asyncio.TimeoutError:
+                                    await initial_message.delete()
+                                    await thread.delete()
                                     await interaction.followup.send(f"<@{interaction.user.id}> didn't send a message in time! Try again in 2 minutes.")
                                     break
                         except asyncio.TimeoutError:
+                            await initial_message.delete()
+                            await thread.delete()
                             await interaction.followup.send(f"<@{other_user.id}> didn't send a message in time! Try again in 2 minutes.")
                             break
                     else:
-                        await interaction.followup.send(f"<@{interaction.user.id}>, guess a whole number between {lower_guess} and {higher_guess} :game_die:\n[Will keep repeating until correct].")
+                        await thread.send(f"<@{interaction.user.id}>, guess a whole number between {lower_guess} and {higher_guess} :game_die:\n[Will keep repeating until correct].")
                         def check_user1(message: discord.Message):
-                            return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
+                            return message.author.id == interaction.user.id and message.channel.id == thread.id
                         try:
                             while True:
                                 try:
@@ -1387,12 +1397,14 @@ class GachaInteraction(commands.Cog):
                                     user1_guess = int(user1_msg.content)
                                     break
                                 except ValueError:
-                                    await interaction.followup.send(f"Please only enter numbers! Try guessing again!", ephemeral=True)
+                                    await thread.send("Please only enter numbers! Try guessing again.", ephemeral=True)
                             if user1_guess == guess_this:
                                 user_correct = interaction.user.id
                                 other_correct = other_user.id
                                 break
                         except asyncio.TimeoutError:
+                            await initial_message.delete()
+                            await thread.delete()
                             await interaction.followup.send(f"<@{interaction.user.id}> didn't send a message in time! Try again in 2 minutes.")
                             break
 
@@ -1428,6 +1440,9 @@ class GachaInteraction(commands.Cog):
                             await conn.commit()
 
                     await conn.commit()
+                # delete the thread, announce win in channel
+                await initial_message.delete()
+                await thread.delete()
                 if interaction.user.id != other_user.id:
                     await interaction.followup.send(f"***{guess_this} is correct! :white_check_mark:*** Good job <@{user_correct}>!\n\nYou and <@{other_correct}> both gained __{correct_answer_gems} :gem:__!\nPlease wait 2 minutes before doing this command again!")
                 else:
