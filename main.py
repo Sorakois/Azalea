@@ -331,13 +331,59 @@ class General(commands.Cog):
 
                                 #now we have all the info... insert it!
                                 await cursor.execute(
-                                    "UPDATE HSR_BUILD SET stats = %s, trapri = %s, bestlc = %s, bestrelics = %s, bestplanar = %s, bestteam = %s, buildauthor = %s;",
-                                    (updated_stats, updated_traceprio, updated_LC, updated_relics, updated_planar, updated_team, updated_author)
+                                    "UPDATE HSR_BUILD SET stats = %s, trapri = %s, bestlc = %s, bestrelics = %s, bestplanar = %s, bestteam = %s, buildauthor = %s WHERE name = %s;",
+                                    (updated_stats, updated_traceprio, updated_LC, updated_relics, updated_planar, updated_team, updated_author, characterB_name)
                                 )                            
                                 await interaction.followup.send(f"Done! {characterB} has been updated.")
                             await conn.commit()
                 except ValueError as e:
                     await interaction.followup.send(f"Error! {e}")
+
+        if prompt == "SKOI_QOTD-GEMS":
+            
+            '''
+            The idea:
+                - parameters would be the thread id
+                - taking the thread id, scan the messages to find unique user IDS
+                - award 300 gems to each unique user
+            '''
+            await interaction.response.defer()
+            await interaction.followup.send(f"Enter the thread ID to reward users.")
+
+            def check(message: discord.Message):
+                    return message.author.id == member.id and message.channel.id == interaction.channel.id
+            
+            try:
+                msg = await interaction.client.wait_for('message', check=check, timeout=90.0)
+                thread_id = int(msg.content)
+
+                #get the thread
+                thread = await bot.fetch_channel(thread_id)
+                if isinstance(thread, discord.Thread):
+                    #grab all QOTD answer-ers
+                    qotd_user_ids = set()
+                    async for message in thread.history(limit=None):
+                        if message.author:  # Ensure the author is valid
+                            qotd_user_ids.add(message.author.id)
+                    qotd_awarded = {}
+
+                    #now, reward people with gems!
+                    qotd_award = 300
+                    async with self.bot.db.acquire() as conn:
+                        async with conn.cursor() as cursor:
+                            for qotd_user in qotd_user_ids:
+                                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (qotd_user,))
+                                gems_old = await cursor.fetchone()
+                                await cursor.execute("UPDATE USER SET USER_GEMS = USER_GEMS + %s WHERE USER_ID = %s", (qotd_award,qotd_user,))
+                                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (qotd_user,))
+                                gems_new = await cursor.fetchone()
+                                qotd_awarded[qotd_user] = (gems_old[0], gems_new[0])
+                        await conn.commit()
+                    #print to show who was given gems
+                    for key, value in qotd_awarded.items():
+                        await interaction.followup.send(f"Added {qotd_award} gems to <@{key}>.\nNew vs Old Gems: {value}.")
+            except:
+                await interaction.followup.send(f"Invalid thread ID")
 
                 
 # Add the general cog after declaration.
