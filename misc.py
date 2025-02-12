@@ -81,17 +81,17 @@ def fix_rarity(rarity):
     return rarity
 
 def chrono_image(chrono: int):
-    chrono_img_ids = ["<:promo_0:1339072000714477720>", #0
-                      "<:promo_1:1339072011422404660>", #1
-                      "<:promo_2:1339072021220556870>", #2
-                      "<:promo_3:1339072028912648255>", #3
-                      "<:promo_4:1339072040224821319>", #4
-                      "<:promo_5:1339072049401827378>", #5
-                      "<:promo_6:1339072059094863934>", #6
-                      "<:promo_7:1339072068456677376>", #7
-                      "<:promo_8:1339072077529092187>", #8
-                      "<:promo_9:1339072085753860137>", #9
-                      "<:promo_10:1339072093849129031>", #10
+    chrono_img_ids = [" ", #0
+                      ":star:", #1
+                      ":star::star:", #2
+                      ":star::star::star:", #3
+                      ":star::star::star::star:", #4
+                      ":star::star::star::star::star:", #5
+                      ":star2:", #6
+                      ":star2::star2:", #7
+                      ":star2::star2::star2:", #8
+                      ":star2::star2::star2::star2:", #9
+                      ":star2::star2::star2::star2::star2:", #10
                     ]
     if chrono > 10:
         return
