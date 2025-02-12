@@ -17,6 +17,7 @@ import misc
 from psyche import Persona
 import asyncio
 from asyncio import Lock
+import debug
 
 # load the enviroment variables
 load_dotenv()
@@ -30,7 +31,6 @@ logging.getLogger().addHandler(stderrLogger)
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
 
 # start up database connection
-
 mysql_login = {'host':"db-buf-05.sparkedhost.us",
                'user':"u104092_jfUaeyVlqc",
                'password':"^lR0+=!4nvkHd9zQvs0BggFS",
@@ -143,7 +143,7 @@ class General(commands.Cog):
             #split = prompt.split(' ')
 
         '''fix this'''
-        if prompt == 'xp-boost': 
+        if prompt == debug.Prompt.XP_BOOST: 
             boost = int(split[1])
             days = int(split[2])
             Leveling.MINEXP *= boost
@@ -151,18 +151,17 @@ class General(commands.Cog):
             await interaction.response.send_message(f"Double XP Started for {days} days")
             print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
-        if prompt == 'SKOI_BUGFIX_scrape_cookie':
+        if prompt == debug.Prompt.CRK_SCRAPE:
             await interaction.response.defer()
             res = await scrape_cookie1(self.bot)
             await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
 
-        if prompt == 'SKOI_BUGFIX_scrape_cookie_ob':
+        if prompt == debug.Prompt.CROB_SCRAPE:
             await interaction.response.defer()
             res = await scrape_cookie2(self.bot)
             await interaction.followup.send('updated cookies!', ephemeral=True)
 
-        if prompt == 'SKOI_BUGFIX_USER-INV-SPACE':
-
+        if prompt == debug.Prompt.USER_INV:
             await interaction.response.defer()
             await interaction.followup.send(f"Enter the USER_ID for who's inventory slot # needs fixed.")
 
@@ -197,7 +196,7 @@ class General(commands.Cog):
             except asyncio.TimeoutError:
                 await interaction.channel.send("You didn't send a message in time.")  
             
-        if prompt == "SKOI_BUGFIX_GIVEGEMS_999-":
+        if prompt == debug.Prompt.GIVE_GEM:
             await interaction.response.defer()
             await interaction.followup.send(f"Enter the USER_ID and gem amount for who's inventory slot # needs fixed.")
 
@@ -226,7 +225,7 @@ class General(commands.Cog):
                 except:
                     await interaction.followup.send(f"This does not work.")
 
-        if prompt == "SKOI_BUGFIX_COMPENSATE-EXPAND":
+        if prompt == debug.Prompt.EXPAND_FIX:
             '''
             Since essence to expand now costs 15x less, 
             compensate users who spent essence to expand already
@@ -270,7 +269,7 @@ class General(commands.Cog):
                 except Exception as e:
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
 
-        if prompt == "SKOI_UPDATE_BUILD-HSR":
+        if prompt == debug.Prompt.HSR_BUILD:
             await interaction.response.defer()
             async with self.lock:
                 await interaction.followup.send(f"Enter the name of the character to update info for [/build cmd update].")
@@ -339,7 +338,7 @@ class General(commands.Cog):
                 except ValueError as e:
                     await interaction.followup.send(f"Error! {e}")
 
-        if prompt == "SKOI_QOTD-GEMS":
+        if prompt == debug.Prompt.QOTD_GEMS:
             
             '''
             The idea:
