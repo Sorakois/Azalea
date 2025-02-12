@@ -122,7 +122,7 @@ class MultipullView(discord.ui.View):
 
 class HelpView(discord.ui.View):
     page = 1
-    COMMANDS_PER_PAGE = 5
+    COMMANDS_PER_PAGE = 8
 
     def __init__(self, com_and_info, last_interaction: discord.Interaction, name: discord.User, timeout: float | None = 180):
         super().__init__(timeout=timeout)
