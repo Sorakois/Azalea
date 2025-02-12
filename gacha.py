@@ -176,7 +176,7 @@ class HelpView(discord.ui.View):
 class InventoryView(discord.ui.View):
 
     page = 1
-    COOKIE_PER_PAGE = 5
+    COOKIE_PER_PAGE = 8
 
     def __init__(self, inventory, last_interaction: discord.Interaction, name: discord.User, timeout: float | None = 180):
         super().__init__(timeout=timeout)
