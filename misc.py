@@ -22,6 +22,8 @@ def cleanse_name(character:str):
     #characters with abreviations or other names
     if character == "DHIL" or character == "DAN HENG IMBIBITOR LUNAE":
         character = "imbibitor lunae"
+    if character == "BHILL":
+        character = "boothill"
     if character == "FEI XIAO":
         character = "feixiao"
     if character == "FUGUE"or character == "FUGUE TINGYUN":
