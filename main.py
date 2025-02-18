@@ -7,6 +7,7 @@ import os
 import logging
 import json
 import datetime
+import gacha
 from leveling import Leveling
 from dotenv import load_dotenv
 from util.scrape_wiki import scrape_cookies as scrape_cookie1
@@ -15,7 +16,6 @@ from cookie_info import CookieInfo
 from gacha import GachaInteraction, HelpView
 import misc
 from psyche import Persona
-from knowledge import Smart
 import asyncio
 from asyncio import Lock
 from debug import Prompt
@@ -51,7 +51,6 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
-    'knowledge' : Smart(bot)
     }
 
 # bot settings
