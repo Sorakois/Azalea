@@ -179,7 +179,7 @@ class Leveling(commands.Cog):
 
                     valid_time = True
 
-                    xp += random.randrange(self.MINEXP, self.MAXEXP) #ensure both numbers are ints
+                    xp += random.randrange(int(self.MINEXP), int(self.MAXEXP)) #ensure both numbers are ints
                     await cursor.execute("UPDATE USER SET USER_XP = %s WHERE USER_ID = %s", (xp, author.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_MSG = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), author.id,)) # time
 
