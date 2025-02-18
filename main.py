@@ -15,9 +15,10 @@ from cookie_info import CookieInfo
 from gacha import GachaInteraction, HelpView
 import misc
 from psyche import Persona
+from knowledge import Smart
 import asyncio
 from asyncio import Lock
-import debug
+from debug import Prompt
 
 # load the enviroment variables
 load_dotenv()
@@ -49,7 +50,8 @@ cogs = {
     'cookie_info' : CookieInfo(bot),
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
-    'psyche' : Persona(bot)
+    'psyche' : Persona(bot),
+    'knowledge' : Smart(bot)
     }
 
 # bot settings
@@ -143,7 +145,7 @@ class General(commands.Cog):
             #split = prompt.split(' ')
 
         '''fix this'''
-        if prompt == debug.Prompt.XP_BOOST: 
+        if prompt == Prompt.XP_BOOST.value: 
             boost = int(split[1])
             days = int(split[2])
             Leveling.MINEXP *= boost
@@ -151,17 +153,17 @@ class General(commands.Cog):
             await interaction.response.send_message(f"Double XP Started for {days} days")
             print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
-        if prompt == debug.Prompt.CRK_SCRAPE:
+        if prompt == Prompt.CRK_SCRAPE.value:
             await interaction.response.defer()
             res = await scrape_cookie1(self.bot)
             await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
 
-        if prompt == debug.Prompt.CROB_SCRAPE:
+        if prompt == Prompt.CROB_SCRAPE.value:
             await interaction.response.defer()
             res = await scrape_cookie2(self.bot)
             await interaction.followup.send('updated cookies!', ephemeral=True)
 
-        if prompt == debug.Prompt.USER_INV:
+        if prompt == Prompt.USER_INV.value:
             await interaction.response.defer()
             await interaction.followup.send(f"Enter the USER_ID for who's inventory slot # needs fixed.")
 
@@ -196,7 +198,7 @@ class General(commands.Cog):
             except asyncio.TimeoutError:
                 await interaction.channel.send("You didn't send a message in time.")  
             
-        if prompt == debug.Prompt.GIVE_GEM:
+        if prompt == Prompt.GIVE_GEM.value:
             await interaction.response.defer()
             await interaction.followup.send(f"Enter the USER_ID and gem amount for who's inventory slot # needs fixed.")
 
@@ -225,7 +227,7 @@ class General(commands.Cog):
                 except:
                     await interaction.followup.send(f"This does not work.")
 
-        if prompt == debug.Prompt.EXPAND_FIX:
+        if prompt == Prompt.EXPAND_FIX.value:
             '''
             Since essence to expand now costs 15x less, 
             compensate users who spent essence to expand already
@@ -269,7 +271,7 @@ class General(commands.Cog):
                 except Exception as e:
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
 
-        if prompt == debug.Prompt.HSR_BUILD:
+        if prompt == Prompt.HSR_BUILD.value:
             await interaction.response.defer()
             async with self.lock:
                 await interaction.followup.send(f"Enter the name of the character to update info for [/build cmd update].")
@@ -338,7 +340,7 @@ class General(commands.Cog):
                 except ValueError as e:
                     await interaction.followup.send(f"Error! {e}")
 
-        if prompt == debug.Prompt.QOTD_GEMS:
+        if prompt == Prompt.QOTD_GEMS.value:
             
             '''
             The idea:

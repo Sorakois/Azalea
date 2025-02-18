@@ -340,10 +340,10 @@ class GachaInteraction(commands.Cog):
                 crystals = await cursor.fetchone()
 
                 if valid_time:
-                    try:
-                        crystals = crystals[0]
-                    except ValueError:
-                        crystals = 0
+                    if crystals is None:
+                        crystals = 0  # Default value for crystals if none found
+                    else:
+                        crystals = crystals[0] # grab the correct crystal amount
                     
                     crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (crystals, author.id,))
@@ -860,7 +860,7 @@ class GachaInteraction(commands.Cog):
 
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} LIMIT {amount};")
+                await cursor.execute(f"SELECT USER_ID, ITEM_ID, ITEM_NAME, ITEM_RARITY FROM ITEM NATURAL JOIN ITEM_INFO WHERE ITEM_NAME LIKE '{cookie}%' AND USER_ID = {member.id} AND PROMO = 0 LIMIT {amount};")
                 crumble_cookie = await cursor.fetchall()
                 if amount < 1:
                     await interaction.response.send_message("Cannot crumble nothing/negative characters, silly!")
@@ -913,6 +913,9 @@ class GachaInteraction(commands.Cog):
                     
                     item_ids = []
                     crumble_essence = 0
+
+                    await interaction.response.defer()
+
                     for unique_item in all_rarity_select:
                         char_id = unique_item[1]
                         char_rarity = unique_item[3]
@@ -952,7 +955,7 @@ class GachaInteraction(commands.Cog):
                     new_bal = new_bal[0] if new_bal else 0 
 
                 await conn.commit()
-                await interaction.response.send_message(f"Success!\n\nYou recieved {crumble_essence} essence by crumbling {len(all_rarity_select)} characters of rarity {char_rarity}.\nYou now have {new_bal} <:essence:1295791325094088855>", ephemeral=False)
+                await interaction.followup.send(f"Success!\n\nYou recieved {crumble_essence} essence by crumbling {len(all_rarity_select)} characters of rarity {char_rarity}.\nYou now have {new_bal} <:essence:1295791325094088855>", ephemeral=False)
 
                     #debug line
                     #await interaction.response.send_message(f"All item ids: {item_ids}", ephemeral=False)
@@ -1155,7 +1158,21 @@ class GachaInteraction(commands.Cog):
                     except:
                         await interaction.response.send_message(f"INVALID CODE:\nCharacter: {character}\nHighest Promo: {highest_promo}\nChar copies: {char_copies}", ephemeral=True)
 
+        #Trading items
+        @discord.app_commands.checks.cooldown(1, 30)
+        @app_commands.command(name="trade", description="Trade your items with another user")
+        async def trade(self, interaction : discord.Interaction, other_user : discord.User):
+            '''
+            "What item to trade?" until valid item from ITEM database
+            "Trade essence?" as a follow-up Q
 
+            Ask other user same question
+            
+            Swap items after confirmation
+            '''
+    
+    
+    
     '''
     Pity Checking
     '''    
