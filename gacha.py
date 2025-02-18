@@ -340,10 +340,10 @@ class GachaInteraction(commands.Cog):
                 crystals = await cursor.fetchone()
 
                 if valid_time:
-                    try:
-                        crystals = crystals[0]
-                    except ValueError:
-                        crystals = 0
+                    if crystals is None:
+                        crystals = 0  # Default value for crystals if none found
+                    else:
+                        crystals = crystals[0] # grab the correct crystal amount
                     
                     crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
                     await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (crystals, author.id,))
@@ -1158,7 +1158,21 @@ class GachaInteraction(commands.Cog):
                     except:
                         await interaction.response.send_message(f"INVALID CODE:\nCharacter: {character}\nHighest Promo: {highest_promo}\nChar copies: {char_copies}", ephemeral=True)
 
+        #Trading items
+        @discord.app_commands.checks.cooldown(1, 30)
+        @app_commands.command(name="trade", description="Trade your items with another user")
+        async def trade(self, interaction : discord.Interaction, other_user : discord.User):
+            '''
+            "What item to trade?" until valid item from ITEM database
+            "Trade essence?" as a follow-up Q
 
+            Ask other user same question
+            
+            Swap items after confirmation
+            '''
+    
+    
+    
     '''
     Pity Checking
     '''    
