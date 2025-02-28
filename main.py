@@ -52,7 +52,7 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
-    'market': market.Business(bot) 
+    'market': Business(bot) 
     }
 
 # bot settings
