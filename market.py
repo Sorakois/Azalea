@@ -27,7 +27,7 @@ class Business(commands.Cog):
     '''
     @discord.app_commands.checks.cooldown(1, 30)
     @app_commands.command(name="trade", description="Trade your items with others!")
-    async def trade(self, interaction : discord.Interaction, other_user : discord.User):
+    async def trade(self, interaction: discord.Interaction, other_user: discord.User):
         await interaction.response.defer()
         
         # Simplify variables
