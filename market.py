@@ -27,7 +27,7 @@ class Business(commands.Cog):
     '''
     @discord.app_commands.checks.cooldown(1, 30)
     @app_commands.command(name="trade", description="Trade your items with others!")
-    async def number_guess(self, interaction : discord.Interaction, other_user : discord.User):
+    async def trade(self, interaction : discord.Interaction, other_user : discord.User):
         await interaction.response.defer()
         
         # Simplify variables
@@ -156,7 +156,7 @@ class Business(commands.Cog):
                                     
                                 if chars_to_trade:
                                     # An item/character is being traded!
-                                    
+
                                     # Cleanse each name then check compare to database
                                     for character in chars_to_trade:
                                         character = cleanse_name(character)
@@ -183,8 +183,22 @@ class Business(commands.Cog):
                                         if not is_valid:
                                             await interaction.followup.send(f"{character} is not valid/unowned and will be removed from your trade query.", ephemeral=True)
                                             validInp = False
-
                                             
+                                    '''NOTE: IMPORTANT
+                                            Do a inventory check on the other person. Trade can't continue if someone has a full inventory.
+                                    '''
+                                    await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", member.id)
+                                    user1_invspace = await cursor.fetchone()
+                                    await cursor.execute("SELECT USER_INV_SLOTS, USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", other_user.id)
+                                    user2_invspace = await cursor.fetchone()
+                                    
+                                    if user1_invspace[0] <= (user1_invspace[1] + len(user2_chars)): # User 1 has a full inventory
+                                        await interaction.followup.send(f"<@{member.id} has a full inventory! Please /crumble or /promote and try again.", ephemeral=True)
+                                        return
+                                    if user2_invspace[0] <= (user2_invspace[1] + len(user1_chars)): # User 2 has a full inventory
+                                        await interaction.followup.send(f"<@{other_user.id} has a full inventory! Please /crumble or /promote and try again.", ephemeral=True)
+                                        return
+                                 
                                     #await interaction.followup.send(f"TESTING2:\n    {testing2}", ephemeral=True)                                    
                     except Exception as e:
                     # General error catch
@@ -245,13 +259,18 @@ class Business(commands.Cog):
                             infoID = eachChar[2]
                             # Swap the ID from it being User1 to it now being User2
                             await cursor.execute("UPDATE ITEM SET USER_ID = %s WHERE ITEM_ID = %s AND ITEM_INFO_ID = %s AND PROMO = 0 AND USER_ID = %s", (other_user.id, instanceID, infoID, member.id))
+                            # Subtract inv slot from User 1, add to User 2
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT + 1 WHERE USER_ID = %s", other_user.id)
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT - 1 WHERE USER_ID = %s", member.id)
                     if user2_chars is not None: # User2 -> User1, CHAR
                         for eachChar in user2_chars:
                             instanceID = eachChar[1]
                             infoID = eachChar[2]
                             # Swap the ID from it being User1 to it now being User2
                             await cursor.execute("UPDATE ITEM SET USER_ID = %s WHERE ITEM_ID = %s AND ITEM_INFO_ID = %s AND PROMO = 0 AND USER_ID = %s", (member.id, instanceID, infoID, other_user.id))
-                    
+                            # Subtract inv slot from User 1, add to User 2
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT + 1 WHERE USER_ID = %s", member.id)
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT - 1 WHERE USER_ID = %s", other_user.id)
             '''
             DONE!!!! Output to user now to show the results.
             '''
@@ -288,7 +307,7 @@ class Business(commands.Cog):
             
             # User 2 results
             if user1_gems and user1_gems > 0:
-                em.add_field(name=f"{other_user.display_name}: ", value=f"{user1_gems} :gem:", inline=True)
+                em.add_field(name=f"{other_user.display_name} Gained: ", value=f"{user1_gems} :gem:", inline=True)
             if user1_ess and user1_ess > 0:
                 em.add_field(name=f"{other_user.display_name} Gained: ", value=f"{user1_ess} <:essence:1295791325094088855>", inline=True)
             if user2_charGained:
@@ -297,3 +316,8 @@ class Business(commands.Cog):
             em.set_footer(text=f"Trade between {member.display_name} and {other_user.display_name}")
             await interaction.followup.send(embed=em, ephemeral=False)
             return
+        
+    @trade.error
+    async def on_trade_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(str(error))
