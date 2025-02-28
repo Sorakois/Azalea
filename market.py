@@ -76,12 +76,12 @@ class Business(commands.Cog):
                                 return message.author.id == other_user.id and message.channel.id == interaction.channel.id # Second User
 
                         # Grab user's raw input
-                        msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                        msg = await interaction.client.wait_for('message', check=check, timeout=120.0)
                         item_to_trade = msg.content
                     
                     # User did not respond in time
                     except asyncio.TimeoutError:
-                        await interaction.followup.send("You took too long to respond!", ephemeral=True)
+                        await interaction.followup.send(f"<@{correctUserID}> took too long to respond!", ephemeral=False)
                         return
                     
                     # The input might contain multiple items... break them apart.
