@@ -1157,21 +1157,6 @@ class GachaInteraction(commands.Cog):
                         await conn.commit()
                     except:
                         await interaction.response.send_message(f"INVALID CODE:\nCharacter: {character}\nHighest Promo: {highest_promo}\nChar copies: {char_copies}", ephemeral=True)
-
-        #Trading items
-        @discord.app_commands.checks.cooldown(1, 30)
-        @app_commands.command(name="trade", description="Trade your items with another user")
-        async def trade(self, interaction : discord.Interaction, other_user : discord.User):
-            '''
-            "What item to trade?" until valid item from ITEM database
-            "Trade essence?" as a follow-up Q
-
-            Ask other user same question
-            
-            Swap items after confirmation
-            '''
-    
-    
     
     '''
     Pity Checking
