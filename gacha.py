@@ -10,6 +10,7 @@ import requests
 import json
 import asyncio
 from asyncio import Lock
+from market import Business
 from misc import cleanse_name, fix_rarity, chrono_image
 
 rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'First', 'Awakened Ancient', 'Beast']
