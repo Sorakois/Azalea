@@ -14,6 +14,7 @@ from util.scrape_wiki import scrape_cookies as scrape_cookie1
 from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
 from gacha import GachaInteraction, HelpView
+from market import Business
 import misc
 from psyche import Persona
 import asyncio
@@ -51,6 +52,7 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
+    'market': Business(bot) 
     }
 
 # bot settings
