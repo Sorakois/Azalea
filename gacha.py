@@ -358,6 +358,7 @@ class GachaInteraction(commands.Cog):
                 
                     await conn.commit()
                     await self.bot.process_commands(message)
+                    # XP successfully awarded!
                     return
             except TimeoutError or OperationalError as e:
                 countAttempt += 1
