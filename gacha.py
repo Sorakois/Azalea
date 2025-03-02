@@ -329,28 +329,42 @@ class GachaInteraction(commands.Cog):
         self.bot = bot
         self.lock = Lock()
 
+    '''
+    Discord sometimes timesout regardless, so.... let it retry.
+    '''
     async def crystalOnMessage(self, message: discord.Message, valid_time):
         if message.author.bot:
             return
         
         author = message.author
+        maxAttempts = 5
+        countAttempt = 0
 
-        async with self.bot.db.acquire() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (author.id,))
-                crystals = await cursor.fetchone()
+        while countAttempt < maxAttempts:
+            try:
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (author.id,))
+                        crystals = await cursor.fetchone()
 
-                if valid_time:
-                    if crystals is None:
-                        crystals = 0  # Default value for crystals if none found
-                    else:
-                        crystals = crystals[0] # grab the correct crystal amount
-                    
-                    crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
-                    await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (crystals, author.id,))
-        
-            await conn.commit()
-            await self.bot.process_commands(message)  
+                        if valid_time:
+                            if crystals is None:
+                                crystals = 0  # Default value for crystals if none found
+                            else:
+                                crystals = crystals[0] # grab the correct crystal amount
+                            
+                            crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
+                            await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (crystals, author.id,))
+                
+                    await conn.commit()
+                    await self.bot.process_commands(message)
+                    return
+            except TimeoutError or OperationalError as e:
+                countAttempt += 1
+                if countAttempt > maxAttempts:
+                    return
+                # Give the connection a second to restart
+                await asyncio.sleep(1) 
 
     @discord.app_commands.checks.cooldown(1, 3)
     @app_commands.command(name="pull", description="Pull once for 300 gems.")
