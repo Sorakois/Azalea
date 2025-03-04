@@ -4,8 +4,11 @@ from discord.ext import commands
 from discord import Colour
 import random
 from typing import Literal
+import json
 #from buildcommand import HSRCharacter
 import logging
+
+import requests
 
 def cleanse_name(character:str):
     #format query
@@ -115,6 +118,11 @@ class MiscCMD(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
+    
+    '''
+    Hug Command:
+        Just randomly sends a hug gif from above. No need for a database for them... yet.
+    '''
     @app_commands.command(name="hug", description="Receive a hug!")
     async def hug(self, interaction: discord.Interaction):
         # Optionally: Log or handle user interaction data here if needed
@@ -126,8 +134,16 @@ class MiscCMD(commands.Cog):
         except Exception as e:
             # Handle potential errors
             await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
-            print(f"Error [/hug]: {e}")
 
+    '''
+    BUILD COMMAND!
+        Allow users to see how to build characters (best equipment) in:
+            - Honkai Star Rail
+            - Cookie Run Kingdom (in development)
+            - Zenless Zone Zero (in development)
+            - Genshin Impact (in development)
+            - Wuthering Waves (in development)
+    '''
     @discord.app_commands.checks.cooldown(5, 15)
     @app_commands.command(name="build", description="Check the optimal build for each character!")
     async def build(self, interaction : discord.Interaction, game: Literal['HSR', 'CRK'], character: str):
@@ -260,3 +276,26 @@ class MiscCMD(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
             
+    '''
+    Fun fact command!
+        Do the command, get a fun fact. That's it!
+    '''
+    @app_commands.command(name="funfact", description="View a random fact!")
+    async def hug(self, interaction: discord.Interaction):
+        member = interaction.user
+        try:
+            # Websites for API 
+            #   --> https://thefact.space/random
+            #   --> https://uselessfacts.jsph.pl/api/v2/facts/random
+            
+            fun_facts = requests.get("https://thefact.space/random", timeout=10)
+                
+            json_data = json.loads(fun_facts.text)
+            fun_fact = json_data['text']
+            source = json_data['source']
+            
+            await interaction.response.send_message(f"## Fun Fact!\n\n{fun_fact}\n-# Source: <{source}>")
+            
+        except Exception as e:
+            # Handle potential errors
+            await interaction.response.send_message(f"Oops! Something went wrong.\n{e}", ephemeral=True)
