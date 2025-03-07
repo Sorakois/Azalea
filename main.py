@@ -201,7 +201,7 @@ class General(commands.Cog):
             
         if prompt == Prompt.GIVE_GEM.value:
             await interaction.response.defer()
-            await interaction.followup.send(f"Enter the USER_ID and gem amount for who's inventory slot # needs fixed.")
+            await interaction.followup.send(f"Enter the USER_ID + gem amount to award.")
 
             def check(message: discord.Message):
                 return message.author.id == member.id and message.channel.id == interaction.channel.id
