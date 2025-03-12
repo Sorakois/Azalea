@@ -157,7 +157,7 @@ class General(commands.Cog):
         if prompt == Prompt.CRK_SCRAPE.value:
             await interaction.response.defer()
             res = await scrape_cookie1(self.bot)
-            await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
+            await interaction.followup.send(f"resolved with: {res}", ephemeral=True)
 
         if prompt == Prompt.CROB_SCRAPE.value:
             await interaction.response.defer()
@@ -412,4 +412,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))

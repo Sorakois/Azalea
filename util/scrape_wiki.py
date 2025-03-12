@@ -1,4 +1,5 @@
-import requests
+#import requests
+import aiohttp
 from bs4 import BeautifulSoup
 
 ###############################################################
@@ -25,7 +26,7 @@ class Cookie:
             link (str) : url destination to cookie
         '''
         self.name = name
-        self.link = link
+        self.link = link # a path --> /Wiki/cookie_cookie
         self.position = position
         self.ctype = ctype
         self.identify_released()
@@ -44,10 +45,8 @@ class Cookie:
     def to_list(self):
         '''
         Converts Cookie object into list format
-
-        returns:
-            cookie_info (list[str]) : list formatted object
         '''
+        # Ensure this order matches: (Name, Link, Gender, Released, Type, Position, Picture, Rarity)
         return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link, self.rarity]
 
     def identify_released(self):
@@ -102,8 +101,8 @@ class Cookie:
 
         # Get cookie's image
         img_container = soup.find('div', {'class': 'wds-tab__content wds-is-current'})
-        self.link = img_container.find('a', {'class': 'image image-thumbnail'})['href']
-
+        self.img_link = img_container.find('a', {'class': 'image image-thumbnail'})['href']
+        
         # Get cookie's pronouns
         pronoundiv = soup.find('div', attrs={'data-source': 'pronouns'})
         self.pronouns = pronoundiv.find('div', class_='pi-data-value').find('a').getText()
@@ -160,7 +159,7 @@ def basic_cookie_scrape():
             type_div = cookie_card.select_one("div[style*='Charge_Cookies'] a, div[style*='Defense_Cookies'] a, div[style*='Magic_Cookies'] a, div[style*='Support_Cookies'] a, div[style*='Ambush_Cookies'] a, div[style*='Bombing_Cookies'] a, div[style*='Healing_Cookies'] a, div[style*='Ranged_Cookies'] a")
             ctype = type_div.get('title').replace("_Cookies", "") if type_div else "Unknown"
             
-            cookies.append(Cookie(name, base_url + link, position, ctype))
+            cookies.append(Cookie(name, position, ctype, link))
         except Exception as e:
             print(f"Error processing a cookie: {e}")
     
@@ -176,6 +175,7 @@ async def indepth_cookie_scrape(cookies: list[Cookie], bot):
     returns:
         new_cookies (list[Cookie]): list of newly added cookies
     '''
+    
     new_cookies = []
     
     async with bot.db.acquire() as conn:
@@ -190,23 +190,28 @@ async def indepth_cookie_scrape(cookies: list[Cookie], bot):
             
             # Identify what cookies are new!
             for cookie in cookies:
-                db_cookie = db_names.get(cookie.name) or db_links.get(cookie.link)
-                
-                if not db_cookie:
-                    # New cookie - fetch info and add to database
-                    cookie.find_info()
-                    new_cookies.append(cookie)
-                    await cursor.execute("INSERT INTO cookie_info (Name, Link, Gender, Released, Type, Position, Picture, Rarity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", tuple(cookie.to_list()))
-                elif hasattr(cookie, 'release') and cookie.release != db_cookie[2]:
-                    # Update existing cookie with new release date
-                    await cursor.execute("UPDATE cookie_info SET Released = %s, Type = %s WHERE Name = %s", (cookie.release, cookie.ctype, cookie.name))
+                try:
+                    db_cookie = db_names.get(cookie.name) or db_links.get(cookie.link)
+                    
+                    if not db_cookie:
+                        # Make sure identify_released has been called first
+                        cookie.identify_released()
+                        # Then fetch all the detailed info
+                        cookie.find_info()
+                        new_cookies.append(cookie)
+                        await cursor.execute("INSERT INTO cookie_info (Name, Link, Gender, Released, Type, Position, Picture, Rarity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", tuple(cookie.to_list()))
+                    elif hasattr(cookie, 'release') and cookie.release != db_cookie[2]:
+                        # Update existing cookie with new release date
+                        await cursor.execute("UPDATE cookie_info SET Released = %s, Type = %s WHERE Name = %s", (cookie.release, cookie.ctype, cookie.name))
+                except Exception:
+                    # Continue with next cookie if there's an error
+                    continue
             
             await conn.commit()
     
     return new_cookies
 		
 async def scrape_cookies(bot):
-	cookies = basic_cookie_scrape()
-
-	cookies_to_update = await indepth_cookie_scrape(cookies=cookies, cookieCSV=cookieCSVFile, bot=bot)
-	return cookies_to_update
+    cookies = basic_cookie_scrape()
+    cookies_to_update = await indepth_cookie_scrape(cookies=cookies, bot=bot)
+    return cookies_to_update
