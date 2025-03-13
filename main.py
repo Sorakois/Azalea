@@ -157,7 +157,13 @@ class General(commands.Cog):
         if prompt == Prompt.CRK_SCRAPE.value:
             await interaction.response.defer()
             res = await scrape_cookie1(self.bot)
-            await interaction.followup.send(f"resolved with: {res}", ephemeral=True)
+            
+            if not res:
+                await interaction.followup.send("No new cookies found.", ephemeral=True)
+            else:
+                # Extract cookie names from the list of Cookie objects
+                cookie_names = [cookie.name for cookie in res]
+                await interaction.followup.send(f"Updated {len(res)} cookies: {', '.join(cookie_names)}", ephemeral=True)
 
         if prompt == Prompt.CROB_SCRAPE.value:
             await interaction.response.defer()
