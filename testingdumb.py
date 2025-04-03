@@ -5,6 +5,16 @@ from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 
+class BuildScrape():
+    def __init__(self, char_name, stat_focus, trace_prio, best_lc, best_relics, best_planar, best_team):
+        self.char_name = char_name
+        self.stat_focus = stat_focus
+        self.trace_prio = trace_prio
+        self.best_lc = best_lc
+        self.best_relics = best_relics
+        self.best_planar = best_planar
+        self.best_team = best_team
+
 def getHSRMetaData():
     '''
     Scrapes information from a community-made Google Sheet
@@ -63,7 +73,6 @@ def getHSRMetaData():
     driver.quit()
 
     return meta_characters
-
 
 def getHSRWikiNames():
     '''
@@ -124,41 +133,68 @@ def getHSRWikiNames():
                 valid_char_names[i] = f"{path} Trailblazer"
                 print(f"Fixed! {valid_char_names[i]} {valid_char_names[i+1]}")
                 
-            file.write(f"{valid_char_names[i+1]} {valid_char_names[i]}\n")
+            file.write(f"{valid_char_names[i]} {valid_char_names[i+1]}\n") # NAME | PATH
 
     return valid_char_names
 
+def grabInfo(released_chars, meta_sheet_data):
+    # List of "BuildScrape" objects, each object contains all info needed for Azalea
+    char_list = []
+    
+    # Go through each meta_sheet_data item
+    # If I find "CHARNAME PATHNAME" that SHOULD be the header for their build info
+    for row_data in meta_sheet_data:
+        for item in released_chars:
+            # Stop at "header" for the table
+            if (released_chars[item], released_chars[item+1]) == (meta_sheet_data[row_data], meta_sheet_data[row_data+1]):
+                # Now, lets grab the items by index hopping
+                # We will use the "BuildScrape class" to store our results. 
+                
+                
+                
+                # Add the info we found to the list!
+                tempChar = BuildScrape()
+                char_list.extend(tempChar)
+    
+    return char_list
 
-# Compare characters from Wiki and Meta Data and print matches or non-matches
-wiki_chars = getHSRWikiNames()
-meta_chars = getHSRMetaData()
+def main():
+    # Compare characters from Wiki and Meta Data and print matches or non-matches
+    wiki_chars = getHSRWikiNames()
+    meta_chars = getHSRMetaData()
 
-# Initialize list to track missing entries in meta
-not_found_in_meta = []
-counted = 0
-count2 = 0
+    # Initialize list to track missing entries in meta
+    released_chars = wiki_chars[:]
+    counted = 0
+    count2 = 0
 
-# Check for character name and path matches and print if they exist
-for i in range(0, len(wiki_chars), 2):  # Iterate in steps of 2 for character names and paths
-    char_name = wiki_chars[i]
-    path = wiki_chars[i+1] if i+1 < len(wiki_chars) else ''  # Get path or empty if none
+    # Check for character name and path matches and print if they exist
+    for i in range(0, len(wiki_chars), 2):  # Iterate in steps of 2 for character names and paths
+        char_name = wiki_chars[i]
+        path = wiki_chars[i+1] if i+1 < len(wiki_chars) else ''  # Get path or empty if none
 
-    # Handle special cases like "Dan Heng • Imbibitor Lunae"
-    if char_name.lower() == "dan heng • imbibitor lunae":
-        char_name = "Imbibitor Lunae"
-    elif char_name.lower() == "dan heng":
-        char_name = "Dan Heng"
+        # Handle special cases like "Dan Heng • Imbibitor Lunae"
+        if char_name.lower() == "dan heng • imbibitor lunae":
+            char_name = "Imbibitor Lunae"
+        elif char_name.lower() == "dan heng":
+            char_name = "Dan Heng"
 
-    # Format "charname path" for comparison
-    wiki_entry = f"{char_name} {path}"
 
-    # Print the characters found in wiki but not in meta
-    if wiki_entry not in meta_chars:
-        print(f"Found in wiki but not in meta: {wiki_entry}")
-        count2 += 1
-    else:
-        counted += 1
+        # Format "charname path" for comparison
+        wiki_entry = f"{char_name} {path}"
 
-needed_still = 71 - counted if counted < 71 else 0        
-print(f"\nFound in both: {counted} characters / 71 possible characters.\n{needed_still} still need found. {count2} of those {needed_still} are found in wiki and not meta.")
+        # Print the characters found in wiki but not in meta
+        if wiki_entry not in meta_chars:
+            print(f"This characters are unreleased and will be ignored: {wiki_entry}")
+            released_chars.remove(wiki_entry)
+            count2 += 1
+        else:
+            counted += 1
+
+    needed_still = 71 - counted if counted < 71 else 0        
+    print(f"\nFound in both: {counted} characters / 71 possible characters.\n{needed_still} still need found. {count2} of those {needed_still} are found in wiki and not meta.")
+
+    # Now that debugging is done, let's call another function
+    # We now want to systemically gnaw out table row data
+    idk_what_to_name = grabInfo(released_chars, meta_chars)
 
