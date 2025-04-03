@@ -1,71 +1,71 @@
-Acheron
-Aglaea
-Argenti
-Arlan
-Asta
-Aventurine
-Bailu
-Black Swan
-Blade
-Boothill
-Bronya
-Clara
-Dan Heng
-Dan Heng • Imbibitor Lunae
-Dr. Ratio
-Feixiao
-Firefly
-Fu Xuan
-Fugue
-Gallagher
-Gepard
-Guinaifen
-Hanya
-Herta
-Himeko
-Hook
-Huohuo
-Jade
-Jiaoqiu
-Jing Yuan
-Jingliu
-Kafka
-Lingsha
-Luka
-Luocha
-Lynx
+Nihility Acheron
+Remembrance Aglaea
+Erudition Argenti
+Destruction Arlan
+Harmony Asta
+Preservation Aventurine
+Abundance Bailu
+Nihility Black Swan
+Destruction Blade
+Hunt Boothill
+Harmony Bronya
+Destruction Clara
+Hunt Dan Heng
+Destruction Imbibitor Lunae
+Hunt Dr. Ratio
+Hunt Feixiao
+Destruction Firefly
+Preservation Fu Xuan
+Nihility Fugue
+Abundance Gallagher
+Preservation Gepard
+Nihility Guinaifen
+Harmony Hanya
+Erudition Herta
+Erudition Himeko
+Destruction Hook
+Abundance Huohuo
+Erudition Jade
+Nihility Jiaoqiu
+Erudition Jing Yuan
+Destruction Jingliu
+Nihility Kafka
+Abundance Lingsha
+Nihility Luka
+Abundance Luocha
+Abundance Lynx
 Preservation March 7th
-The Hunt March 7th
-Misha
-Moze
-Mydei
-Natasha
-Pela
-Qingque
-Rappa
-Robin
-Ruan Mei
-Sampo
-Seele
-Serval
-Silver Wolf
-Sparkle
-Sunday
-Sushang
-The Herta
-Tingyun
-Topaz & Numby
-Destruction Trailblazer
-Preservation Trailblazer
-Harmony Trailblazer
-Remembrance Trailblazer
-Tribbie
-Welt
-Xueyi
-Yanqing
-Yukong
-Yunli
-Anaxa
-Castorice
-Cipher
-Hyacine
+Hunt March 7th
+Destruction Misha
+Hunt Moze
+Destruction Mydei
+Abundance Natasha
+Nihility Pela
+Erudition Qingque
+Erudition Rappa
+Harmony Robin
+Harmony Ruan Mei
+Nihility Sampo
+Hunt Seele
+Erudition Serval
+Nihility Silver Wolf
+Harmony Sparkle
+Harmony Sunday
+Hunt Sushang
+Erudition The Herta
+Harmony Tingyun
+Hunt Topaz & Numby
+Destruction Destruction Trailblazer
+Preservation Preservation Trailblazer
+Harmony Harmony Trailblazer
+Remembrance Remembrance Trailblazer
+Harmony Tribbie
+Nihility Welt
+Destruction Xueyi
+Hunt Yanqing
+Harmony Yukong
+Destruction Yunli
+Erudition Anaxa
+Remembrance Castorice
+Nihility Cipher
+Remembrance Hyacine
