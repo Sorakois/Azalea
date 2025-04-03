@@ -674,7 +674,7 @@ If Time Were a Flower 5★2 - Dance! Dance! Dance! 4★ ⁵3 - Memories of the P
 CRIT Rate / CRIT DMG 1.) Skill
 HP% ¹ / SPD ~~ Ultimate
 Role:Support / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-Lushaka, the Sunken Seas~~ Penacony, Land of the Dreams~~ Bone Collection's Serene Demesne ²2.) Sprightly Vonwacq ³ HP: 5000CRIT Rate: 80%CRIT DMG: 140%SPD: <95 SPD / 120+ ¹
+Lushaka, the Sunken Seas~~ Penacony, Land of the Dreams~~ Bone Collection's Serene Demesne ²2.) Sprightly Vonwacq ³ HP: 5000CRIT Rate: 80% ¹CRIT DMG: 140% ¹SPD: <95 SPD ¹ / 120+
 HP% 2.) Talent
 ERR% / HP% ⁴ 3.) Basic ATK
 Relic Notes ¹ With 4-PC: Poet of Mourning Collapse, Tribbie wants to be below 95 SPD out of combat, and have around 60% CRIT Rate & 160% CRIT DMG out of combat.- If not using 4-PC: Poet of Mourning Collapse, it is recommended to build some SPD on Tribbie.² Bone Collection's Serene Demesne is for Tribbie's Personal DMG.³ Sprightly Vonwacq & SPD boots allows Tribbie to act first and activate her Ultimate early without the need of If Time Were a Flower.⁴ ERR% rope is recommended unless Tribbie has her signature Light Cone If Time Were a Flower, in which case HP% rope can be viable too.

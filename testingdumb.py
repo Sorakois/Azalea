@@ -140,61 +140,87 @@ def getHSRWikiNames():
 def grabInfo(released_chars, meta_sheet_data):
     # List of "BuildScrape" objects, each object contains all info needed for Azalea
     char_list = []
-    
-    # Go through each meta_sheet_data item
-    # If I find "CHARNAME PATHNAME" that SHOULD be the header for their build info
-    for row_data in meta_sheet_data:
-        for item in released_chars:
-            # Stop at "header" for the table
-            if (released_chars[item], released_chars[item+1]) == (meta_sheet_data[row_data], meta_sheet_data[row_data+1]):
-                # Now, lets grab the items by index hopping
-                # We will use the "BuildScrape class" to store our results. 
+
+    for i in range(0, len(meta_sheet_data), 7):  # Assuming 7 fields per character (adjust if needed)
+        char_name_path = meta_sheet_data[i]  # Format: "Character Path"
+        
+        for released in released_chars:
+            if char_name_path.lower().strip() == released.lower().strip():
+                print(f"Found build info for {released}. Processing...")
+
+                # Extracting character build details
+                stat_focus = meta_sheet_data[i + 1] if i + 1 < len(meta_sheet_data) else "N/A"
+                print(f"stat focus: {stat_focus}") # i+6
                 
+                trace_prio = meta_sheet_data[i + 2] if i + 2 < len(meta_sheet_data) else "N/A"
+                print(f"trace_prio: {trace_prio}") # all over the place...
                 
+                best_lc = meta_sheet_data[i + 3] if i + 3 < len(meta_sheet_data) else "N/A"
+                print(f"best_lc: {best_lc}") # first half of i+2
                 
-                # Add the info we found to the list!
-                tempChar = BuildScrape()
-                char_list.extend(tempChar)
-    
+                best_relics = meta_sheet_data[i + 4] if i + 4 < len(meta_sheet_data) else "N/A"
+                print(f"best_relics: {best_relics}") # Second half of i+2
+                
+                best_planar = meta_sheet_data[i + 5] if i + 5 < len(meta_sheet_data) else "N/A"
+                print(f"best_planar: {best_planar}") # Correct!
+                
+                best_team = meta_sheet_data[i + 6] if i + 6 < len(meta_sheet_data) else "N/A"
+                print(f"best_team: {best_team}") # Won't be actually on the build sheet..... get from pyrdwen
+                
+                # Create a BuildScrape object
+                char_obj = BuildScrape(
+                    char_name=released.split()[0],  # Extract only the character name
+                    stat_focus=stat_focus,
+                    trace_prio=trace_prio,
+                    best_lc=best_lc,
+                    best_relics=best_relics,
+                    best_planar=best_planar,
+                    best_team=best_team
+                )
+
+                # Store in the list
+                char_list.append(char_obj)
+
     return char_list
 
-def main():
-    # Compare characters from Wiki and Meta Data and print matches or non-matches
-    wiki_chars = getHSRWikiNames()
-    meta_chars = getHSRMetaData()
 
-    # Initialize list to track missing entries in meta
-    released_chars = wiki_chars[:]
-    counted = 0
-    count2 = 0
+# Compare characters from Wiki and Meta Data and print matches or non-matches
+wiki_chars = getHSRWikiNames()
+meta_chars = getHSRMetaData()
 
-    # Check for character name and path matches and print if they exist
-    for i in range(0, len(wiki_chars), 2):  # Iterate in steps of 2 for character names and paths
-        char_name = wiki_chars[i]
-        path = wiki_chars[i+1] if i+1 < len(wiki_chars) else ''  # Get path or empty if none
+# Initialize list to track missing entries in meta
+released_chars = []
+counted = 0
+count2 = 0
 
-        # Handle special cases like "Dan Heng • Imbibitor Lunae"
-        if char_name.lower() == "dan heng • imbibitor lunae":
-            char_name = "Imbibitor Lunae"
-        elif char_name.lower() == "dan heng":
-            char_name = "Dan Heng"
+# Check for character name and path matches and print if they exist
+for i in range(0, len(wiki_chars), 2):  # Iterate in steps of 2 for character names and paths
+    char_name = wiki_chars[i]
+    path = wiki_chars[i+1] if i+1 < len(wiki_chars) else ''  # Get path or empty if none
+
+    # Handle special cases like "Dan Heng • Imbibitor Lunae"
+    if char_name.lower() == "dan heng • imbibitor lunae":
+        char_name = "Imbibitor Lunae"
+    elif char_name.lower() == "dan heng":
+        char_name = "Dan Heng"
 
 
-        # Format "charname path" for comparison
-        wiki_entry = f"{char_name} {path}"
+    # Format "charname path" for comparison
+    wiki_entry = f"{char_name} {path}"
 
-        # Print the characters found in wiki but not in meta
-        if wiki_entry not in meta_chars:
-            print(f"This characters are unreleased and will be ignored: {wiki_entry}")
-            released_chars.remove(wiki_entry)
-            count2 += 1
-        else:
-            counted += 1
+    # Print the characters found in wiki but not in meta
+    if wiki_entry not in meta_chars:
+        print(f"This characters are unreleased and will be ignored: {wiki_entry}")
+        
+        count2 += 1
+    else:
+        counted += 1
+        released_chars.append(wiki_entry)
 
-    needed_still = 71 - counted if counted < 71 else 0        
-    print(f"\nFound in both: {counted} characters / 71 possible characters.\n{needed_still} still need found. {count2} of those {needed_still} are found in wiki and not meta.")
+needed_still = 71 - counted if counted < 71 else 0        
+print(f"\nFound in both: {counted} characters / 71 possible characters.\n{needed_still} still need found. {count2} of those {needed_still} are found in wiki and not meta.")
 
-    # Now that debugging is done, let's call another function
-    # We now want to systemically gnaw out table row data
-    idk_what_to_name = grabInfo(released_chars, meta_chars)
+# Now that debugging is done, let's call another function
+# We now want to systemically gnaw out table row data
+idk_what_to_name = grabInfo(released_chars, meta_chars)
 
