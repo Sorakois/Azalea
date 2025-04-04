@@ -140,47 +140,60 @@ def getHSRWikiNames():
 def grabInfo(released_chars, meta_sheet_data):
     # List of "BuildScrape" objects, each object contains all info needed for Azalea
     char_list = []
-
-    for i in range(0, len(meta_sheet_data), 7):  # Assuming 7 fields per character (adjust if needed)
-        char_name_path = meta_sheet_data[i]  # Format: "Character Path"
+    count = 0
+    with open('scraped-buildinfo.txt', 'w', encoding='utf-8') as file:
+        for i in range(0, len(meta_sheet_data)): # Iterate through EVERY character
+            char_name_path = meta_sheet_data[i] # Format: "Character Path"
         
-        for released in released_chars:
-            if char_name_path.lower().strip() == released.lower().strip():
-                print(f"Found build info for {released}. Processing...")
+            for released in released_chars:
+            
+                if char_name_path.lower().strip() == released.lower().strip():
+                    print(f"Found build info for {released}. Processing...")
+                    file.write(f"Name: {meta_sheet_data[i]}\n")
+                    # Extracting character build details
+                    stat_focus = meta_sheet_data[i + 1] if i + 1 < len(meta_sheet_data) else "N/A"
+                    file.write(f"stat focus: {stat_focus}\n") # i+6
+                    
+                    trace_prio = meta_sheet_data[i + 2] if i + 2 < len(meta_sheet_data) else "N/A"
+                    file.write(f"trace_prio: {trace_prio}\n") # all over the place...
+                    
+                    best_lc = meta_sheet_data[i + 3] if i + 3 < len(meta_sheet_data) else "N/A"
+                    file.write(f"best_lc: {best_lc}\n") # first half of i+2
+                    
+                    best_relics = meta_sheet_data[i + 4] if i + 4 < len(meta_sheet_data) else "N/A"
+                    file.write(f"best_relics: {best_relics}\n") # Second half of i+2
+                    
+                    best_planar = meta_sheet_data[i + 6] if i + 6 < len(meta_sheet_data) else "N/A"
+                    file.write(f"best_planar: {best_planar}\n") # Correct!
+                    
+                    # Other stuff... not too sure
+                    file.write(f"Index 5 info: {meta_sheet_data[i+5]}\n")
+                    file.write(f"Index 7 info: {meta_sheet_data[i+7]}\n")
+                    file.write(f"Index 8 info: {meta_sheet_data[i+8]}\n")
+                    file.write(f"Index 9 info: {meta_sheet_data[i+9]}\n")
+                    file.write(f"Index 10 info: {meta_sheet_data[i+10]}\n")
+                    file.write(f"Index 11 info: {meta_sheet_data[i+11]}\n")
+                    
+                    # We have to get teams from Pydrwen!
+                    file.write("\n")
+                    
+                    # Create a BuildScrape object
+                    char_obj = BuildScrape(
+                        char_name=released.split()[0],  # Extract only the character name
+                        stat_focus=stat_focus,
+                        trace_prio=trace_prio,
+                        best_lc=best_lc,
+                        best_relics=best_relics,
+                        best_planar=best_planar,
+                        best_team=None
+                    )
 
-                # Extracting character build details
-                stat_focus = meta_sheet_data[i + 1] if i + 1 < len(meta_sheet_data) else "N/A"
-                print(f"stat focus: {stat_focus}") # i+6
-                
-                trace_prio = meta_sheet_data[i + 2] if i + 2 < len(meta_sheet_data) else "N/A"
-                print(f"trace_prio: {trace_prio}") # all over the place...
-                
-                best_lc = meta_sheet_data[i + 3] if i + 3 < len(meta_sheet_data) else "N/A"
-                print(f"best_lc: {best_lc}") # first half of i+2
-                
-                best_relics = meta_sheet_data[i + 4] if i + 4 < len(meta_sheet_data) else "N/A"
-                print(f"best_relics: {best_relics}") # Second half of i+2
-                
-                best_planar = meta_sheet_data[i + 5] if i + 5 < len(meta_sheet_data) else "N/A"
-                print(f"best_planar: {best_planar}") # Correct!
-                
-                best_team = meta_sheet_data[i + 6] if i + 6 < len(meta_sheet_data) else "N/A"
-                print(f"best_team: {best_team}") # Won't be actually on the build sheet..... get from pyrdwen
-                
-                # Create a BuildScrape object
-                char_obj = BuildScrape(
-                    char_name=released.split()[0],  # Extract only the character name
-                    stat_focus=stat_focus,
-                    trace_prio=trace_prio,
-                    best_lc=best_lc,
-                    best_relics=best_relics,
-                    best_planar=best_planar,
-                    best_team=best_team
-                )
+                    count += 1
 
-                # Store in the list
-                char_list.append(char_obj)
+                    # Store in the list
+                    char_list.append(char_obj)
 
+    print(f"Out of {len(released_chars)} characters, we got the info for {count} of them.")
     return char_list
 
 
@@ -215,10 +228,13 @@ for i in range(0, len(wiki_chars), 2):  # Iterate in steps of 2 for character na
         count2 += 1
     else:
         counted += 1
-        released_chars.append(wiki_entry)
+        if char_name.lower() == "anaxa" or char_name.lower() == "castorice":
+            print(f"This characters is coming soon, but no build exists yet: {wiki_entry}")
+        else:
+            released_chars.append(wiki_entry)
 
 needed_still = 71 - counted if counted < 71 else 0        
-print(f"\nFound in both: {counted} characters / 71 possible characters.\n{needed_still} still need found. {count2} of those {needed_still} are found in wiki and not meta.")
+print(f"Found in both: {counted} characters / 71 possible characters.\n{needed_still} still need found. {count2} of those {needed_still} are found in wiki and not meta.")
 
 # Now that debugging is done, let's call another function
 # We now want to systemically gnaw out table row data
