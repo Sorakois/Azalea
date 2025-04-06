@@ -370,3 +370,4 @@ Read port: 49554
 1743920236182	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
 1743920238811	Marionette	INFO	Stopped listening on port 49554
 Dynamically enable window occlusion 1
+1743920309935	geckodriver	INFO	Listening on 127.0.0.1:49591
