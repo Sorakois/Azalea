@@ -186,6 +186,10 @@ def grabInfo(released_chars, meta_sheet_data):
                     name = meta_sheet_data[i]
                     file.write(f"Build of {meta_sheet_data[i]}:\n")
                     
+                    #for f in range(11): '''exists for the sake of debugging'''
+                        #file.write(f"TESTING index{i}: {meta_sheet_data[i+f]}\n")
+
+
                     # I+2 -> Light Cone Info | Relic Set Info
                     lc_relic_info = meta_sheet_data[i + 2]
                     # Find the position of "1.)" which separates LC from relics
@@ -245,12 +249,14 @@ def grabInfo(released_chars, meta_sheet_data):
                         if i+offset < len(meta_sheet_data):
                             note_text = meta_sheet_data[i+offset]
                             if note_text.startswith("Relic") or note_text.startswith("Other"):
+                                # NOTE: Boothill -> Boothill\'s ... please fix?
                                 notes.append(note_text.strip())
-                    file.write(f"Notes: {notes}\n")
                     
+                    file.write(f"Notes: {notes}\n")
+  
                     # We have to get teams from Pydrwen!
                     file.write("\n")
-                    
+
                     # Create a BuildScrape object
                     char_obj = BuildScrape(
                         char_name=name,
