@@ -16,16 +16,27 @@ from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 
 class BuildScrape():
-    def __init__(self, char_name, stat_focus, trace_prio, best_lc, best_relics, best_planar, best_team):
+    def __init__(self, char_name, stat_focus, trace_prio, substats, gear_mainstats, best_lc, best_relics, best_planar, best_team, notes):
+        
         self.char_name = char_name
-        self.stat_focus = stat_focus
+
+        self.stat_focus = stat_focus # Overall character stats to "reach"
         self.trace_prio = trace_prio
+    
+        self.substats = substats # Each relic has 4 sub-stats
+        self.gear_mainstats = gear_mainstats # Each relic has 1 main stat
+        
+
         self.best_lc = best_lc
+
         self.best_relics = best_relics
         self.best_planar = best_planar
+
         self.best_team = best_team
 
-def getHSRMetaData():
+        self.notes = notes
+
+def getHSRMetaData():#
     '''
     Scrapes information from a community-made Google Sheet
     '''
@@ -158,44 +169,100 @@ def grabInfo(released_chars, meta_sheet_data):
             for released in released_chars:
             
                 if char_name_path.lower().strip() == released.lower().strip():
-                    print(f"Found build info for {released}. Processing...")
-                    file.write(f"Name: {meta_sheet_data[i]}\n")
-                    # Extracting character build details
-                    stat_focus = meta_sheet_data[i + 1] if i + 1 < len(meta_sheet_data) else "N/A"
-                    file.write(f"stat focus: {stat_focus}\n") # i+6
+                    # Initialize defaults in case parsing fails
+                    stat_focus = ""
+                    trace_prio = []
+                    substats = []
+                    gear_mainstats = []
+                    best_lc = ""
+                    best_relics = ""
+                    best_planar = ""
+                    notes = ""
+
+                    #print(f"Found build info for {released}. Processing...")
+
+                    # Grab the name of the character. 
+                    # This is "origin" (when they match in both lists, stop and look around for details)
+                    name = meta_sheet_data[i]
+                    file.write(f"Build of {meta_sheet_data[i]}:\n")
                     
-                    trace_prio = meta_sheet_data[i + 2] if i + 2 < len(meta_sheet_data) else "N/A"
-                    file.write(f"trace_prio: {trace_prio}\n") # all over the place...
+                    # I+2 -> Light Cone Info | Relic Set Info
+                    lc_relic_info = meta_sheet_data[i + 2]
+                    # Find the position of "1.)" which separates LC from relics
+                    split_pos = lc_relic_info.find("1.)")
+                    if split_pos != -1:
+                        best_lc = lc_relic_info[:split_pos].strip()
+                        best_relics = lc_relic_info[split_pos:].strip()
+                    else:
+                        # Fallback if "1.)" not found
+                        best_lc = lc_relic_info
                     
-                    best_lc = meta_sheet_data[i + 3] if i + 3 < len(meta_sheet_data) else "N/A"
-                    file.write(f"best_lc: {best_lc}\n") # first half of i+2
+                    file.write(f"best_lc: {best_lc}\n") 
+                    file.write(f"best_relics: {best_relics}\n")
                     
-                    best_relics = meta_sheet_data[i + 4] if i + 4 < len(meta_sheet_data) else "N/A"
-                    file.write(f"best_relics: {best_relics}\n") # Second half of i+2
+                    # I+6 -> Best Planar | Stat Focus
+                    planar_stat_info = meta_sheet_data[i+6]
+                    # Define stat keywords that indicate the start of stat_focus
+                    stat_keywords = ["ATK:", "CRIT Rate:", "CRIT DMG:", "SPD:", "DEF:", "EHR:", "HP:", "Break"]
                     
-                    best_planar = meta_sheet_data[i + 6] if i + 6 < len(meta_sheet_data) else "N/A"
-                    file.write(f"best_planar: {best_planar}\n") # Correct!
+                    # Find first occurrence of any stat keyword
+                    split_pos = -1
+                    for keyword in stat_keywords:
+                        pos = planar_stat_info.find(keyword)
+                        if pos != -1 and (split_pos == -1 or pos < split_pos):
+                            split_pos = pos
                     
-                    # Other stuff... not too sure
-                    file.write(f"Index 5 info: {meta_sheet_data[i+5]}\n")
-                    file.write(f"Index 7 info: {meta_sheet_data[i+7]}\n")
-                    file.write(f"Index 8 info: {meta_sheet_data[i+8]}\n")
-                    file.write(f"Index 9 info: {meta_sheet_data[i+9]}\n")
-                    file.write(f"Index 10 info: {meta_sheet_data[i+10]}\n")
-                    file.write(f"Index 11 info: {meta_sheet_data[i+11]}\n")
+                    if split_pos != -1:
+                        best_planar = planar_stat_info[:split_pos]
+                        stat_focus = planar_stat_info[split_pos:]
+                    else:
+                        # Fallback if no stat keyword found
+                        best_planar = planar_stat_info
+                    
+                    file.write(f"best_planar: {best_planar}\n") 
+                    file.write(f"stat_focus: {stat_focus}\n")
+
+                    # I+3, I+4, I+7, I+8 all look like -> gear_mainstats | ability_prio 
+                    # (all are in order)
+                    gear_mainstats = []
+                    trace_prio= []
+                    for num in [3,4,7,8]:
+                        for idx, char in enumerate(meta_sheet_data[i+num]):
+                            if char.isdigit() or char == "~":
+                                if char in "⁰¹²³⁴⁵⁶⁷⁸⁹":
+                                    # Skip supersripts for notes
+                                    continue
+                                gear_mainstats.append(meta_sheet_data[i+num][:idx])
+                                trace_prio.append(meta_sheet_data[i+num][idx:])
+                                break 
+                    file.write(f"gear_mainstats: {gear_mainstats}\n") 
+                    file.write(f"trace_prio: {trace_prio}\n")
+
+                    # NOTES PARSING
+                    # Check both i+9 and i+10 for notes sections
+                    notes = []
+                    for offset in [9, 10]:
+                        if i+offset < len(meta_sheet_data):
+                            note_text = meta_sheet_data[i+offset]
+                            if note_text.startswith("Relic") or note_text.startswith("Other"):
+                                notes.append(note_text.strip())
+                    file.write(f"Notes: {notes}\n")
                     
                     # We have to get teams from Pydrwen!
                     file.write("\n")
                     
                     # Create a BuildScrape object
                     char_obj = BuildScrape(
-                        char_name=released.split()[0],  # Extract only the character name
+                        char_name=name,
                         stat_focus=stat_focus,
                         trace_prio=trace_prio,
+                        substats=None,
+                        gear_mainstats=gear_mainstats,
                         best_lc=best_lc,
                         best_relics=best_relics,
                         best_planar=best_planar,
-                        best_team=None
+                        best_team=None,
+                        notes=notes
                     )
 
                     count += 1
