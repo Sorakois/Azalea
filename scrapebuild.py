@@ -186,8 +186,8 @@ def grabInfo(released_chars, meta_sheet_data):
                     name = meta_sheet_data[i]
                     file.write(f"Build of {meta_sheet_data[i]}:\n")
                     
-                    #for f in range(11): '''exists for the sake of debugging'''
-                        #file.write(f"TESTING index{i}: {meta_sheet_data[i+f]}\n")
+                    #for f in range(0, 15, 1): #exists for the sake of debugging
+                    #    file.write(f"TESTING index{f}: {meta_sheet_data[i+f]}\n")
 
 
                     # I+2 -> Light Cone Info | Relic Set Info
@@ -258,6 +258,10 @@ def grabInfo(released_chars, meta_sheet_data):
                     file.write("\n")
 
                     # Create a BuildScrape object
+                    '''
+                    NOTE:
+                        Find out where the hell "substat" went? it's not in my parse, but should be right below/near relics
+                    '''
                     char_obj = BuildScrape(
                         char_name=name,
                         stat_focus=stat_focus,
