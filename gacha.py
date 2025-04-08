@@ -1,3 +1,7 @@
+'''
+Imports
+'''
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -13,6 +17,19 @@ from asyncio import Lock
 from market import Business
 from misc import cleanse_name, fix_rarity, chrono_image
 
+# ======================================= # ======================================= 
+
+'''
+Define global variables
+    - rarity filter
+        -> Valid pool of rarities for CR gacha pity
+    - max_pity
+        -> for CR gacha pity
+        
+    - cookie_rarity_rankings
+        -> to organize rarities neatly in gacha and inventory
+        
+'''
 rarity_filter = ['Legendary', 'Feat_Leg', 'Dragon', 'Ancient', 'First', 'Awakened Ancient', 'Beast']
 max_pity = 100
 cookie_rarity_rankings = {
@@ -38,9 +55,14 @@ cookie_rarity_rankings = {
     'Feat_Five': 9
 }
 
-
+# ======================================= # ======================================= 
 
 class MultipullView(discord.ui.View):
+    '''
+    MultipullView Class:
+        - Where the embed and logic for the multipull
+            -> 2 "slides" user can click between
+    '''
     page = 1
 
     def __init__(self, last_interaction: discord.Interaction, essence: int, cookies: dict, timeout: float | None = 180):
@@ -122,6 +144,11 @@ class MultipullView(discord.ui.View):
         button.disabled = False
 
 class HelpView(discord.ui.View):
+    '''
+    HelpView Class:
+        - To make the /help commannd look neat
+            -> limits and UI 
+    '''
     page = 1
     COMMANDS_PER_PAGE = 8
 
@@ -175,7 +202,11 @@ class HelpView(discord.ui.View):
         self.last_interaction = interaction
 
 class InventoryView(discord.ui.View):
-
+    '''
+    InventoryView Class:
+        - Make the /inventory UI look nice
+            -> GUI, name formatting, rarity formatting
+    '''
     page = 1
     COOKIE_PER_PAGE = 8
 
@@ -268,6 +299,11 @@ async def fetch_essence_balance(cursor, member, interaction):
 
 
 class CrumbleView(discord.ui.View):
+    '''
+    CrumbleView Class:
+        - Make UI look nice for user when crumbling
+            -> Confirmation of character deletion + actual deletion + reward.
+    '''
     def __init__(self, bot, crumble_data, add, last_interaction, amt):
         super().__init__()
         self.bot = bot
@@ -305,7 +341,6 @@ class CrumbleView(discord.ui.View):
     async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.last_interaction.delete_original_response()
         await interaction.response.send_message("Crumble canceled.", ephemeral=True) 
-
 
 class GachaInteraction(commands.Cog):
     '''
@@ -1269,13 +1304,16 @@ class GachaInteraction(commands.Cog):
                         await interaction.response.send_message(f"No featured characters currently.\n cr_leg_rateupimg = {cr_leg_rateupimg}\n\nfeatured_cr_legen = {featured_cr_legen}\nfeatured_cr_epic = {featured_cr_epic}", ephemeral=False)
                         return
 
-
+# ======================================= # ======================================= # ======================================= 
+    '''
+    NOTE: Below are all ways to get gems!
+    '''
+# ======================================= # ======================================= # ======================================= 
 
     '''
-    Below are all ways to get gems!
+    /Trivia
+        Envoke the command, answer "true" or "false", be rewarded when correct!
     '''
-
-    #First Way (1), [general] Trivia!
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="trivia", description="Answer anime questions, get gems!")
     async def trivia(self, interaction: discord.Interaction):
@@ -1328,7 +1366,10 @@ class GachaInteraction(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
 
-    #Second way, Guess a random number!
+    '''
+    /number_guess
+        A random number (+/- 10) is generated. Guess the number in a thread, get gems
+    '''
     @discord.app_commands.checks.cooldown(1, 120)
     @app_commands.command(name="number_guess", description="Guess the number correctly, get gems!")
     async def number_guess(self, interaction : discord.Interaction, other_user : discord.User):

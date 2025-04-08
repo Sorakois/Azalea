@@ -4,8 +4,11 @@ from discord.ext import commands
 from discord import Colour
 import random
 from typing import Literal
+import json
 #from buildcommand import HSRCharacter
 import logging
+
+import requests
 
 def cleanse_name(character:str):
     #format query
@@ -42,6 +45,8 @@ def cleanse_name(character:str):
         character = "destruction trailblazer"
     if character == "PTB":
         character = "preservation trailblazer"
+    if character == "RTB":
+        character = "remembrance trailblazer"
     if character == "BS":
         character = "black swan"
     if character == "AVEN":
@@ -62,10 +67,12 @@ def cleanse_name(character:str):
         character = "preservation march"
     if character == "HTB" or character == "HARMONY MC" or character == "HMC" or character == "HTB" or character == "HARMONY TB" or character == "TRAILBLAZER HARMONY" or character == "HATBLAZER" or character == "HARMBLAZER":
         character = "harmony trailblazer"
-    if character == "Preservation MC" or character == "FIREBLAZER" or character == "FMC"  or character == "FTB" or character == "FIRE MC" or character == "FIRE TB" or character== "TRAILBLAZER PRESERVATION":
+    if character == "PRESERVATION MC" or character == "FIREBLAZER" or character == "FMC"  or character == "FTB" or character == "FIRE MC" or character == "FIRE TB" or character== "TRAILBLAZER PRESERVATION":
         character = "preservation trailblazer"
-    if character == "Destruction MC" or character == "DESTRUCTION TB" or character == "PHYSICAL TRAILBLAZER" or character == "TRAILBLAZER DESTRUCTION" or character == "PHYS MC" or character == "PHYS TB" or character == "DMC" or  character == "DTB":
+    if character == "DESTRUCTION MC" or character == "DESTRUCTION TB" or character == "PHYSICAL TRAILBLAZER" or character == "TRAILBLAZER DESTRUCTION" or character == "PHYS MC" or character == "PHYS TB" or character == "DMC" or  character == "DTB":
         character = "destruction trailblazer"
+    if character == "REMEMBRANCE MC" or character == "REMEMBRANCE TB" or character == "REMEMBRANCE TRAILBLAZER" or character == "TRAILBLAZER REMEMBRANCE" or character == "REMEM MC" or character == "REMEM TB" or character == "RMC" or  character == "RTB":
+        character = "remembrance trailblazer"
 
     return character.lower()
 
@@ -115,6 +122,11 @@ class MiscCMD(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
+    
+    '''
+    Hug Command:
+        Just randomly sends a hug gif from above. No need for a database for them... yet.
+    '''
     @app_commands.command(name="hug", description="Receive a hug!")
     async def hug(self, interaction: discord.Interaction):
         # Optionally: Log or handle user interaction data here if needed
@@ -126,8 +138,16 @@ class MiscCMD(commands.Cog):
         except Exception as e:
             # Handle potential errors
             await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
-            print(f"Error [/hug]: {e}")
 
+    '''
+    BUILD COMMAND!
+        Allow users to see how to build characters (best equipment) in:
+            - Honkai Star Rail
+            - Cookie Run Kingdom (in development)
+            - Zenless Zone Zero (in development)
+            - Genshin Impact (in development)
+            - Wuthering Waves (in development)
+    '''
     @discord.app_commands.checks.cooldown(5, 15)
     @app_commands.command(name="build", description="Check the optimal build for each character!")
     async def build(self, interaction : discord.Interaction, game: Literal['HSR', 'CRK'], character: str):
@@ -212,6 +232,13 @@ class MiscCMD(commands.Cog):
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-5_shop_icon.webp?x30775")
                         else:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-6_shop_icon.webp?x30775")
+                    elif character.upper() == "REMEMBERANCE-TRAILBLAZER":
+                        trailblaze_decide = random.randint(1, 2)
+                        if trailblaze_decide == 1:
+                            em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-7_gacha_result_bg.webp")
+                        else:
+                            em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-8_gacha_result_bg.webp")
+
 
                     elif character.upper() == "IMBIBITOR-LUNAE":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/dan-heng-imbibitor-lunae-character_gacha_result_bg.webp?x30775")
@@ -226,6 +253,14 @@ class MiscCMD(commands.Cog):
                     #temp until available on the site
                     elif character.upper() == "AGLAEA":
                         em.set_image(url=f"https://i.imgur.com/dNiSmlm.png")
+                    elif character.upper() == "CASTORICE":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/castorice-character_cut_in_front.webp")
+                    elif character.upper() == "ANAXA":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/anaxa-character_cut_in_front.webp")
+                    elif character.upper() == "CIPHER":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/cipher-character_gacha_result_bg.webp")
+                    elif character.upper() == "HYACINE":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/hyacine-character_gacha_result_bg.webp")
                     else:   #default images
                         try:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_gacha_result_bg.webp?x30775")
@@ -260,3 +295,26 @@ class MiscCMD(commands.Cog):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
             
+    '''
+    Fun fact command!
+        Do the command, get a fun fact. That's it!
+    '''
+    @app_commands.command(name="funfact", description="View a random fact!")
+    async def hug(self, interaction: discord.Interaction):
+        member = interaction.user
+        try:
+            # Websites for API 
+            #   --> https://thefact.space/random
+            #   --> https://uselessfacts.jsph.pl/api/v2/facts/random
+            
+            fun_facts = requests.get("https://thefact.space/random", timeout=10)
+                
+            json_data = json.loads(fun_facts.text)
+            fun_fact = json_data['text']
+            source = json_data['source']
+            
+            await interaction.response.send_message(f"## Fun Fact!\n\n{fun_fact}\n-# Source: <{source}>")
+            
+        except Exception as e:
+            # Handle potential errors
+            await interaction.response.send_message(f"Oops! Something went wrong.\n{e}", ephemeral=True)

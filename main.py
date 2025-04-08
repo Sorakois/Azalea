@@ -19,7 +19,8 @@ import misc
 from psyche import Persona
 import asyncio
 from asyncio import Lock
-from debug import Prompt
+from debug import Prompt, Login
+from scrapebuild import BuildScrape, fullScrape
 
 # load the enviroment variables
 load_dotenv()
@@ -31,13 +32,6 @@ stderrLogger.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
 logging.getLogger().addHandler(stderrLogger)
 
 sys.stdout = open(f'logs/{datetime.datetime.now().strftime("%m-%d-%Y-%H-%M-%S")}', 'w')
-
-# start up database connection
-mysql_login = {'host':"db-buf-05.sparkedhost.us",
-               'user':"u104092_jfUaeyVlqc",
-               'password':"^lR0+=!4nvkHd9zQvs0BggFS",
-               'db':"s104092_db_update",
-               'port':3306}
 
 # discord bot settings
 intents = discord.Intents.default()
@@ -52,7 +46,8 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
-    'market': Business(bot) 
+    'market': Business(bot),
+    'buildscrape' : fullScrape(bot)
     }
 
 # bot settings
@@ -157,7 +152,13 @@ class General(commands.Cog):
         if prompt == Prompt.CRK_SCRAPE.value:
             await interaction.response.defer()
             res = await scrape_cookie1(self.bot)
-            await interaction.followup.send_message(f"resolved with: {res}", ephemeral=True)
+            
+            if not res:
+                await interaction.followup.send("No new cookies found.", ephemeral=True)
+            else:
+                # Extract cookie names from the list of Cookie objects
+                cookie_names = [cookie.name for cookie in res]
+                await interaction.followup.send(f"Updated {len(res)} cookies: {', '.join(cookie_names)}", ephemeral=True)
 
         if prompt == Prompt.CROB_SCRAPE.value:
             await interaction.response.defer()
@@ -201,7 +202,7 @@ class General(commands.Cog):
             
         if prompt == Prompt.GIVE_GEM.value:
             await interaction.response.defer()
-            await interaction.followup.send(f"Enter the USER_ID and gem amount for who's inventory slot # needs fixed.")
+            await interaction.followup.send(f"Enter the USER_ID + gem amount to award.")
 
             def check(message: discord.Message):
                 return message.author.id == member.id and message.channel.id == interaction.channel.id
@@ -273,72 +274,12 @@ class General(commands.Cog):
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
 
         if prompt == Prompt.HSR_BUILD.value:
-            await interaction.response.defer()
             async with self.lock:
-                await interaction.followup.send(f"Enter the name of the character to update info for [/build cmd update].")
-
-                def check(message: discord.Message):
-                    return message.author.id == member.id and message.channel.id == interaction.channel.id
-            
+                await interaction.response.defer()
                 try:
-                    msg = await interaction.client.wait_for('message', check=check, timeout=90.0)
-                    characterB = msg.content
-
-                    async with self.bot.db.acquire() as conn:
-                            async with conn.cursor() as cursor:
-                                await cursor.execute("SELECT * FROM HSR_BUILD WHERE name LIKE %s;", (characterB,))
-                                
-                                characterB_data = await cursor.fetchone()
-
-                                #make the info make sense
-                                characterB_name = characterB_data[0]
-                                characterB_stats = characterB_data[1]
-                                characterB_trapri = characterB_data[2]
-                                characterB_bestlc = characterB_data[3]
-                                characterB_bestrelics = characterB_data[4]
-                                characterB_bestplanar = characterB_data[5]
-                                characterB_bestteam = characterB_data[6]
-                                characterB_author = characterB_data[7]
-
-                                #show the current version (allow copy pasting)
-                                await interaction.followup.send(f"Currently, {characterB_name} has the following info set:\n\nStat Prio = {characterB_stats}\nTrace Prio = {characterB_trapri}\nBest LC = {characterB_bestlc}\nBest Relics = {characterB_bestrelics}\nBest Planar = {characterB_bestplanar}\nBest Team = {characterB_bestteam}\nAuthor = {characterB_author}")
-
-                                await interaction.followup.send(f"Enter the updated stat focus for {characterB_name}:")
-                                stat_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_stats = stat_msg.content
-
-                                await interaction.followup.send(f"Enter the updated trace prio for {characterB}:")
-                                trace_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_traceprio = trace_msg.content
-
-                                await interaction.followup.send(f"Enter the updated best LC(s) for {characterB}:")
-                                LC_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_LC = LC_msg.content
-
-                                await interaction.followup.send(f"Enter the updated best relic(s) for {characterB}:")
-                                relic_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_relics = relic_msg.content
-
-                                await interaction.followup.send(f"Enter the updated best planar(s) for {characterB}:")
-                                planar_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_planar = planar_msg.content
-
-                                await interaction.followup.send(f"Enter the updated team for {characterB}:")
-                                team_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_team = team_msg.content
-
-                                await interaction.followup.send(f"Enter the updated author for {characterB}:")
-                                author_msg = await bot.wait_for('message', check=check, timeout=60.0)
-                                updated_author = author_msg.content
-
-                                #now we have all the info... insert it!
-                                await cursor.execute(
-                                    "UPDATE HSR_BUILD SET stats = %s, trapri = %s, bestlc = %s, bestrelics = %s, bestplanar = %s, bestteam = %s, buildauthor = %s WHERE name = %s;",
-                                    (updated_stats, updated_traceprio, updated_LC, updated_relics, updated_planar, updated_team, updated_author, characterB_name)
-                                )                            
-                                await interaction.followup.send(f"Done! {characterB} has been updated.")
-                            await conn.commit()
-                except ValueError as e:
+                    fullScrape.fullScrapeBuild(self, interaction)
+                    await interaction.response.send_message("Done! Check /build!")
+                except Exception as e:
                     await interaction.followup.send(f"Error! {e}")
 
         if prompt == Prompt.QOTD_GEMS.value:
@@ -397,11 +338,11 @@ async def on_ready():
     Runs on bot startup
     '''
     print("Ready!")
-    pool = await aiomysql.create_pool(host=mysql_login['host'],
-                                       user=mysql_login['user'],
-                                       password=mysql_login['password'],
-                                       db=mysql_login['db'],
-                                       port=mysql_login['port'])
+    pool = await aiomysql.create_pool(host=Login.mysql_login['host'],
+                                       user=Login.mysql_login['user'],
+                                       password=Login.mysql_login['password'],
+                                       db=Login.mysql_login['db'],
+                                       port=Login.mysql_login['port'])
     setattr(bot, 'db', pool)
     for key in cogs.keys():
         try:
@@ -412,4 +353,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))

@@ -12,3 +12,7 @@ util/cookies.csv
 /.idea
 
 debug.py
+scrapebuild.py
+scraped-buildinfo.txt
+testing-scrape.txt
+valid_chars.txt

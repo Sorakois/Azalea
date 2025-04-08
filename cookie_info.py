@@ -70,7 +70,7 @@ class CookieInfo(commands.Cog):
 
 				await interaction.response.send_message(embed=em)
 			except IndexError as e:
-				await interaction.response.send_message(f"{query.capitalize} Cookie does not exist.")
+				await interaction.response.send_message(f"{query.capitalize()} Cookie does not exist.")
 
 		#Wiki for Cookie Run: Ovenbreak
 		if wikigame == "CROB":
