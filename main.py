@@ -350,4 +350,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('SORA_TOKEN'))
+bot.run(os.environ.get('MAIN_TOKEN'))
