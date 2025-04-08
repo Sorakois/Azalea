@@ -45,6 +45,8 @@ def cleanse_name(character:str):
         character = "destruction trailblazer"
     if character == "PTB":
         character = "preservation trailblazer"
+    if character == "RTB":
+        character = "remembrance trailblazer"
     if character == "BS":
         character = "black swan"
     if character == "AVEN":
@@ -65,10 +67,12 @@ def cleanse_name(character:str):
         character = "preservation march"
     if character == "HTB" or character == "HARMONY MC" or character == "HMC" or character == "HTB" or character == "HARMONY TB" or character == "TRAILBLAZER HARMONY" or character == "HATBLAZER" or character == "HARMBLAZER":
         character = "harmony trailblazer"
-    if character == "Preservation MC" or character == "FIREBLAZER" or character == "FMC"  or character == "FTB" or character == "FIRE MC" or character == "FIRE TB" or character== "TRAILBLAZER PRESERVATION":
+    if character == "PRESERVATION MC" or character == "FIREBLAZER" or character == "FMC"  or character == "FTB" or character == "FIRE MC" or character == "FIRE TB" or character== "TRAILBLAZER PRESERVATION":
         character = "preservation trailblazer"
-    if character == "Destruction MC" or character == "DESTRUCTION TB" or character == "PHYSICAL TRAILBLAZER" or character == "TRAILBLAZER DESTRUCTION" or character == "PHYS MC" or character == "PHYS TB" or character == "DMC" or  character == "DTB":
+    if character == "DESTRUCTION MC" or character == "DESTRUCTION TB" or character == "PHYSICAL TRAILBLAZER" or character == "TRAILBLAZER DESTRUCTION" or character == "PHYS MC" or character == "PHYS TB" or character == "DMC" or  character == "DTB":
         character = "destruction trailblazer"
+    if character == "REMEMBRANCE MC" or character == "REMEMBRANCE TB" or character == "REMEMBRANCE TRAILBLAZER" or character == "TRAILBLAZER REMEMBRANCE" or character == "REMEM MC" or character == "REMEM TB" or character == "RMC" or  character == "RTB":
+        character = "remembrance trailblazer"
 
     return character.lower()
 
