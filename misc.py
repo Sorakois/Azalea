@@ -191,7 +191,7 @@ class MiscCMD(commands.Cog):
                                 HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "").replace(",","")
                             else:
                                 HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(|\)', '', HSRBuildInfo[i]) \
-                                .replace("'", "").replace(",", "").replace(")", "\n")
+                                .replace("'", "").replace(",", "").replace(")", "\n").replace("~~","==").replace("==", " or")
 
             # res = ''
             # for row in HSRBuildInfo:
