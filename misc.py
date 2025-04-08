@@ -1,3 +1,4 @@
+import re
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -186,7 +187,8 @@ class MiscCMD(commands.Cog):
                         if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
                             HSRBuildInfo[i] = "N/A"
                         else:
-                            HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "").replace(",","")
+                            HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(|\)', '', HSRBuildInfo[i]) \
+                            .replace("'", "").replace(",", "").replace(")", "\n")
 
 
             # res = ''
