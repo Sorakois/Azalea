@@ -46,7 +46,7 @@ class BuildScrape():
 
     def __str__(self):
         # No need to print path
-        return f"\n{self.char_name}'s Info:\nStat Focus: {self.stat_focus}\nTrace Prio: {self.trace_prio}\nGear Mainstats: {self.gear_mainstats}\nBest LCs: {self.best_lc}\nBest Relics: {self.best_relics}\nBest Planar: {self.best_planar}\nBest Team: {self.best_team if self.best_team != None else "N/A"}\nNotes: {self.notes if self.notes != None else "N/A"}\n"
+        return f"\n{self.char_name}'s Info:\nStat Focus: {self.stat_focus}\nTrace Prio: {self.trace_prio}\nGear Mainstats: {self.gear_mainstats}\nBest LCs: {self.best_lc}\nBest Relics: {self.best_relics}\nBest Planar: {self.best_planar}\nBest Team: {self.best_team if self.best_team != None else 'N/A'}\nNotes: {self.notes if self.notes != None else 'N/A'}\n"
         
     def getHSRMetaData():#
         '''
