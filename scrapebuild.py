@@ -46,9 +46,7 @@ class BuildScrape():
 
     def __str__(self):
         # No need to print path
-        relic_pc = ["Chest","Boots", "Orb", "Rope"]
-        gearfocus = zip(self.gear_mainstats, relic_pc)
-        return f"\n{self.char_name}'s Info:\nStat Focus: {self.stat_focus}\nTrace Prio: {self.trace_prio}\nGear Mainstats: {list(gearfocus)}\nBest LCs: {self.best_lc}\nBest Relics: {self.best_relics}\nBest Planar: {self.best_planar}\nBest Team: {self.best_team if self.best_team != None else "N/A"}\nNotes: {self.notes if self.notes != None else "N/A"}\n"
+        return f"\n{self.char_name}'s Info:\nStat Focus: {self.stat_focus}\nTrace Prio: {self.trace_prio}\nGear Mainstats: {self.gear_mainstats}\nBest LCs: {self.best_lc}\nBest Relics: {self.best_relics}\nBest Planar: {self.best_planar}\nBest Team: {self.best_team if self.best_team != None else "N/A"}\nNotes: {self.notes if self.notes != None else "N/A"}\n"
         
     def getHSRMetaData():#
         '''
@@ -260,7 +258,10 @@ class BuildScrape():
                                         continue
                                     gear_mainstats.append(meta_sheet_data[i+num][:idx])
                                     trace_prio.append(meta_sheet_data[i+num][idx:])
-                                    break 
+                                    break
+                        
+                        relic_pc = ["Chest","Boots", "Orb", "Rope"]
+                        gear_mainstats = list(zip(gear_mainstats, relic_pc))
                         file.write(f"gear_mainstats: {gear_mainstats}\n") 
                         file.write(f"trace_prio: {trace_prio}\n")
 
