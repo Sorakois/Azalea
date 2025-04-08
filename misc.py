@@ -176,7 +176,7 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats FROM HSR_BUILD WHERE name = %s", character.lower())
+                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats FROM HSR_BUILD WHERE name LIKE = %s", character.lower())
                     HSRBuildInfo = await cursor.fetchone()
                     if HSRBuildInfo:
                         HSRBuildInfo = list(HSRBuildInfo)
