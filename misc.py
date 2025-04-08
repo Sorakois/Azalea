@@ -242,6 +242,14 @@ class MiscCMD(commands.Cog):
                     #temp until available on the site
                     elif character.upper() == "AGLAEA":
                         em.set_image(url=f"https://i.imgur.com/dNiSmlm.png")
+                    elif character.upper() == "CASTORICE":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/castorice-character_cut_in_front.webp")
+                    elif character.upper() == "ANAXA":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/anaxa-character_cut_in_front.webp")
+                    elif character.upper() == "CIPHER":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/cipher-character_gacha_result_bg.webp")
+                    elif character.upper() == "HYACINE":
+                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/hyacine-character_gacha_result_bg.webp")
                     else:   #default images
                         try:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_gacha_result_bg.webp?x30775")

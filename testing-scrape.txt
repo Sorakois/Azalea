@@ -43,6 +43,7 @@ PhantomHearts331
 GuobaCertified
 Document ChangeLogs
 Date Changes Applied Applied By
+Reverted the removal of Giant Tree of Rapt Brooding from Gallagher and Lingsha (since they may not always be against Fire-weak enemies) Ataraxia
 Improved Title Screen ImageAdded Castorice / Anaxa Previews json.JasonDark Angel
 Adjusted images for Physical characters json.Jason
 Transformed Serval's note about her battery build into an alternative build Ataraxia
@@ -209,7 +210,7 @@ Scent Alone Stays True 5★2 - Echoes of the Coffin 5★ ⁴3 - Night of Fright 
 Outgoing Healing% / ATK% 1.) Ultimate
 SPD 2.) Talent
 Roles:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³ ATK: 2200+SPD: 150+Break Effect: 100%+~~ 150%+ if on Sig LC Leveling Basic ATK can be ignored.
+Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (if you need more healing) ATK: 2200+SPD: 150+Break Effect: 100%+~~ 150%+ if on Sig LC Leveling Basic ATK can be ignored.
 ATK% ~~ Skill
 ERR% 3.) Basic ATK
 Relic Notes ¹ 4-PC: Iron Cavalry Against the Scourge can be used if Harmony Trailblazer or Fugue is in the team for extra damage.² Forge of the Kalpagni Lantern is preferred if Lingsha is in a Break / Super Break team. Otherwise, Fleet of the Ageless, Broken Keel or Lushaka, the Sunken Seas is preferred.³ Penacony, Land of the Dreams can be used if paired with Fire DPS other than Firefly.
@@ -282,7 +283,7 @@ Multiplication 3★ [S5]~~ Quid Pro Quo 4★ [Free]~~ Scent Alone Stays True 5�
 Outgoing Healing% 1.) Talent
 SPD 2.) Skill
 Role: Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³ HP: 3000DEF: 1000SPD: 150+Break Effect: 100%+ Leveling Ultimate can be ignored.
+Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (if you need more healing) HP: 3000DEF: 1000SPD: 150+Break Effect: 100%+ Leveling Ultimate can be ignored.
 HP% / DEF% 3.) Basic ATK
 Break Effect% / ERR% 4.) Ultimate
 Relic Notes ¹ 4-PC: Iron Cavalry Against the Scourge can be used if Harmony Trailblazer is in the team for extra damage.² Forge of the Kalpagni Lantern is preferred if Gallagher is in a Break / Super Break team. Otherwise, either of the first two Planar Ornament options is preferred.³ Penacony, Land of the Dreams can be used if paired with Fire DPS other than Firefly.
