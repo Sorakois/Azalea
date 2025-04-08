@@ -185,6 +185,9 @@ class MiscCMD(commands.Cog):
                         for i in range(len(HSRBuildInfo)):
                             if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
                                 HSRBuildInfo[i] = "N/A"
+                            HSRBuildInfo[i].replace("(", "")
+                            HSRBuildInfo[i].replace(")", "\n")
+                            HSRBuildInfo[i].replace("'", "")
 
             # res = ''
             # for row in HSRBuildInfo:
@@ -204,12 +207,12 @@ class MiscCMD(commands.Cog):
 
                 #grab server pfp and set up base of embed
                 em.set_thumbnail(url=interaction.user.guild.icon.url)
-                em.add_field(name="Recommended Stats: ", value=f"{HSRBuildInfo[0]}", inline=True)
-                em.add_field(name="Trace Priority: ", value=f"{HSRBuildInfo[1]}", inline=False)
-                em.add_field(name="Best LCs: ", value=f"{HSRBuildInfo[2]}", inline=True)
-                em.add_field(name="Best Relics: ", value=f"{HSRBuildInfo[3]}", inline=False)
-                em.add_field(name="Best Planar Relics: ", value=f"{HSRBuildInfo[4]}", inline=True)
-                em.add_field(name="Best Gear Mainstats: ", value=f"{HSRBuildInfo[5]}", inline=False)
+                em.add_field(name="Recommended Stats: ", value=f"``{HSRBuildInfo[0]}``", inline=True)
+                em.add_field(name="Trace Priority: ", value=f"``{HSRBuildInfo[1]}``", inline=False)
+                em.add_field(name="Best LCs: ", value=f"``{HSRBuildInfo[2]}``", inline=True)
+                em.add_field(name="Best Relics: ", value=f"``{HSRBuildInfo[3]}``", inline=False)
+                em.add_field(name="Best Planar Relics: ", value=f"``{HSRBuildInfo[4]}``", inline=True)
+                em.add_field(name="Best Gear Mainstats: ", value=f"``{HSRBuildInfo[5]}``", inline=False)
 
                 #catch irregularities
                 character = character.strip()

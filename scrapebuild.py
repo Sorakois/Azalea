@@ -241,7 +241,9 @@ class BuildScrape():
                             # Fallback if no stat keyword found
                             best_planar = planar_stat_info
                         
-                        stat_focus_info = re.findall(r'(?:[A-Z]+: [^A-Z]+)', stat_focus)
+                        matches = re.split(r'(?=(?:ATK|CRIT Rate|CRIT DMG|SPD|DEF|EHR|HP|Break Effect):)', stat_focus)
+                        stat_focus_info = [s.strip() for s in matches if s.strip()]
+                        print(f"stat foc for {name}: {stat_focus_info}")
                         best_planar_info = re.findall(r'(?:\d+\.\) .*?(?=(?:\d+\.\)|~~|$)))|~~ .*?(?=(?:\d+\.\)|~~|$))', best_planar)
                         file.write(f"best_planar: {best_planar_info}\n") 
                         file.write(f"stat_focus: {stat_focus_info}\n")
@@ -260,8 +262,8 @@ class BuildScrape():
                                     trace_prio.append(meta_sheet_data[i+num][idx:])
                                     break
                         
-                        relic_pc = ["Chest","Boots", "Orb", "Rope"]
-                        gear_mainstats = list(zip(gear_mainstats, relic_pc))
+                        relic_pc = ["Chest:","Boots:", "Orb:", "Rope:"]
+                        gear_mainstats = list(zip(relic_pc, gear_mainstats))
                         file.write(f"gear_mainstats: {gear_mainstats}\n") 
                         file.write(f"trace_prio: {trace_prio}\n")
 
@@ -363,16 +365,16 @@ class fullScrape(BuildScrape):
             for Character in builtCharacters:
                 name = cleanse_name(str(Character.char_name.lower()))
                 path = str(Character.path.lower()) if Character.path else ""
-                stat_focus = str(Character.stat_focus).replace(", ", " | ")
-                trace_prio = str(Character.trace_prio).replace(", ", " | ")
-                substats = str(Character.substats).replace(", ", "|") if Character.substats else "N/A"
-                gear_mainstats = str(Character.gear_mainstats).replace(", ", " | ")
-                best_lc = str(Character.best_lc).replace(", ", " | ")
-                best_relics = str(Character.best_relics).replace(", ", " | ")
-                best_planar = str(Character.best_planar).replace(", ", " | ")
-                best_team = str(Character.best_team).replace(", ", " | ") if Character.best_team else "N/A"
+                stat_focus = str(Character.stat_focus).replace(", ", "\n").replace("~~","==")
+                trace_prio = str(Character.trace_prio).replace(", ", "\n").replace("~~","==")
+                substats = str(Character.substats).replace(", ", "\n") if Character.substats else "N/A"
+                gear_mainstats = str(Character.gear_mainstats).replace("~~","==")
+                best_lc = str(Character.best_lc).replace(", ", "\n").replace("~~","==")
+                best_relics = str(Character.best_relics).replace(", ", "\n").replace("~~","==")
+                best_planar = str(Character.best_planar).replace(", ", "\n").replace("~~","==")
+                best_team = str(Character.best_team).replace(", ", "\n") if Character.best_team else "N/A"
                 #if Character.notes
-                notes = str(Character.notes).replace(", ", " | ") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
+                notes = str(Character.notes).replace(", ", "\n") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
                 build_author = "Sorakoi"
                 #print(f"test: this is char. {Character}")
                 await cursor.execute("SELECT name FROM HSR_BUILD WHERE name = %s", name)
