@@ -423,7 +423,7 @@ class fullScrape(BuildScrape):
             # Let's add images for unreleased characters even though we got no info!
             for char in unreleased_chars:
                 
-                name = str(char[0])
+                name = str(char[0]).lower()
                 path = str(char[1])
                 #print(name, path)
                 
@@ -438,7 +438,7 @@ class fullScrape(BuildScrape):
                 
                 # Update query if exist already
                 #print(name, querycheck)
-                if name.lower() == querycheck:
+                if name == querycheck:
                     await cursor.execute("""
                         UPDATE HSR_BUILD SET
                             path = %s,
