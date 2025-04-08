@@ -176,15 +176,22 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT * FROM HSR_BUILD")
-                    HSRBuildInfo = await cursor.fetchall()
+                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats FROM HSR_BUILD WHERE name = %s", character.lower())
+                    HSRBuildInfo = await cursor.fetchone()
+                    if HSRBuildInfo:
+                        HSRBuildInfo = list(HSRBuildInfo)
+                        
+                        # Replace None or empty strings with "N/A"
+                        for i in range(len(HSRBuildInfo)):
+                            if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
+                                HSRBuildInfo[i] = "N/A"
 
-            res = ''
-            for row in HSRBuildInfo:
-                temp = row[0]
-                if character == temp:
-                    res = row
-                    break
+            # res = ''
+            # for row in HSRBuildInfo:
+            #     temp = row[0]
+            #     if character == temp:
+            #         res = row
+            #         break
 
             try:
                 #add a hyphen so that URL works
@@ -197,12 +204,12 @@ class MiscCMD(commands.Cog):
 
                 #grab server pfp and set up base of embed
                 em.set_thumbnail(url=interaction.user.guild.icon.url)
-                em.add_field(name="Recommended Stats: ", value=f"{res[1]}", inline=True)
-                em.add_field(name="Trace Priority: ", value=f"{res[2]}", inline=False)
-                em.add_field(name="Best LCs: ", value=f"{res[3]}", inline=True)
-                em.add_field(name="Best Relics: ", value=f"{res[4]}", inline=False)
-                em.add_field(name="Best Planar Relics: ", value=f"{res[5]}", inline=True)
-                em.add_field(name="Best Team Synergy: ", value=f"{res[6]}", inline=False)
+                em.add_field(name="Recommended Stats: ", value=f"{HSRBuildInfo[0]}", inline=True)
+                em.add_field(name="Trace Priority: ", value=f"{HSRBuildInfo[1]}", inline=False)
+                em.add_field(name="Best LCs: ", value=f"{HSRBuildInfo[2]}", inline=True)
+                em.add_field(name="Best Relics: ", value=f"{HSRBuildInfo[3]}", inline=False)
+                em.add_field(name="Best Planar Relics: ", value=f"{HSRBuildInfo[4]}", inline=True)
+                em.add_field(name="Best Gear Mainstats: ", value=f"{HSRBuildInfo[5]}", inline=False)
 
                 #catch irregularities
                 character = character.strip()
@@ -232,7 +239,7 @@ class MiscCMD(commands.Cog):
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-5_shop_icon.webp?x30775")
                         else:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-6_shop_icon.webp?x30775")
-                    elif character.upper() == "REMEMBERANCE-TRAILBLAZER":
+                    elif character.upper() == "REMEMBRANCE-TRAILBLAZER":
                         trailblaze_decide = random.randint(1, 2)
                         if trailblaze_decide == 1:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-7_gacha_result_bg.webp")
