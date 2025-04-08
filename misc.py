@@ -187,9 +187,11 @@ class MiscCMD(commands.Cog):
                         if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
                             HSRBuildInfo[i] = "N/A"
                         else:
-                            HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(|\)', '', HSRBuildInfo[i]) \
-                            .replace("'", "").replace(",", "").replace(")", "\n")
-
+                            if i != 0:
+                                HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "").replace(",","")
+                            else:
+                                HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(|\)', '', HSRBuildInfo[i]) \
+                                .replace("'", "").replace(",", "").replace(")", "\n")
 
             # res = ''
             # for row in HSRBuildInfo:

@@ -365,7 +365,7 @@ class fullScrape(BuildScrape):
             for Character in builtCharacters:
                 name = cleanse_name(str(Character.char_name.lower()))
                 path = str(Character.path.lower()) if Character.path else ""
-                stat_focus = str(Character.stat_focus).replace(", ", "\n").replace("~~","==")
+                stat_focus = str(Character.stat_focus).replace(", ", "\n").replace("~~"," or")
                 trace_prio = str(Character.trace_prio).replace(", ", "\n").replace("~~","==")
                 substats = str(Character.substats).replace(", ", "\n") if Character.substats else "N/A"
                 gear_mainstats = str(Character.gear_mainstats).replace("~~","==")
