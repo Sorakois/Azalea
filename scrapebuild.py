@@ -372,8 +372,6 @@ class fullScrape(BuildScrape):
                 best_team = str(Character.best_team).replace(", ", " | ") if Character.best_team else "N/A"
                 #if Character.notes
                 notes = str(Character.notes).replace(", ", " | ") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
-
-                print(f"{len(notes)} for {name}")
                 build_author = "Sorakoi"
                 #print(f"test: this is char. {Character}")
                 await cursor.execute("SELECT name FROM HSR_BUILD WHERE name = %s", name)
@@ -386,7 +384,6 @@ class fullScrape(BuildScrape):
                     querycheck = querycheck.strip("(),' ")
                 
                 # Update query if exist already
-                print(f'{name} vs {querycheck}')
                 if querycheck is not None and name == querycheck:
                     await cursor.execute("""
                         UPDATE HSR_BUILD SET
@@ -403,7 +400,7 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, stat_focus, trace_prio, substats, gear_mainstats, best_lc, best_relics, best_planar, best_team, notes, build_author, name))
-
+                    print(f"Updated: {name}")
                 # Insert query if not existent
                 elif querycheck is None:
                     await cursor.execute("""
@@ -421,12 +418,14 @@ class fullScrape(BuildScrape):
                         gear_mainstats, best_lc, best_relics,
                         best_planar, best_team, notes, build_author
                     ))
+                    print(f"Inserted: {name}")
                 
             # Let's add images for unreleased characters even though we got no info!
             for char in unreleased_chars:
-                print(unreleased_chars)
+                
                 name = str(char[0])
                 path = str(char[1])
+                #print(name, path)
                 
                 await cursor.execute("SELECT name FROM HSR_BUILD WHERE name = %s", name)
                 querycheck = await cursor.fetchone()
@@ -438,7 +437,8 @@ class fullScrape(BuildScrape):
                     querycheck = querycheck.strip("(),' ")
                 
                 # Update query if exist already
-                if name == querycheck:
+                #print(name, querycheck)
+                if name.lower() == querycheck:
                     await cursor.execute("""
                         UPDATE HSR_BUILD SET
                             path = %s,
@@ -454,24 +454,26 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", build_author, name))
-
+                    print(f"Updated: {name}")
+                    
                 # Insert query if not existent
                 elif querycheck is None:
-                        await cursor.execute("""
-                            INSERT INTO HSR_BUILD (
-                                name, path, stats, trapri, substats,
-                                gear_mainstats, bestlc, bestrelics,
-                                bestplanar, bestteam, notes, buildauthor
-                            ) VALUES (
-                                %s, %s, %s, %s, %s,
-                                %s, %s, %s,
-                                %s, %s, %s, %s
-                            )
-                        """, (
-                            name, path, "N/A", "N/A", "N/A",
-                            "N/A", "N/A", "N/A",
-                            "N/A", "N/A", "N/A", build_author
-                            ))
+                    await cursor.execute("""
+                        INSERT INTO HSR_BUILD (
+                            name, path, stats, trapri, substats,
+                            gear_mainstats, bestlc, bestrelics,
+                            bestplanar, bestteam, notes, buildauthor
+                        ) VALUES (
+                            %s, %s, %s, %s, %s,
+                            %s, %s, %s,
+                            %s, %s, %s, %s
+                        )
+                    """, (
+                        name, path, "N/A", "N/A", "N/A",
+                        "N/A", "N/A", "N/A",
+                        "N/A", "N/A", "N/A", build_author
+                        ))
+                    print(f"Inserted: {name}")
             # Done!
             await conn.commit()
         except Exception as e:
