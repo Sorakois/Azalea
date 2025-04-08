@@ -177,7 +177,7 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats, buildauthor FROM HSR_BUILD WHERE name LIKE %s", f"%{character.lower()}%")
+                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats, buildauthor, notes FROM HSR_BUILD WHERE name LIKE %s", f"%{character.lower()}%")
                     HSRBuildInfo = await cursor.fetchone()
                     if HSRBuildInfo:
                         HSRBuildInfo = list(HSRBuildInfo)
@@ -207,12 +207,13 @@ class MiscCMD(commands.Cog):
                 #grab server pfp and set up base of embed
                 em.set_thumbnail(url=interaction.user.guild.icon.url)
                 em.add_field(name="Recommended Stats: ", value=f"{HSRBuildInfo[0]}", inline=True)
+                em.add_field(name="Best Gear Mainstats: ", value=f"{HSRBuildInfo[5]}", inline=False)
                 em.add_field(name="Trace Priority: ", value=f"{HSRBuildInfo[1]}", inline=False)
                 em.add_field(name="Best LCs: ", value=f"{HSRBuildInfo[2]}", inline=True)
                 em.add_field(name="Best Relics: ", value=f"{HSRBuildInfo[3]}", inline=False)
                 em.add_field(name="Best Planar Relics: ", value=f"{HSRBuildInfo[4]}", inline=True)
-                em.add_field(name="Best Gear Mainstats: ", value=f"{HSRBuildInfo[5]}", inline=False)
-
+                em.add_field(name="Notes: ", value=f"{HSRBuildInfo[7]}", inline=True)
+                
                 #catch irregularities
                 character = character.strip()
                 character = character.replace(" ", "-")
@@ -288,6 +289,8 @@ class MiscCMD(commands.Cog):
                 await interaction.response.send_message(embed=em, ephemeral=False)
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)
+            except Exception as e:
+                 await interaction.response.send_message(f"Notes are too long! Let sorakoi know pls!")
             return
 
         if game == "CRK":
