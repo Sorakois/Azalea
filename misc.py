@@ -212,7 +212,8 @@ class MiscCMD(commands.Cog):
                 em.add_field(name="Best LCs: ", value=f"{HSRBuildInfo[2]}", inline=True)
                 em.add_field(name="Best Relics: ", value=f"{HSRBuildInfo[3]}", inline=False)
                 em.add_field(name="Best Planar Relics: ", value=f"{HSRBuildInfo[4]}", inline=True)
-                em.add_field(name="Notes: ", value=f"{HSRBuildInfo[7]}", inline=True)
+                '''TODO: Make this into page 2 later'''
+                #em.add_field(name="Notes: ", value=f"{HSRBuildInfo[7]}", inline=True)
                 
                 #catch irregularities
                 character = character.strip()
