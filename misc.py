@@ -183,16 +183,18 @@ class MiscCMD(commands.Cog):
                         HSRBuildInfo = list(HSRBuildInfo)
                         
                         # Replace None or empty strings with "N/A"
-                    for i in range(len(HSRBuildInfo)):
-                        if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
-                            HSRBuildInfo[i] = "N/A"
-                        else:
-                            if i != 0:
-                                HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "").replace(",","")
+                        for i in range(len(HSRBuildInfo)):
+                            if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
+                                HSRBuildInfo[i] = "N/A"
                             else:
-                                HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(|\)', '', HSRBuildInfo[i]) \
-                                .replace("'", "").replace(",", "").replace(")", "\n").replace("~~","==").replace("==", " or")
-
+                                # Check if there's a ")" and it's not part of a decimal number like "1.)"
+                                if ".)" not in HSRBuildInfo[i]:
+                                    # Remove parentheses and clean up extra symbols
+                                    HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "").replace(",", "")
+                                else:
+                                    # For text with numbered points, preserve the numbering format like "1.)"
+                                    HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(', '', HSRBuildInfo[i]) \
+                                        .replace("'", "").replace(",", "").replace(")", "\n").replace("~~", "==").replace("==", " or")
             # res = ''
             # for row in HSRBuildInfo:
             #     temp = row[0]
