@@ -182,12 +182,12 @@ class MiscCMD(commands.Cog):
                         HSRBuildInfo = list(HSRBuildInfo)
                         
                         # Replace None or empty strings with "N/A"
-                        for i in range(len(HSRBuildInfo)):
-                            if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
-                                HSRBuildInfo[i] = "N/A"
-                            HSRBuildInfo[i].replace("(", "")
-                            HSRBuildInfo[i].replace(")", "\n")
-                            HSRBuildInfo[i].replace("'", "")
+                    for i in range(len(HSRBuildInfo)):
+                        if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
+                            HSRBuildInfo[i] = "N/A"
+                        else:
+                            HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "")
+
 
             # res = ''
             # for row in HSRBuildInfo:
