@@ -228,6 +228,13 @@ class MiscCMD(commands.Cog):
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-5_shop_icon.webp?x30775")
                         else:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-6_shop_icon.webp?x30775")
+                    elif character.upper() == "REMEMBERANCE-TRAILBLAZER":
+                        trailblaze_decide = random.randint(1, 2)
+                        if trailblaze_decide == 1:
+                            em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-7_gacha_result_bg.webp")
+                        else:
+                            em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/trailblazer-character-8_gacha_result_bg.webp")
+
 
                     elif character.upper() == "IMBIBITOR-LUNAE":
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/dan-heng-imbibitor-lunae-character_gacha_result_bg.webp?x30775")

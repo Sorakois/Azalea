@@ -405,7 +405,7 @@ class fullScrape(BuildScrape):
                     """, (path, stat_focus, trace_prio, substats, gear_mainstats, best_lc, best_relics, best_planar, best_team, notes, build_author, name))
 
                 # Insert query if not existent
-                elif querycheck is not None:
+                elif querycheck is None:
                     await cursor.execute("""
                         INSERT INTO HSR_BUILD (
                             name, path, stats, trapri, substats,
