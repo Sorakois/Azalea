@@ -187,14 +187,7 @@ class MiscCMD(commands.Cog):
                             if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
                                 HSRBuildInfo[i] = "N/A"
                             else:
-                                # Check if there's a ")" and it's not part of a decimal number like "1.)"
-                                if ".)" not in HSRBuildInfo[i]:
-                                    # Remove parentheses and clean up extra symbols
-                                    HSRBuildInfo[i] = HSRBuildInfo[i].replace("(", "").replace(")", "\n").replace("'", "").replace(",", "")
-                                else:
-                                    # For text with numbered points, preserve the numbering format like "1.)"
-                                    HSRBuildInfo[i] = re.sub(r'(?<!\d\.)\(', '', HSRBuildInfo[i]) \
-                                        .replace("'", "").replace(",", "").replace(")", "\n").replace("~~", "==").replace("==", " or")
+                                HSRBuildInfo[i] = HSRBuildInfo[i].replace(".)", " -").replace("(", "").replace(")", "\n").replace("'", "").replace(",", "")
             # res = ''
             # for row in HSRBuildInfo:
             #     temp = row[0]
