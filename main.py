@@ -20,7 +20,6 @@ from psyche import Persona
 import asyncio
 from asyncio import Lock
 from debug import Prompt, Login
-from scrapebuild import BuildScrape, fullScrape
 
 # load the enviroment variables
 load_dotenv()
@@ -47,7 +46,6 @@ cogs = {
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
     'market': Business(bot),
-    'buildscrape' : fullScrape(bot)
     }
 
 # bot settings
