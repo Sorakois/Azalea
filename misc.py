@@ -176,7 +176,7 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats FROM HSR_BUILD WHERE name LIKE = %s", character.lower())
+                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats, buildauthor FROM HSR_BUILD WHERE name LIKE %s", f"%{character.lower()}%")
                     HSRBuildInfo = await cursor.fetchone()
                     if HSRBuildInfo:
                         HSRBuildInfo = list(HSRBuildInfo)
@@ -282,7 +282,7 @@ class MiscCMD(commands.Cog):
 
 
 
-                em.set_footer(text=f"Created by: {res[7].capitalize()} in discord.gg/nurture")
+                em.set_footer(text=f"Created by: {HSRBuildInfo[6].capitalize()} in discord.gg/nurture")
                 await interaction.response.send_message(embed=em, ephemeral=False)
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)
