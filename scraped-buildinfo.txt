@@ -421,6 +421,15 @@ gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'SPD '), ('Orb:
 trace_prio: ['1.) Skill', '2.) Ultimate', '3.) Talent', '4.) Basic ATK']
 Notes: []
 
+Build of Castorice:
+best_lc: ['1 - Make Farewells More Beautiful 5★', '2 - Sweat Now, Cry Less 4★', '3 - Time Waits for No One 5★', '4 - Victory In a Blink 4★ [Free]']
+best_relics: ['1.) 4-PC: Poet of Mourning Collapse ¹', '2.) 2-PC: Quantum% Set / Longevous Disciple / Scholar Lost in Erudition [Choose 2]']
+best_planar: []
+stat_focus: []
+gear_mainstats: [('Chest:', 'Role:Main DPS '), ('Boots:', '')]
+trace_prio: ['2 Piece Set (Planar Ornament)', "1.) Bone Collection's Serene Demesne2.) Rutilant Arena ²~~ The Wondrous BananAmusement Park ² HP: 7000CRIT Rate: 70% ¹CRIT DMG: 140% ¹SPD: <95 SPD ¹"]
+Notes: []
+
 Build of Tribbie:
 best_lc: ['1 - If Time Were a Flower 5★', '2 - Dance! Dance! Dance! 4★', '3 - Memories of the Past 4★', '~~ Meshing Cogs 3★', '4 - Poised to Bloom 4★', '5 - Carve the Moon, Weave the Clouds 4★']
 best_relics: ['1.) 4-PC: Poet of Mourning Collapse ¹', '2.) 4-PC: Genius of Brilliant Stars', '~~ 2-PC: Scholar / Longevous / Quantum% Set / SPD% Set [Choose 2]']
