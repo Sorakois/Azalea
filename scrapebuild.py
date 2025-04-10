@@ -176,10 +176,11 @@ class BuildScrape():
             all_rows = file.readlines()
 
         for eachchar in all_char_objs:
+            temp = eachchar.char_name.replace(" ", "")
             if eachchar.path == "Remembrance":
                 for idx, eachrow in enumerate(all_rows):
                     words = eachrow.strip().split()
-                    if len(words) >= 2 and (words[0] == eachchar.char_name or "RemembranceTrailblazer") and words[1] == eachchar.path:
+                    if len(words) >= 2 and (words[0] == temp) and words[1] == eachchar.path:
                         # Found the proper info!
                         '''only fix:
                             - trace prio
@@ -208,7 +209,8 @@ class BuildScrape():
                         
                         matches = re.split(r'(?=(?:ATK|CRIT Rate|CRIT DMG|SPD|DEF|EHR|HP|Break Effect):)', stat_focus)
                         eachchar.stat_focus = [s.strip() for s in matches if s.strip()]
-                        eachchar.best_planar = re.findall(r'(?:\d+\.\) .*?(?=(?:\d+\.\)|~~|$)))|~~ .*?(?=(?:\d+\.\)|~~|$))', best_planar)
+                        tempplanar = re.findall(r'(?:\d+\.\) .*?(?=(?:\d+\.\)|~~|$)))|~~ .*?(?=(?:\d+\.\)|~~|$))', best_planar)
+                        eachchar.best_planar = tuple(tempplanar)
                         
                         '''FIX HERE'''
                         gear_mainstats = []
@@ -221,12 +223,13 @@ class BuildScrape():
                                 parsemore = all_rows[idx+7]
                                 if "~~" in parsemore:
                                     split_parts = parsemore.split("~~")
-                                    trace_prio.append(split_parts[1])
+                                    temp = split_parts[1].strip().split(" ")[0]
+                                    trace_prio.append("~~" + temp)
                                 elif re.search(r'\d+\.\)', parsemore):
                                     # Check for number followed by `.)`
                                     split_parts = re.split(r'\d+\.\)', parsemore)
-                                    trace_prio.append(split_parts[1]) #3rd item in comparison
-                                    
+                                    temp = split_parts[1].strip().split(" ")[0]
+                                    trace_prio.append(temp) #3rd item in comparison
                             elif num == 8:
                                 # Get the last item in stat_focus
                                 last_item = eachchar.stat_focus[-1]
@@ -239,7 +242,7 @@ class BuildScrape():
                                     # After "~~" becomes part of trace_prio
                                     split_parts = last_item.split('~~', 1)  
                                     stat_focus_part = split_parts[0].strip() 
-                                    trace_prio_part = split_parts[1].strip()  
+                                    trace_prio_part = "~~" + split_parts[1].strip()
                                 elif re.search(number_pattern, last_item):
                                     # Split at first number followed by `.)`
                                     # First part becomes stat_focus
@@ -247,13 +250,14 @@ class BuildScrape():
                                     split_parts = re.split(r'(\d+\.\))', last_item, 1) 
                                     stat_focus_part = split_parts[0].strip()  
                                     trace_prio_part = split_parts[1].strip() + split_parts[2].strip() 
+                                    trace_prio_part = trace_prio_part.split()[0]
                                 else:
                                     # If no "~~" or number followed by `.)`, just keep it as is
                                     stat_focus_part = last_item.strip()
                                     trace_prio_part = ''
                                 
                                 # Update stat_focus by keeping everything but the last item
-                                eachchar.stat_focus = eachchar.stat_focus[:-1] + [stat_focus_part]
+                                eachchar.stat_focus[-1] = stat_focus_part
                                 
                                 # Add the extracted part to trace_prio
                                 if trace_prio_part:
@@ -265,7 +269,7 @@ class BuildScrape():
                             else:
                                 trace_prio.append(all_rows[idx+num])
                     
-                        eachchar.trace_prio = trace_prio
+                        eachchar.trace_prio = tuple(trace_prio)
                      
                         ''' Finally, lets fix gear mainstats'''   
                         relic_pc = ["Chest:","Boots:", "Orb:", "Rope:"]
@@ -275,11 +279,19 @@ class BuildScrape():
                         for num in num_of_relics:
                             relic_info.append(all_rows[idx+num])
                         
+                        relic_info = tuple(relic_info)
                         tempgear_mainstats = list(zip(relic_pc, relic_info))
                         eachchar.gear_mainstats = tempgear_mainstats
                        
                         # Housekeeping
                         eachchar.notes = "N/A"
+                        # trace_prio_list = list(eachchar.trace_prio)
+                        # for idx in [2,3]:
+                        #     trace_prio_list[idx] = trace_prio_list[idx].split()[0]
+                        # print(f"{eachchar.char_name}: traceprio 2: {eachchar.trace_prio[2]}")
+                        # #print(f"{eachchar.char_name}: traceprio: {eachchar.trace_prio}")
+                        # eachchar.trace_prio = tuple(trace_prio_list)
+                            
             
             # if eachchar.char_name in ["Castorice", "Aglaea", "Remembrance Trailblazer"]:
             #     print(eachchar)
@@ -492,14 +504,14 @@ class fullScrape(BuildScrape):
             for Character in builtCharacters:
                 name = cleanse_name(str(Character.char_name.lower()))
                 path = str(Character.path.lower()) if Character.path else ""
-                stat_focus = str(Character.stat_focus).replace(", ", "\n").replace("~~"," or")
-                trace_prio = str(Character.trace_prio).replace(", ", "\n").replace("~~","==")
-                substats = str(Character.substats).replace(", ", "\n") if Character.substats else "N/A"
-                gear_mainstats = str(Character.gear_mainstats).replace("~~","==")
-                best_lc = str(Character.best_lc).replace(", ", "\n").replace("~~","==")
-                best_relics = str(Character.best_relics).replace(", ", "\n").replace("~~","==")
-                best_planar = str(Character.best_planar).replace(", ", "\n").replace("~~","==")
-                best_team = str(Character.best_team).replace(", ", "\n") if Character.best_team else "N/A"
+                stat_focus = str(Character.stat_focus).replace(", ", "\n").replace("~~"," or").replace("[", "").replace("]","").replace(r"\n","").replace('"', '')
+                trace_prio = str(Character.trace_prio).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                substats = str(Character.substats).replace(", ", "\n").replace(r"\n","").replace('"', '') if Character.substats else "N/A"
+                gear_mainstats = str(Character.gear_mainstats).replace("~~","==").replace("[", "").replace("]","").replace(r"\n","").replace('"', '')
+                best_lc = str(Character.best_lc).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                best_relics = str(Character.best_relics).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                best_planar = str(Character.best_planar).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                best_team = str(Character.best_team).replace(", ", "\n").replace(r"\n","").replace('"', '') if Character.best_team else "N/A"
                 #if Character.notes
                 notes = str(Character.notes).replace(", ", "\n") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
                 build_author = "Sorakoi"
@@ -530,7 +542,7 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, stat_focus, trace_prio, substats, gear_mainstats, best_lc, best_relics, best_planar, best_team, notes, build_author, name))
-                    print(f"Updated: {name}")
+                    print(f"Updated: {name.title()}")
                 # Insert query if not existent
                 elif querycheck is None:
                     await cursor.execute("""
