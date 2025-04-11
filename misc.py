@@ -177,7 +177,7 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats, buildauthor, notes FROM HSR_BUILD WHERE name LIKE %s", f"%{character.lower()}%")
+                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats, buildauthor, notes, name FROM HSR_BUILD WHERE name LIKE %s", f"%{character.lower()}%")
                     HSRBuildInfo = await cursor.fetchone()
                     if HSRBuildInfo:
                         HSRBuildInfo = list(HSRBuildInfo)
@@ -201,7 +201,7 @@ class MiscCMD(commands.Cog):
                 if character.upper() == "TOPAZ NUMBY":
                     em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {character.title()}")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title()})")
                 
 
                 #grab server pfp and set up base of embed
