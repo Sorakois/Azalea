@@ -922,7 +922,7 @@ class GachaInteraction(commands.Cog):
                     await interaction.response.send_message("You currently do not own this character or it does not exist. Consider using /daily or sending messages to earn crystals to use /pull or /multipull to pull cookies! Have fun :]", ephemeral=True)
                     return
 
-                crumble_essence = 30
+                crumble_essence = 40
                 
                 # Replace values with some sort of significance
                 try:
@@ -943,7 +943,7 @@ class GachaInteraction(commands.Cog):
                     elif crumble_cookie[0][3] == "Stand_Four" or "Feat_Four":
                         crumble_essence *= 5
                     elif crumble_cookie[0][3] == "Stand_Five" or "Feat_Five":
-                        crumble_essence *= 250
+                        crumble_essence *= 150
                 except TypeError:
                     await interaction.response.send_message("Character does not exist", ephemeral=True)
                     return
@@ -963,7 +963,7 @@ class GachaInteraction(commands.Cog):
                     all_rarity_select = await cursor.fetchall()
                     
                     item_ids = []
-                    crumble_essence = 0
+                    crumble_essence = 40
 
                     await interaction.response.defer()
 
@@ -976,21 +976,21 @@ class GachaInteraction(commands.Cog):
 
                         #rarity to essence (crk)
                         if char_rarity == "Common":
-                            crumble_essence += 30
+                            crumble_essence *= 1
                         elif char_rarity == "Rare":
-                            crumble_essence += 35
+                            crumble_essence *= 1.5
                         elif char_rarity == "Epic":
-                            crumble_essence += 80
+                            crumble_essence *= 4
                         elif char_rarity == "Super Epic":
-                            crumble_essence += 250
+                            crumble_essence *= 10
                         elif char_rarity == "Legendary" or char_rarity == "Special" or char_rarity == "Dragon" or char_rarity == "Ancient":
-                            crumble_essence += 750
+                            crumble_essence *= 100
                         
                         #rarity to essence (hsr)
                         if char_rarity == "Stand_Four" or char_rarity == "Feat_Four":
-                            crumble_essence += 150
+                            crumble_essence *= 5
                         elif char_rarity == "Stand_Five" or char_rarity == "Feat_Five":
-                            crumble_essence += 750
+                            crumble_essence *= 150
                     
                     #remove each item from database
                     for id in item_ids:
