@@ -46,9 +46,7 @@ class BuildScrape():
 
     def __str__(self):
         # No need to print path
-        relic_pc = ["Chest","Boots", "Orb", "Rope"]
-        gearfocus = zip(self.gear_mainstats, relic_pc)
-        return f"\n{self.char_name}'s Info:\nStat Focus: {self.stat_focus}\nTrace Prio: {self.trace_prio}\nGear Mainstats: {list(gearfocus)}\nBest LCs: {self.best_lc}\nBest Relics: {self.best_relics}\nBest Planar: {self.best_planar}\nBest Team: {self.best_team if self.best_team != None else "N/A"}\nNotes: {self.notes if self.notes != None else "N/A"}\n"
+        return f"\n{self.char_name}'s Info:\nStat Focus: {self.stat_focus}\nTrace Prio: {self.trace_prio}\nGear Mainstats: {self.gear_mainstats}\nBest LCs: {self.best_lc}\nBest Relics: {self.best_relics}\nBest Planar: {self.best_planar}\nBest Team: {self.best_team if self.best_team != None else 'N/A'}\nNotes: {self.notes if self.notes != None else 'N/A'}\n"
         
     def getHSRMetaData():#
         '''
@@ -87,7 +85,7 @@ class BuildScrape():
                 cleaned_text = ' '.join(td_texts)
 
                 # Remove leading digits and any non-alphabet characters immediately after them
-                cleaned_text = re.sub(r'^\d+[^A-Za-z]*', '', cleaned_text)
+                #cleaned_text = re.sub(r'^\d+[^A-Za-z]*', '', cleaned_text)
 
                 # Skip lines that start with specific keywords
                 if re.match(r'^(added|removed|updated|fixed|Completely|lowered)\b', cleaned_text, re.IGNORECASE):
@@ -104,9 +102,10 @@ class BuildScrape():
                         td_texts[0] = "Remembrance Trailblazer" if td_texts[0].lower().strip() == "remembrancetrailblazer" else td_texts[0]
                         
                         meta_characters.append(f"{td_texts[0]} {td_texts[1]}")  # charname |  path
+                        
         # Close the driver after scraping
         driver.quit()
-
+        
         return meta_characters
 
     def getHSRWikiNames():
@@ -172,16 +171,146 @@ class BuildScrape():
 
         return valid_char_names
 
+    def fixRemembranceChars(all_char_objs):
+        with open("testing-scrape.txt", "r", encoding="utf-8") as file:
+            all_rows = file.readlines()
+
+        for eachchar in all_char_objs:
+            temp = eachchar.char_name.replace(" ", "")
+            if eachchar.path == "Remembrance":
+                for idx, eachrow in enumerate(all_rows):
+                    words = eachrow.strip().split()
+                    if len(words) >= 2 and (words[0] == temp) and words[1] == eachchar.path:
+                        # Found the proper info!
+                        '''only fix:
+                            - trace prio
+                            - planar relics:
+                            - gear mainstats:
+                            - recomended stats:
+                        '''
+                                                
+                        planar_stat_info = all_rows[idx+8]
+                        # Define stat keywords that indicate the start of stat_focus
+                        stat_keywords = ["ATK:", "CRIT Rate:", "CRIT DMG:", "SPD:", "DEF:", "EHR:", "HP:", "Break"]
+                        
+                        # Find first occurrence of any stat keyword
+                        split_pos = -1
+                        for keyword in stat_keywords:
+                            pos = planar_stat_info.find(keyword)
+                            if pos != -1 and (split_pos == -1 or pos < split_pos):
+                                split_pos = pos
+                        
+                        if split_pos != -1:
+                            best_planar = planar_stat_info[:split_pos]
+                            stat_focus = planar_stat_info[split_pos:]
+                        else:
+                            # Fallback if no stat keyword found
+                            best_planar = planar_stat_info
+                        
+                        matches = re.split(r'(?=(?:ATK|CRIT Rate|CRIT DMG|SPD|DEF|EHR|HP|Break Effect):)', stat_focus)
+                        eachchar.stat_focus = [s.strip() for s in matches if s.strip()]
+                        tempplanar = re.findall(r'(?:\d+\.\) .*?(?=(?:\d+\.\)|~~|$)))|~~ .*?(?=(?:\d+\.\)|~~|$))', best_planar)
+                        eachchar.best_planar = tuple(tempplanar)
+                        
+                        '''FIX HERE'''
+                        gear_mainstats = []
+                        trace_prio = []
+                                                
+                        list_check = [4,5,7,8,10,11]
+                        for num in list_check:
+                            # must parse index 7/8 for more
+                            if num == 7:
+                                parsemore = all_rows[idx+7]
+                                if "~~" in parsemore:
+                                    split_parts = parsemore.split("~~")
+                                    temp = split_parts[1].strip().split(" ")[0]
+                                    trace_prio.append("~~" + temp)
+                                elif re.search(r'\d+\.\)', parsemore):
+                                    # Check for number followed by `.)`
+                                    split_parts = re.split(r'\d+\.\)', parsemore)
+                                    temp = split_parts[1].strip().split(" ")[0]
+                                    trace_prio.append(temp) #3rd item in comparison
+                            elif num == 8:
+                                # Get the last item in stat_focus
+                                last_item = eachchar.stat_focus[-1]
+                                
+                                # Check for "~~" or a number followed by `.)` in the last item
+                                number_pattern = r'\d+\.\)'  # Regex pattern for number followed by `.)`
+                                if '~~' in last_item:
+                                    # Split at first occurrence of "~~"
+                                    # First part becomes stat_focus
+                                    # After "~~" becomes part of trace_prio
+                                    split_parts = last_item.split('~~', 1)  
+                                    stat_focus_part = split_parts[0].strip() 
+                                    trace_prio_part = "~~" + split_parts[1].strip()
+                                elif re.search(number_pattern, last_item):
+                                    # Split at first number followed by `.)`
+                                    # First part becomes stat_focus
+                                    # The number and the rest go to trace_prio
+                                    split_parts = re.split(r'(\d+\.\))', last_item, 1) 
+                                    stat_focus_part = split_parts[0].strip()  
+                                    trace_prio_part = split_parts[1].strip() + split_parts[2].strip() 
+                                    trace_prio_part = trace_prio_part.split()[0]
+                                else:
+                                    # If no "~~" or number followed by `.)`, just keep it as is
+                                    stat_focus_part = last_item.strip()
+                                    trace_prio_part = ''
+                                
+                                # Update stat_focus by keeping everything but the last item
+                                eachchar.stat_focus[-1] = stat_focus_part
+                                
+                                # Add the extracted part to trace_prio
+                                if trace_prio_part:
+                                    trace_prio.append(trace_prio_part)
+                                
+                                # print(f"fixstats for {eachchar.char_name}: {eachchar.stat_focus}")
+                                # print(f"trace_prio for {eachchar.char_name}: {trace_prio}")
+                                
+                            else:
+                                trace_prio.append(all_rows[idx+num])
+                    
+                        eachchar.trace_prio = tuple(trace_prio)
+                     
+                        ''' Finally, lets fix gear mainstats'''   
+                        relic_pc = ["Chest:","Boots:", "Orb:", "Rope:"]
+                        num_of_relics = [3,6,9,12]
+                        relic_info = []
+                        
+                        for num in num_of_relics:
+                            relic_info.append(all_rows[idx+num])
+                        
+                        relic_info = tuple(relic_info)
+                        tempgear_mainstats = list(zip(relic_pc, relic_info))
+                        eachchar.gear_mainstats = tempgear_mainstats
+                       
+                        # Housekeeping
+                        eachchar.notes = "N/A"
+                        # trace_prio_list = list(eachchar.trace_prio)
+                        # for idx in [2,3]:
+                        #     trace_prio_list[idx] = trace_prio_list[idx].split()[0]
+                        # print(f"{eachchar.char_name}: traceprio 2: {eachchar.trace_prio[2]}")
+                        # #print(f"{eachchar.char_name}: traceprio: {eachchar.trace_prio}")
+                        # eachchar.trace_prio = tuple(trace_prio_list)
+                            
+            
+            # if eachchar.char_name in ["Castorice", "Aglaea", "Remembrance Trailblazer"]:
+            #     print(eachchar)
+                        # for r in range(0, 15):
+                        #     if idx + r < len(all_rows):
+                        #         print(f"{eachchar.char_name} {eachchar.path}, idx + {r}: {all_rows[idx + r].strip()}")
+        
+        return all_char_objs
+    
     def grabInfo(released_chars, meta_sheet_data):
         # List of "BuildScrape" objects, each object contains all info needed for Azalea
         char_list = []
         count = 0
+        
         with open('scraped-buildinfo.txt', 'w', encoding='utf-8') as file:
             for i in range(0, len(meta_sheet_data)): # Iterate through EVERY character
                 char_name_path = meta_sheet_data[i] # Format: "Character Path"
             
                 for released in released_chars:
-                
                     if char_name_path.lower().strip() == released.lower().strip():
                         # Initialize defaults in case parsing fails
                         stat_focus = ""
@@ -224,7 +353,7 @@ class BuildScrape():
                         file.write(f"best_lc: {best_lc_split}\n") 
                         file.write(f"best_relics: {best_relic_split}\n")
                         
-                        # I+6 -> Best Planar | Stat Focus
+                        # I+6 -> Best Planar | Stat Focus                        
                         planar_stat_info = meta_sheet_data[i+6]
                         # Define stat keywords that indicate the start of stat_focus
                         stat_keywords = ["ATK:", "CRIT Rate:", "CRIT DMG:", "SPD:", "DEF:", "EHR:", "HP:", "Break"]
@@ -243,7 +372,8 @@ class BuildScrape():
                             # Fallback if no stat keyword found
                             best_planar = planar_stat_info
                         
-                        stat_focus_info = re.findall(r'(?:[A-Z]+: [^A-Z]+)', stat_focus)
+                        matches = re.split(r'(?=(?:ATK|CRIT Rate|CRIT DMG|SPD|DEF|EHR|HP|Break Effect):)', stat_focus)
+                        stat_focus_info = [s.strip() for s in matches if s.strip()]
                         best_planar_info = re.findall(r'(?:\d+\.\) .*?(?=(?:\d+\.\)|~~|$)))|~~ .*?(?=(?:\d+\.\)|~~|$))', best_planar)
                         file.write(f"best_planar: {best_planar_info}\n") 
                         file.write(f"stat_focus: {stat_focus_info}\n")
@@ -252,7 +382,8 @@ class BuildScrape():
                         # (all are in order)
                         gear_mainstats = []
                         trace_prio= []
-                        for num in [3,4,7,8]:
+                        list_check = [3,4,7,8]
+                        for num in list_check:
                             for idx, char in enumerate(meta_sheet_data[i+num]):
                                 if char.isdigit() or char == "~":
                                     if char in "⁰¹²³⁴⁵⁶⁷⁸⁹":
@@ -260,7 +391,10 @@ class BuildScrape():
                                         continue
                                     gear_mainstats.append(meta_sheet_data[i+num][:idx])
                                     trace_prio.append(meta_sheet_data[i+num][idx:])
-                                    break 
+                                    break
+                        
+                        relic_pc = ["Chest:","Boots:", "Orb:", "Rope:"]
+                        gear_mainstats = list(zip(relic_pc, gear_mainstats))
                         file.write(f"gear_mainstats: {gear_mainstats}\n") 
                         file.write(f"trace_prio: {trace_prio}\n")
 
@@ -297,7 +431,7 @@ class BuildScrape():
                             best_team=None,
                             notes=tuple(notes) if not None else "N/A"
                         )
-
+                        
                         count += 1
 
                         # Store in the list
@@ -310,10 +444,15 @@ class BuildScrape():
               
 class fullScrape(BuildScrape):
     async def fullScrapeBuild(pool):
+        
+        print("==================== Starting to scrape... ====================\n")
+        
         # Compare characters from Wiki and Meta Data and print matches or non-matches
         wiki_chars = BuildScrape.getHSRWikiNames()
         meta_chars = BuildScrape.getHSRMetaData()
-
+        
+        print("\n==================== Info retrieved! Time to parse... ====================\n")
+        
         # Initialize list to track missing entries in meta
         released_chars = []
         counted = 0
@@ -341,7 +480,7 @@ class fullScrape(BuildScrape):
                 count2 += 1
             else:
                 counted += 1
-                if char_name.lower() == "anaxa" or char_name.lower() == "castorice":
+                if char_name.lower() == "anaxa": #or char_name.lower() == "castorice":
                     print(f"This characters is coming soon, but no build exists yet: {wiki_entry}")
                     unreleased_chars.append((char_name, path))
                 else:
@@ -353,7 +492,10 @@ class fullScrape(BuildScrape):
         # Now that debugging is done, let's call another function
         # We now want to systemically gnaw out table row data
         builtCharacters = BuildScrape.grabInfo(released_chars, meta_chars)
-
+        print("\n==================== Character data parsed and sorted! Now time to apply fixes...  ====================\n")
+        # Quickly fix stuff
+        builtCharacters = BuildScrape.fixRemembranceChars(builtCharacters)
+        print("\n==================== Fixes complete! Now time to upload everything to the database...  ====================\n")
         # We have all the info we need. Let's now add to the database
         try:
             conn = await pool.acquire()
@@ -362,16 +504,16 @@ class fullScrape(BuildScrape):
             for Character in builtCharacters:
                 name = cleanse_name(str(Character.char_name.lower()))
                 path = str(Character.path.lower()) if Character.path else ""
-                stat_focus = str(Character.stat_focus).replace(", ", " | ")
-                trace_prio = str(Character.trace_prio).replace(", ", " | ")
-                substats = str(Character.substats).replace(", ", "|") if Character.substats else "N/A"
-                gear_mainstats = str(Character.gear_mainstats).replace(", ", " | ")
-                best_lc = str(Character.best_lc).replace(", ", " | ")
-                best_relics = str(Character.best_relics).replace(", ", " | ")
-                best_planar = str(Character.best_planar).replace(", ", " | ")
-                best_team = str(Character.best_team).replace(", ", " | ") if Character.best_team else "N/A"
+                stat_focus = str(Character.stat_focus).replace(", ", "\n").replace("~~"," or").replace("[", "").replace("]","").replace(r"\n","").replace('"', '')
+                trace_prio = str(Character.trace_prio).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                substats = str(Character.substats).replace(", ", "\n").replace(r"\n","").replace('"', '') if Character.substats else "N/A"
+                gear_mainstats = str(Character.gear_mainstats).replace("~~","==").replace("[", "").replace("]","").replace(r"\n","").replace('"', '')
+                best_lc = str(Character.best_lc).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                best_relics = str(Character.best_relics).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                best_planar = str(Character.best_planar).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
+                best_team = str(Character.best_team).replace(", ", "\n").replace(r"\n","").replace('"', '') if Character.best_team else "N/A"
                 #if Character.notes
-                notes = str(Character.notes).replace(", ", " | ") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
+                notes = str(Character.notes).replace(", ", "\n") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
                 build_author = "Sorakoi"
                 #print(f"test: this is char. {Character}")
                 await cursor.execute("SELECT name FROM HSR_BUILD WHERE name = %s", name)
@@ -400,7 +542,7 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, stat_focus, trace_prio, substats, gear_mainstats, best_lc, best_relics, best_planar, best_team, notes, build_author, name))
-                    print(f"Updated: {name}")
+                    print(f"Updated: {name.title()}")
                 # Insert query if not existent
                 elif querycheck is None:
                     await cursor.execute("""
@@ -454,7 +596,7 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", build_author, name))
-                    print(f"Updated: {name}")
+                    print(f"Updated: {name.title()}")
                     
                 # Insert query if not existent
                 elif querycheck is None:
@@ -493,7 +635,7 @@ async def main():
                 port=Login.mysql_login['port'])
     
         await fullScrape.fullScrapeBuild(pool)
-        print("Done! Try /build of an unreleased.")
+        print("\nDone! Try /build of an unreleased.")
     finally:
         if pool:
             pool.close()

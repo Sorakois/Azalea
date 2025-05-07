@@ -9,6 +9,7 @@ Black Swan Nihility
 Blade Destruction
 Boothill Hunt
 Bronya Harmony
+Castorice Remembrance
 Clara Destruction
 Dan Heng Hunt
 Imbibitor Lunae Destruction
@@ -66,6 +67,5 @@ Yanqing Hunt
 Yukong Harmony
 Yunli Destruction
 Anaxa Erudition
-Castorice Remembrance
 Cipher Nihility
 Hyacine Remembrance

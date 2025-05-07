@@ -20,7 +20,6 @@ from psyche import Persona
 import asyncio
 from asyncio import Lock
 from debug import Prompt, Login
-from scrapebuild import BuildScrape, fullScrape
 
 # load the enviroment variables
 load_dotenv()
@@ -47,7 +46,6 @@ cogs = {
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
     'market': Business(bot),
-    'buildscrape' : fullScrape(bot)
     }
 
 # bot settings
@@ -277,8 +275,7 @@ class General(commands.Cog):
             async with self.lock:
                 await interaction.response.defer()
                 try:
-                    fullScrape.fullScrapeBuild(self, interaction)
-                    await interaction.response.send_message("Done! Check /build!")
+                    await interaction.response.send_message("Do this locally.")
                 except Exception as e:
                     await interaction.followup.send(f"Error! {e}")
 
@@ -383,4 +380,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('SORA_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))
