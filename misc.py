@@ -201,7 +201,7 @@ class MiscCMD(commands.Cog):
                 if character.upper() == "TOPAZ NUMBY":
                     em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title()})")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title().replace()}")
                 
 
                 #grab server pfp and set up base of embed
@@ -262,16 +262,13 @@ class MiscCMD(commands.Cog):
                         em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/tingyun-character_gacha_result_bg.webp?x33576")
                     
                     #temp until available on the site
-                    elif character.upper() == "AGLAEA":
-                        em.set_image(url=f"https://i.imgur.com/dNiSmlm.png")
-                    elif character.upper() == "CASTORICE":
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/castorice-character_cut_in_front.webp")
-                    elif character.upper() == "ANAXA":
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/anaxa-character_cut_in_front.webp")
-                    elif character.upper() == "CIPHER":
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/cipher-character_gacha_result_bg.webp")
-                    elif character.upper() == "HYACINE":
-                        em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/hyacine-character_gacha_result_bg.webp")
+                    elif character.upper() == "SABER":
+                        em.set_image(url=f"https://pbs.twimg.com/media/GqCFK0kbQAAn6VV?format=jpg&name=large")
+                    elif character.upper() == "ARCHER":
+                        em.set_image(url=f"https://pbs.twimg.com/media/GqCFK0ca0AA8_eM?format=jpg&name=large")
+                    elif character.upper() == "PHAINON":
+                        em.set_image(url=f"https://pbs.twimg.com/media/GqPNdMVbAAIQy6B?format=jpg&name=large")
+
                     else:   #default images
                         try:
                             em.set_image(url=f"https://starrail.honeyhunterworld.com/img/character/{character.lower()}-character_gacha_result_bg.webp?x30775")
@@ -291,7 +288,7 @@ class MiscCMD(commands.Cog):
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)
             except Exception as e:
-                 await interaction.response.send_message(f"Notes are too long! Let sorakoi know pls!")
+                 await interaction.response.send_message(f"Invalid character... {original_input}. Please try again", ephemeral=True)
             return
 
         if game == "CRK":

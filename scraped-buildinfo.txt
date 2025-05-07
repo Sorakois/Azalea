@@ -82,7 +82,7 @@ Notes: ['Other Notes ¹ Swordplay gains 2 stacks per Skill and 1 stack per Ultim
 Build of Natasha:
 best_lc: ['1 - Post-Op Conversation 4★', '2 - Time Waits for No One 5★', '3 - Perfect Timing 4★', '4 - Quid Pro Quo 4★ [Free]', '5 - Multiplication 3★ [S5]']
 best_relics: ["1.) 2-PC: SPD% Set + SPD% Set / Longevous / Passerby [Choose 1]* 4-PC: Sacerdos' Relived Ordeal ⁶"]
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['HP: 4000+', 'DEF: 1000', 'SPD: 140+']
 gear_mainstats: [('Chest:', 'Outgoing Healing% / HP% ² '), ('Boots:', 'SPD '), ('Orb:', 'HP% '), ('Rope:', 'ERR% / HP% ')]
 trace_prio: ['1.) Ultimate', '2.) Skill', '3.) Talent', '4.) Basic ATK']
@@ -100,7 +100,7 @@ Notes: ['Relic Notes ¹ Solitary Healing and 4-PC: Thief of Shooting Meteor are 
 Build of Lingsha:
 best_lc: ['1 - Scent Alone Stays True 5★', '2 - Echoes of the Coffin 5★', '3 - Night of Fright 5★', "~~ Dream's Montage 4★", '4 - Post-Op Conversation 4★', '5 - Quid Pro Quo 4★ [Free]', '6 - Multiplication 3★', '7 - What is Real 4★']
 best_relics: ['1.) 4-PC: Iron Cavalry Against the Scourge ¹', '2.) 2-PC: BE% Set / SPD% Set / Passerby [Choose 2]']
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '~~ Forge of the Kalpagni Lantern ²', '2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '~~ Forge of the Kalpagni Lantern ²', '2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['ATK: 2200+', 'SPD: 150+', 'Break Effect: 100%+~~ 150%+ if on Sig LC']
 gear_mainstats: [('Chest:', 'Outgoing Healing% / ATK% '), ('Boots:', 'SPD '), ('Orb:', 'ATK% '), ('Rope:', 'ERR% ')]
 trace_prio: ['1.) Ultimate', '2.) Talent', '~~ Skill', '3.) Basic ATK']
@@ -127,7 +127,7 @@ Notes: ['Relic Notes ¹ 4-PC: Genius of Brilliant Stars provides DEF ignore even
 Build of Topaz & Numby:
 best_lc: ['1 - Worrisome, Blissful 5★', '2 - Cruising in the Stellar Sea 5★ [Free]', '3 - Final Victor 4★ [Free]', '4 - Only Silence Remains 4★', '5 - Swordplay 4★']
 best_relics: ['1.) 4-PC: The Ashblazing Grand Duke', '~~ 4-PC: Pioneer Diver of Dead Waters ¹', '2.) 2-PC: Grand Duke + ATK% Set / Pioneer / Scholar [Choose 1]']
-best_planar: ['1.) Duran, Dynasty of Running Wolves', '~~ The Wondrous BananAmusement Park', '2.) Inert Salsotto', '~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member)', '3.) Rutilant Arena ', '4.) Firmament Frontline: Glamoth ']
+best_planar: ['1.) Duran, Dynasty of Running Wolves', '~~ The Wondrous BananAmusement Park', '2.) Inert Salsotto', '~~ Izumo Gensei and Takama Divine Realm (with Hunt ally)', '3.) Rutilant Arena ', '4.) Firmament Frontline: Glamoth ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 70%', 'CRIT DMG: 140%', 'SPD: 110 / 134+']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'SPD / ATK% ² '), ('Orb:', 'Fire DMG% '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Skill', '~~ Talent', '~~ Ultimate', '2.) Basic ATK']
@@ -153,8 +153,8 @@ Notes: ['Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with 
 
 Build of Gallagher:
 best_lc: ['1 - Multiplication 3★ [S5]', '~~ Quid Pro Quo 4★', '~~ Scent Alone Stays True 5★', '2 - Post-Op Conversation 4★', "~~ Dream's Montage 4★", '3 - What Is Real 4★ [Free]']
-best_relics: ['1.) 2-PC: SPD% Set + BE% Set / SPD% Set [Choose 1]', "2.) 4-PC: Iron Cavalry Against the Scourge ¹* 4-PC: Sacerdos' Relived Ordeal ⁴"]
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '~~ Forge of the Kalpagni Lantern ²', '2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_relics: ['1.) 2-PC: SPD% Set + BE% Set / SPD% Set [Choose 1]', "2.) 4-PC: Iron Cavalry Against the Scourge ¹~ 4-PC: Sacerdos' Relived Ordeal ⁴"]
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '~~ Forge of the Kalpagni Lantern ²', '2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['HP: 3000', 'DEF: 1000', 'SPD: 150+', 'Break Effect: 100%+']
 gear_mainstats: [('Chest:', 'Outgoing Healing% '), ('Boots:', 'SPD '), ('Orb:', 'HP% / DEF% '), ('Rope:', 'Break Effect% / ERR% ')]
 trace_prio: ['1.) Talent', '2.) Skill', '3.) Basic ATK', '4.) Ultimate']
@@ -253,7 +253,7 @@ Notes: ["Other Notes ¹ Adding EHR on top of Misha's A2 trace should make it eas
 Build of Herta:
 best_lc: ['1 - Before Dawn 5★', '2 - Night on the Milky Way 5★', "3 - Geniuses' Repose 4★", '4 - An Instant Before A Gaze 5★', '5 - Today Is Another Peaceful Day 4★', '6 - Eternal Calculus 5★ [Free]', '7 - The Seriousness of Breakfast 4★ [Free]', '~~ The Day The Cosmos Fell 4★', '8 - The Birth of the Self 4★']
 best_relics: ['1.) 4-PC: The Ashblazing Grand Duke', '~~ 4-PC: Poet of Mourning Collapse ¹', '2.) 4-PC: Hunter of Glacial Forest', '3.) 2-PC: ATK% Set / Duke / Hunter / Scholar [Choose 2]']
-best_planar: ['1.) Sigonia, the Unclaimed Desolation', '~~ Duran, Dynasty of Running Wolves', '2.) Izumo Gensei and Takama Divine Realm (with another Erudition team member)', '3.) Inert Salsotto', '4.) Firmament Frontline: Glamoth ']
+best_planar: ['1.) Sigonia, the Unclaimed Desolation', '~~ Duran, Dynasty of Running Wolves', '2.) Izumo Gensei and Takama Divine Realm (with Erudition ally)', '3.) Inert Salsotto', '4.) Firmament Frontline: Glamoth ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 70%', 'CRIT DMG: 140%']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'ATK% / SPD '), ('Orb:', 'Ice DMG% ² '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Talent', '2.) Ultimate', '~~ Skill', '3.) Basic ATK']
@@ -280,7 +280,7 @@ Notes: ['Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with 
 Build of Feixiao:
 best_lc: ['1 - I Venture Forth to Hunt 5★', '2 - Baptism of Pure Thought 5★', '3 - Worrisome, Blissful 5★', '4 - Sleep Like the Dead 5★', '5 - Cruising on the Stellar Sea 5★ [Free]', '6 - Swordplay 4★', '7 - Only Silence Remains 4★', '8 - Final Victor 4★ [Free]']
 best_relics: ['1.) 4-PC: The Wind-Soaring Valorous', '~~ 4-PC: The Ashblazing Grand Duke ¹', '2.) 2-PC: ATK% Set / Duke / Eagle / Scholar [Choose 2]']
-best_planar: ['1.) Duran, Dynasty of Running Wolves', '2.) Inert Salsotto', '~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member) ']
+best_planar: ['1.) Duran, Dynasty of Running Wolves', '2.) Inert Salsotto', '~~ Izumo Gensei and Takama Divine Realm (with Hunt ally) ']
 stat_focus: ['ATK: 2500+', 'SPD: 134+', 'CRIT Rate: 80%', 'CRIT DMG: 120%']
 gear_mainstats: [('Chest:', 'CRIT Rate '), ('Boots:', 'SPD / ATK% ² '), ('Orb:', 'Wind DMG% / ATK% ³ '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Ultimate', '2.) Talent', '~~ Skill', '3.) Basic']
@@ -298,14 +298,14 @@ Notes: ['Relic Notes ¹ While Pan-Cosmic Commercial Enterprise performs slightly
 Build of Huohuo:
 best_lc: ['1 - Night of Fright 5★', '2 - Post-Op Conversation 4★', "3 - Dream's Montage 4★", '4 - Time Waits for No One 5★', '5 - Shared Feeling 4★', '6 - Perfect Timing 4★', '7 - Multiplication 3★ [S5]']
 best_relics: ['1.) 2-PC: SPD% Set + SPD% Set / Longevous / Passerby [Choose 1]', '2.) 4-PC: Passerby of Wandering Cloud']
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['HP: 5000+', 'DEF: 1000', 'SPD: 140+']
 gear_mainstats: [('Chest:', 'Outgoing Healing / HP% ² '), ('Boots:', 'SPD '), ('Orb:', 'HP% '), ('Rope:', 'ERR% ')]
 trace_prio: ['1.) Ultimate', '2.) Skill', '~~ Talent', '3.) Basic ATK']
 Notes: ['Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with same type DPS.² HP% is more survivability but less healing as compared to Outgoing Healing%.', 'Other Notes - For Huohuo to be Skill Point positive and maintain a 4 turn Ultimate, she needs 131.44% ERR, which allows a Skill > Basic > Basic rotation. Otherwise, she needs to alternate Skill > Basic for 4 turn Ultimate. ³ Perfect Timing at any superimposition requires 30% Effect RES (before adding the Light Cone) to maximize the Outgoing Healing.⁴ E1 makes her Skill > Basic > Basic rotation have no downtime on the healing.']
 
 Build of Blade:
-best_lc: ['1 - The Unreachable Side 5★', '2 - Ninja Record: Sound Hunt 4★ [Event]', '3 - A Secret Vow 4★', '4 - Dance at Sunset 5★', '5 - Flames Afar 4★ [Free]', '6 - Mutual Demise 3★', '7 - Collapsing Sky 3★']
+best_lc: ['1 - The Unreachable Side 5★', '2 - Ninja Record: Sound Hunt 4★ [Free]', '3 - A Secret Vow 4★', '4 - Dance at Sunset 5★', '5 - Flames Afar 4★ [Free]', '6 - Mutual Demise 3★', '7 - Collapsing Sky 3★']
 best_relics: ['1.) 4-PC: Longevous Disciple', '~~ 4-PC: Poet of Mourning Collapse ¹']
 best_planar: ["1.) Bone Collection's Serene Demesne", '2.) Rutilant Arena ', '~~ Inert Salsotto ']
 stat_focus: ['HP: 6500+', 'CRIT Rate: 70%', 'CRIT DMG: 140%']
@@ -379,7 +379,7 @@ Notes: ['Relic Notes ¹ It is recommended to use Jing Yuan with Sunday if possib
 Build of Bailu:
 best_lc: ['1 - Post-Op Conversation 4★', '2 - Time Waits for No One 5★', '3 - Perfect Timing 4★', '4 - Multiplication 3★ [S5]']
 best_relics: ['1.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Passerby [Choose 1]', "2.) 4-PC: Passerby of Wandering Cloud* 4-PC: Sacerdos' Relived Ordeal ⁵"]
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['HP: 5000+', 'DEF: 1000', 'SPD: 150+']
 gear_mainstats: [('Chest:', 'Outgoing Healing% / HP% ² '), ('Boots:', 'SPD '), ('Orb:', 'HP% '), ('Rope:', 'ERR% ')]
 trace_prio: ['1.) Ultimate', '2.) Talent', '3.) Skill', '4.) Basic ATK']
@@ -388,7 +388,7 @@ Notes: ['Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with 
 Build of Moze:
 best_lc: ['1 - Worrisome, Blissful 5★', '2 - Baptism of Pure Thought 5★', '3 - Cruising on the Stellar Sea 5★ [Free]', '~~ Swordplay 4★', '4 - Only Silence Remains 4★', '5 - Final Victor 4★']
 best_relics: ['1.) 4-PC: Pioneer Diver of Dead Waters', '~~ 4-PC: The Ashblazing Grand Duke ¹', '2.) 2-PC: ATK% Set / Pioneer / Duke / Thunder / Scholar [Choose 2]']
-best_planar: ['1.) Duran, Dynasty of Running Wolves', '2.) Inert Salsotto', '~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member) ']
+best_planar: ['1.) Duran, Dynasty of Running Wolves', '2.) Inert Salsotto', '~~ Izumo Gensei and Takama Divine Realm (W/ Hunt Ally) ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 80%', 'CRIT DMG: 120%']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'ATK% '), ('Orb:', 'Lightning DMG% / ATK% ² '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Talent', '2.) Ultimate', '3.) Skill', '4.) Basic ATK']
@@ -413,7 +413,7 @@ trace_prio: ['1.) Skill', '2.) Ultimate', '3.) Talent', '4.) Basic ATK']
 Notes: []
 
 Build of Arlan:
-best_lc: ['1 - The Unreachable Side 5★', '2 - On the Fall of an Aeon 5★ [Free]', '3 - I Shall Be My Own Sword 5★', '4 - A Secret Vow 4★', '5 - Something Irreplaceable 5★', '6 - Ninja Record: Sound Hunt 4★ [Event]', '7 - Flames Afar 4★ [Free]']
+best_lc: ['1 - The Unreachable Side 5★', '2 - On the Fall of an Aeon 5★ [Free]', '3 - I Shall Be My Own Sword 5★', '4 - A Secret Vow 4★', '5 - Something Irreplaceable 5★', '6 - Ninja Record: Sound Hunt 4★ [Free]', '7 - Flames Afar 4★ [Free]']
 best_relics: ['1.) 4-PC: Scholar Lost in Erudition', '2.) 4-PC: Longevous Disciple', '3.) 4-PC: Genius of Brilliant Stars']
 best_planar: ['1.) Rutilant Arena ', '2.) Inert Salsotto', '~~ Space Sealing Station ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 70%', 'CRIT DMG: 120%', 'SPD: 134+']
@@ -422,12 +422,12 @@ trace_prio: ['1.) Skill', '2.) Ultimate', '3.) Talent', '4.) Basic ATK']
 Notes: []
 
 Build of Castorice:
-best_lc: ['1 - Make Farewells More Beautiful 5★', '2 - Sweat Now, Cry Less 4★', '3 - Time Waits for No One 5★', '4 - Victory In a Blink 4★ [Free]']
-best_relics: ['1.) 4-PC: Poet of Mourning Collapse ¹', '2.) 2-PC: Quantum% Set / Longevous Disciple / Scholar Lost in Erudition [Choose 2]']
+best_lc: ['1 - Make Farewells More Beautiful 5★', '2 - Sweat Now, Cry Less 4★', '3 - Time Waits for No One 5★', '4 - Flames Afar 4★ [Free]', '~~ Victory In a Blink 4★']
+best_relics: ['1.) 4-PC: Poet of Mourning Collapse', '2.) 2-PC: Quantum% Set / Longevous Disciple / Scholar Lost in Erudition [Choose 2]']
 best_planar: []
 stat_focus: []
 gear_mainstats: [('Chest:', 'Role:Main DPS '), ('Boots:', '')]
-trace_prio: ['2 Piece Set (Planar Ornament)', "1.) Bone Collection's Serene Demesne2.) Rutilant Arena ²~~ The Wondrous BananAmusement Park ² HP: 7000CRIT Rate: 70% ¹CRIT DMG: 140% ¹SPD: <95 SPD ¹"]
+trace_prio: ['2 Piece Set (Planar Ornament)', "1.) Bone Collection's Serene Demesne2.) Rutilant Arena ²~~ The Wondrous BananAmusement Park ² (Assuming 4-PC: Poet of Mourning Collapse) ¹HP: 7000CRIT Rate: 58%CRIT DMG: 160%SPD: <95 SPD"]
 Notes: []
 
 Build of Tribbie:
@@ -442,7 +442,7 @@ Notes: ["Relic Notes ¹ With 4-PC: Poet of Mourning Collapse, Tribbie wants to b
 Build of Jade:
 best_lc: ['1 - Yet Hope Is Priceless 5★', '2 - Night on the Milky Way 5★', '3 - Before Dawn 5★', '4 - Today is Another Peaceful Day 4★', "5 - Geniuses' Repose 4★", '6 - Eternal Calculus 5★ [Free]', '7 - The Seriousness of Breakfast 4★ [Free]', '8 - The Day The Cosmos Fell 4★ [Free]']
 best_relics: ['1.) 4-PC: The Ashblazing Grand Duke', '~~ 4-PC: Poet of Mourning Collapse ¹', '2.) 4-PC: Genius of Brilliant Stars']
-best_planar: ['1.) Duran, Dynasty of Running Wolves', '~~ Sigonia, the Unclaimed Desolation ²', '~~ Izumo Gensei and Takama Divine Realm (with another Erudition team member)', '2.) Inert Salsotto ']
+best_planar: ['1.) Duran, Dynasty of Running Wolves', '~~ Sigonia, the Unclaimed Desolation ²', '~~ Izumo Gensei and Takama Divine Realm (with Erudition ally)', '2.) Inert Salsotto ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 80% ³', 'CRIT DMG: 120%']
 gear_mainstats: [('Chest:', 'CRIT Rate '), ('Boots:', 'ATK% '), ('Orb:', 'Quantum DMG% '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Talent', '2.) Ultimate', '~~ Skill', '3.) Basic']
@@ -479,7 +479,7 @@ Build of Seele:
 best_lc: ['1 - In the Night 5★', '2 - Sleep Like the Dead 5★', '3 - Cruising in the Stellar Sea 5★ [Free]', '4 - Swordplay 4★', '5 - Only Silence Remains 4★']
 best_relics: ['1.) 4-PC: Genius of Brilliant Stars', '2.) 4-PC: Scholar Lost in Erudition', '~~ 4-PC: Poet of Mourning Collapse ¹']
 best_planar: ['1.) Rutilant Arena ', '2.) Firmament Frontline: Glamoth', '3.) Space Sealing Station', '4.) Inert Salsotto ']
-stat_focus: ['ATK: 3000+', 'CRIT Rate: 70%', 'CRIT DMG: 140%', 'SPD: 115 / 122 ²']
+stat_focus: ['ATK: 3000+', 'CRIT Rate: 70%', 'CRIT DMG: 140%', 'SPD: 115 / 122 ³']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'ATK% '), ('Orb:', 'Quantum DMG% / ATK% ² '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Ultimate', '2.) Skill', '3.) Talent', '4.) Basic ATK']
 Notes: ["Relic Notes ¹ 4-PC: Poet of Mourning Collapse should only be used if Seele is not on her Signature LC In the Night or is E2+, since the SPD reduction would be detrimental for In the Night without her E2's SPD boost to compensate. Additionally, check that Seele's SPD out of combat is lower than 110 in this case.- All 4 Planar Set options are within ~3% of each other and so any can be used with a negligible difference in performance.² The difference between ATK% sphere and Quantum DMG% sphere is minimal, so going for the one that has better substats is recommended.", "Other Notes ³ For E0/E1 Seele, In the Night requires 132 SPD to maximize its effect, but it's recommended to use ATK% feet and aim for 122 speed with substats. If Seele is on another Light Cone, you don't need any SPD on her."]
@@ -496,7 +496,7 @@ Notes: ['Relic Notes - The DEF ignore on 4-PC: Genius of Brilliant Stars applies
 Build of Lynx:
 best_lc: ['1 - Post-Op Conversation 4★', '2 - Time Waits for No One 5★', '3 - Perfect Timing 4★', '4 - Multiplication 3★ [S5]']
 best_relics: ['1.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Passerby [Choose 1]', "2.) 4-PC: Passerby of Wandering Cloud* 4-PC: Sacerdos' Relived Ordeal ⁶"]
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['HP: 4000+', 'DEF: 1000', 'SPD: 140+']
 gear_mainstats: [('Chest:', 'Outgoing Healing% / HP% ² '), ('Boots:', 'SPD '), ('Orb:', 'HP% '), ('Rope:', 'ERR% ')]
 trace_prio: ['1.) Ultimate', '2.) Talent', '3.) Skill', '4.) Basic ATK']
@@ -512,7 +512,7 @@ trace_prio: ['1.) Basic ATK', '2.) Skill', '~~ Talent', '3.) Ultimate']
 Notes: ["Relic Notes ¹ 4-PC: Poet of Mourning Collapse should only be used if Qingque's SPD out of combat is less than 95, and if her being this slow works with your team.- All 4 Planar Ornament options are within ~2% of each other and so any can be used with a negligible difference in performance.", "Other Notes - Ideally, you want to spend 3-4 Skill Points before using Ultimate.- Having Qingque too slow compared to the other allies might get you Four of a Kind without spending any Skill Point but is a damage loss.² If using Yet Hope is Priceless, Qingque should ideally have at least 200% CRIT DMG after buffs (including any buffs from sources such as Sparkle's Skill).³ The Day The Cosmos Fell's ranking assumes full uptime on the CRIT DMG buff."]
 
 Build of Mydei:
-best_lc: ['1 - Flame of Blood, Blaze My Path 5★', '2 - The Unreachable Side 5★', '3 - A Secret Vow 4★', '4 - Ninja Record: Sound Hunt 4★ [Event]', '5 - Flames Afar 4★ [Free]']
+best_lc: ['1 - Flame of Blood, Blaze My Path 5★', '2 - The Unreachable Side 5★', '3 - A Secret Vow 4★', '4 - Ninja Record: Sound Hunt 4★ [Free]', '5 - Flames Afar 4★ [Free]']
 best_relics: ['1.) 4-PC: Scholar Lost in Erudition', '2.) 4-PC: Longevous Disciple']
 best_planar: ["1.) Bone Collection's Serene Demesne", '~~ Rutilant Arena ']
 stat_focus: ['HP: 8000+', 'CRIT Rate: 40% ³', 'CRIT DMG: 140%', 'SPD: 134+']
@@ -559,7 +559,7 @@ Notes: ['Relic Notes ¹ SPD boots are generally better if you have enough DEF (4
 Build of Dr. Ratio:
 best_lc: ['1 - Baptism of Pure Thought 5★', '2 - Worrisome, Blissful 5★', '3 - Cruising in the Stellar Sea 5★ [Free]', '4 - Only Silence Remains 4★']
 best_relics: ['1.) 4-PC: Pioneer Diver of Dead Waters', '2.) 4-PC: Wastelander of Banditry Desert', '3.) 2-PC: ATK% Set / Wastelander / Pioneer / Duke / Scholar [Choose 2]']
-best_planar: ['1.) Firmament Frontline: Glamoth ¹', '~~ Duran, Dynasty of Running Wolves ²', '~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member)', '2.) Space Sealing Station', '~~ Inert Salsotto ']
+best_planar: ['1.) Firmament Frontline: Glamoth ¹', '~~ Duran, Dynasty of Running Wolves ²', '~~ Izumo Gensei and Takama Divine Realm (with Hunt ally)', '2.) Space Sealing Station', '~~ Inert Salsotto ']
 stat_focus: ['ATK: 3000+', 'CRIT Rate: 70%', 'CRIT DMG: 140%', 'SPD: 134+']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'SPD / ATK% '), ('Orb:', 'ATK% / Imaginary DMG% ³ '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Talent', '2.) Skill', '~~ Ultimate', '3.) Basic ATK']
@@ -577,7 +577,7 @@ Notes: ["Relic Notes ¹ 4-PC: Poet of Mourning Collapse should only be used if I
 Build of Luocha:
 best_lc: ['1 - Echoes of the Coffin 5★', '2 - Multiplication 3★ [S5]', "3 - Dream's Montage 4★", '4 - Quid Pro Quo 4★ [Free]', '5 - Perfect Timing 4★']
 best_relics: ['1.) 2-PC: SPD% Set + SPD% Set / ATK% Set / Guard / Longevous / Passerby [Choose 1]', "~~ 4-PC: Musketeer of Wild Wheat* 4-PC: Sacerdos' Relived Ordeal ⁴"]
-best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) ']
+best_planar: ['1.) Fleet of the Ageless', '~~ Broken Keel', '~~ Lushaka, the Sunken Seas', '2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) ']
 stat_focus: ['HP: 3000+', 'ATK: 2500+', 'DEF: 1000', 'SPD: 150+']
 gear_mainstats: [('Chest:', 'Outgoing Healing% / ATK% '), ('Boots:', 'SPD '), ('Orb:', 'ATK% / HP% / DEF% '), ('Rope:', 'ERR% ')]
 trace_prio: ['1.) Talent', '2.) Skill', '3.) Ultimate', '4.) Basic ATK']
@@ -586,7 +586,7 @@ Notes: ["Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with 
 Build of Welt:
 best_lc: ['1 - Along The Passing Shore 5★', '2 - Patience is All You Need 5★', '3 - Incessant Rain 5★', '~~ Good Night Sleep Well 4★', '4 - In The Name Of The World 5★', '5 - Boundless Choreo 4★', '6 - Before the Tutorial Mission Starts 4★ [Free]', '7 - Resolution Shines As Pearls of Sweat 4★']
 best_relics: ['1.) 4-PC: Pioneer Diver of Dead Waters', '2.) 4-PC: Wastelander of Banditry Desert', '~~ 4-PC: Scholar Lost in Erudition']
-best_planar: ['1.) Izumo Gensei and Takama Divine Realm (with another Nihility team member)', '2.) Firmament Frontline: Glamoth', '3.) Space Sealing Station ']
+best_planar: ['1.) Izumo Gensei and Takama Divine Realm (with Nihility ally)', '2.) Firmament Frontline: Glamoth', '3.) Space Sealing Station ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 70%', 'CRIT DMG: 120%', 'SPD: 134+', 'EHR: 30%']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'SPD '), ('Orb:', 'Imaginary DMG% '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Talent', '2.) Skill', '3.) Ultimate', '4.) Basic ATK']
@@ -595,7 +595,7 @@ Notes: ['Other Notes - Welt is generally best built to be a main DPS character. 
 Build of March 7th:
 best_lc: ['1 - Baptism of Pure Thought 5★', '~~ Worrisome, Blissful 5★', '~~ In the Night 5★', '2 - Cruising in the Stellar Sea 5★ [Free]', '3 - Only Silence Remains 4★', '~~ Swordplay 4★']
 best_relics: ['1.) 4-PC: Pioneer Diver of Dead Waters (needs Worrisome, Blissful) ²', '2.) 4-PC: Musketeer of Wild Wheat', '~~ 4-PC: Wastelander of Banditry Desert', '3.) 2-PC: ATK% Set / Wastelander / Pioneer / Scholar [Choose 2]', '4.) 4-PC: Genius of Brilliant Stars']
-best_planar: ['1.) Rutilant Arena', '~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member)', '2.) Space Sealing Station', '~~ Duran, Dynasty of Running Wolves ']
+best_planar: ['1.) Rutilant Arena', '~~ Izumo Gensei and Takama Divine Realm (with Hunt ally)', '2.) Space Sealing Station', '~~ Duran, Dynasty of Running Wolves ']
 stat_focus: ['ATK: 2500+', 'CRIT Rate: 80%', 'CRIT DMG: 120%', 'SPD: (see notes)']
 gear_mainstats: [('Chest:', 'CRIT Rate / CRIT DMG '), ('Boots:', 'SPD / ATK% '), ('Orb:', 'Imaginary DMG% / ATK% '), ('Rope:', 'ATK% ')]
 trace_prio: ['1.) Basic ATK', '2.) Skill', '~~ Talent', '3.) Ultimate']
