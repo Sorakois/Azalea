@@ -201,7 +201,7 @@ class MiscCMD(commands.Cog):
                 if character.upper() == "TOPAZ NUMBY":
                     em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title().replace()}")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title()}")
                 
 
                 #grab server pfp and set up base of embed
@@ -288,7 +288,7 @@ class MiscCMD(commands.Cog):
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)
             except Exception as e:
-                 await interaction.response.send_message(f"Invalid character... {original_input}. Please try again", ephemeral=True)
+                 await interaction.response.send_message(f"Invalid character... {original_input}. Please try again\nError: {e}", ephemeral=True)
             return
 
         if game == "CRK":
