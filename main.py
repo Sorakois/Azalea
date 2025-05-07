@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands, tasks
 import aiomysql
 import sys
 import os
@@ -328,7 +328,34 @@ class General(commands.Cog):
             except:
                 await interaction.followup.send(f"Invalid thread ID")
 
-                
+    ''' This section is for the "daily reminder" for CRK for guild contri'''
+    # Send the message!
+    @tasks.loop(hours=24)
+    async def daily_ping(self):
+        channel = self.bot.get_channel(1042253069196480542)
+        if channel:
+            ping_message = f"<@&{1042250208534343763}> be sure to contribute... there's only 2 more hours until tickets refresh!"
+            await channel.send(ping_message)
+            print(f"Sent daily ping at {datetime.datetime.utcnow()}")
+        else:
+            print("Error: Could not find channel.")
+    
+    # Do all of this before starting the "oh is it time yet?" loop
+    @daily_ping.before_loop
+    async def before_daily_ping(self):
+        await self.bot.wait_until_ready()
+        seconds = await self.seconds_until_9am()
+        await asyncio.sleep(seconds)
+    
+    # check how much longer we need to wait before sending the alert
+    async def seconds_until_9am(self):
+        now = datetime.datetime.now(datetime.timezone.utc)
+        target_hour = 13  # 13:00 UTC = 9:00 AM ET
+        target = now.replace(hour=target_hour, minute=0, second=0, microsecond=0)
+        if now.hour >= target_hour:
+            target += datetime.timedelta(days=1)
+        return (target - now).total_seconds()
+    
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
 
@@ -350,6 +377,9 @@ async def on_ready():
         except discord.errors.ClientException:
             pass
     synced = await bot.tree.sync()
+
+    # Start the "timer" for pinging to Contribute in CRK Guild
+    General.daily_ping.start()
     
 
 
