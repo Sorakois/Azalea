@@ -45,11 +45,7 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
-<<<<<<< HEAD
     'market': Business(bot)
-=======
-    'market': Business(bot),
->>>>>>> 35b7d706968af415b8b36e22c2fa7983aacd991c
     }
 
 # bot settings
@@ -275,17 +271,6 @@ class General(commands.Cog):
                 except Exception as e:
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
 
-<<<<<<< HEAD
-=======
-        if prompt == Prompt.HSR_BUILD.value:
-            async with self.lock:
-                await interaction.response.defer()
-                try:
-                    await interaction.response.send_message("Do this locally.")
-                except Exception as e:
-                    await interaction.followup.send(f"Error! {e}")
-
->>>>>>> 35b7d706968af415b8b36e22c2fa7983aacd991c
         if prompt == Prompt.QOTD_GEMS.value:
             
             '''
