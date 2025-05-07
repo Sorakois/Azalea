@@ -20,7 +20,6 @@ from psyche import Persona
 import asyncio
 from asyncio import Lock
 from debug import Prompt, Login
-from scrapebuild import BuildScrape, fullScrape
 
 # load the enviroment variables
 load_dotenv()
@@ -46,8 +45,7 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
-    'market': Business(bot),
-    'buildscrape' : fullScrape(bot)
+    'market': Business(bot)
     }
 
 # bot settings
@@ -137,8 +135,8 @@ class General(commands.Cog):
             prompt (str) : the given prompt to run within the function
         '''
         # Experienced role
-        #if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
-            #split = prompt.split(' ')
+        if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
+            split = prompt.split(' ')
 
         '''fix this'''
         if prompt == Prompt.XP_BOOST.value: 
@@ -272,15 +270,6 @@ class General(commands.Cog):
                             await interaction.followup.send(f"Fixed Essences for users:\n{response_message}")
                 except Exception as e:
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
-
-        if prompt == Prompt.HSR_BUILD.value:
-            async with self.lock:
-                await interaction.response.defer()
-                try:
-                    fullScrape.fullScrapeBuild(self, interaction)
-                    await interaction.response.send_message("Done! Check /build!")
-                except Exception as e:
-                    await interaction.followup.send(f"Error! {e}")
 
         if prompt == Prompt.QOTD_GEMS.value:
             
