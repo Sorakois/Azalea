@@ -1,3 +1,4 @@
+import re
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -176,7 +177,7 @@ class MiscCMD(commands.Cog):
 
             async with self.bot.db.acquire() as conn:
                 async with conn.cursor() as cursor:
-                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats FROM HSR_BUILD WHERE name LIKE = %s", character.lower())
+                    await cursor.execute("SELECT stats, trapri, bestlc, bestrelics, bestplanar, gear_mainstats, buildauthor, notes, name FROM HSR_BUILD WHERE name LIKE %s", f"%{character.lower()}%")
                     HSRBuildInfo = await cursor.fetchone()
                     if HSRBuildInfo:
                         HSRBuildInfo = list(HSRBuildInfo)
@@ -185,7 +186,8 @@ class MiscCMD(commands.Cog):
                         for i in range(len(HSRBuildInfo)):
                             if HSRBuildInfo[i] is None or HSRBuildInfo[i] == "":
                                 HSRBuildInfo[i] = "N/A"
-
+                            else:
+                                HSRBuildInfo[i] = HSRBuildInfo[i].replace(".)", " -").replace("(", "").replace(")", "\n").replace("'", "").replace(",", "")
             # res = ''
             # for row in HSRBuildInfo:
             #     temp = row[0]
@@ -199,18 +201,20 @@ class MiscCMD(commands.Cog):
                 if character.upper() == "TOPAZ NUMBY":
                     em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {character.title()}")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title()})")
                 
 
                 #grab server pfp and set up base of embed
-                em.set_thumbnail(url=interaction.user.guild.icon.url)
-                em.add_field(name="Recommended Stats: ", value=f"{HSRBuildInfo[0]}", inline=True)
                 em.add_field(name="Trace Priority: ", value=f"{HSRBuildInfo[1]}", inline=False)
                 em.add_field(name="Best LCs: ", value=f"{HSRBuildInfo[2]}", inline=True)
+                em.set_thumbnail(url=interaction.user.guild.icon.url)
                 em.add_field(name="Best Relics: ", value=f"{HSRBuildInfo[3]}", inline=False)
                 em.add_field(name="Best Planar Relics: ", value=f"{HSRBuildInfo[4]}", inline=True)
                 em.add_field(name="Best Gear Mainstats: ", value=f"{HSRBuildInfo[5]}", inline=False)
-
+                em.add_field(name="Recommended Stats: ", value=f"{HSRBuildInfo[0]}", inline=True)
+                '''TODO: Make this into page 2 later'''
+                #em.add_field(name="Notes: ", value=f"{HSRBuildInfo[7]}", inline=True)
+                
                 #catch irregularities
                 character = character.strip()
                 character = character.replace(" ", "-")
@@ -282,10 +286,12 @@ class MiscCMD(commands.Cog):
 
 
 
-                em.set_footer(text=f"Created by: {res[7].capitalize()} in discord.gg/nurture")
+                em.set_footer(text=f"Created by: {HSRBuildInfo[6].capitalize()} in discord.gg/nurture")
                 await interaction.response.send_message(embed=em, ephemeral=False)
             except IndexError as e:
                 await interaction.response.send_message(f"The character you entered, __**{original_input}**__, was not found. Please check the name and try again.", ephemeral=True)
+            except Exception as e:
+                 await interaction.response.send_message(f"Notes are too long! Let sorakoi know pls!")
             return
 
         if game == "CRK":
