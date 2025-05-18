@@ -368,7 +368,7 @@ async def on_ready():
     synced = await bot.tree.sync()
 
     # Start the "timer" for pinging to Contribute in CRK Guild
-    General.daily_ping.start()
+    cogs['general'].daily_ping.start()
     
 
 
