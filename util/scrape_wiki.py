@@ -1,4 +1,4 @@
-import requests
+import aiohttp  # Async HTTP requests library
 from bs4 import BeautifulSoup
 
 ###############################################################
@@ -12,164 +12,323 @@ cookieCSVFile = 'cookies.csv'
 base_url = "https://cookierunkingdom.fandom.com"
 
 class Cookie:
-	'''
-	Cookie object to store all information of each of cookie
-	'''
+    '''
+    Cookie object to store all information of each of cookie
+    '''
 
-	def __init__(self, name, link):
-		'''
-		Assign the known names
+    def __init__(self, name, position, ctype, link):
+        '''
+        Assign the known names
 
-		params:
-			name (str) : name of cookie
-			link (str) : url destination to cookie
-		'''
-		self.name = name
-		self.link = link
-		self.identify_released()
-		self.identify_type()
+        params:
+            name (str) : name of cookie
+            link (str) : url destination to cookie
+        '''
+        self.name = name
+        self.link = link
+        self.position = position
+        self.ctype = ctype
+        
+        self.pronouns = "Unknown"
+        self.release = "Unreleased/TBA"
+        self.img_link = ""
+        self.rarity = "Unknown"
+        # Note: identify_released() is now async, so we don't call it here
 
-	def __str__(self):
-		'''
-		Allows for name to be called when referenced.
+    def __str__(self):
+        '''
+        Allows for name to be called when referenced.
 
-		returns:
-			self.name (str) : name of cookie
-		'''
-		return self.name
-	
-	def to_list(self):
-		'''
-		Converts Cookie object into list format
+        returns:
+            self.name (str) : name of cookie
+        '''
+        return self.name
 
-		returns:
-			cookie_info (list[str]) : list formatted object
-		'''
-		return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link, self.rarity]
-	
-	def identify_released(self):
-		r = requests.get(base_url + self.link)
-		soup = BeautifulSoup(r.content, 'html5lib')
+    def to_list(self):
+        '''
+        Converts Cookie object into list format
 
-		try:
-			releasediv = soup.findAll('div', attrs={'data-source':'releasedate'})
-			self.release = releasediv[-1].find('div').getText()
-		except (AttributeError, IndexError):
-			try:
-				releasediv = soup.findAll('div', attrs={'data-source':'release_date'})
-				self.release = releasediv[-1].find('div').getText()
-			except (AttributeError, IndexError):
-				self.release = 'Unreleased/TBA'
+        returns:
+            cookie_info (list[str]) : list formatted object
+        '''
+        return [self.name, self.link, self.pronouns, self.release, self.ctype, self.position, self.img_link, self.rarity]
 
-	def identify_type(self):
-		r = requests.get(base_url + self.link)
-		soup = BeautifulSoup(r.content, 'html5lib')
+    async def identify_released(self, session):
+        '''
+        Identify the release date of the cookie - async version
+        '''
+        async with session.get(base_url + self.link) as response:
+            html = await response.text()
+            soup = BeautifulSoup(html, 'html5lib')
+            
+            try:
+                # Look for the release date div
+                releasediv = soup.find('div', attrs={'data-source': 'releasedate'})
+                if releasediv:
+                    # Extract only the value part
+                    value_div = releasediv.find('div', class_='pi-data-value')
+                    if value_div:
+                        self.release = value_div.getText().strip()
+                    else:
+                        raise AttributeError("No value div found")
+                else:
+                    # Try alternative format
+                    releasediv = soup.find('div', attrs={'data-source':'release_date'})
+                    if releasediv:
+                        value_div = releasediv.find('div', class_='pi-data-value')
+                        if value_div:
+                            self.release = value_div.getText().strip()
+                        else:
+                            self.release = 'Unreleased/TBA'
+                    else:
+                        self.release = 'Unreleased/TBA'
+            except (AttributeError, IndexError):
+                self.release = 'Unreleased/TBA'
 
-		try:
-			typediv = soup.find('td', attrs={'data-source':'role'})
-			self.ctype = typediv.findAll('a')[1].getText()
-		except IndexError:
-			self.ctype = 'Unknown'
+    async def find_info(self, session):
+        '''
+        Search through cookie's link to scrape the information.
+        Sets: image link, gender, release date, type, position
+        '''
+        
+        async with session.get(base_url + self.link) as response:
+            html = await response.text()
+            soup = BeautifulSoup(html, 'html5lib')
 
-	def find_info(self):
-		'''
-		Search through cookie's link to scrape the information.
-		Sets: image link, gender, release date, type, position
-		'''
-		
-		r = requests.get(base_url + self.link)
-		soup = BeautifulSoup(r.content, 'html5lib')
+            # Get cookie's image (keeping existing code)
+            img_container = soup.find('div', {'class': 'wds-tab__content wds-is-current'})
+            if img_container and img_container.find('a', {'class': 'image image-thumbnail'}):
+                self.img_link = img_container.find('a', {'class': 'image image-thumbnail'})['href']
+            else:
+                self.img_link = ""
 
-		self.img_link = soup.find('img', attrs={'class':'pi-image-thumbnail'})['src']
+            # Get cookie's pronouns (keeping existing code)
+            try:
+                pronoundiv = soup.find('div', attrs={'data-source': 'pronouns'})
+                if pronoundiv and pronoundiv.find('div', class_='pi-data-value') and pronoundiv.find('div', class_='pi-data-value').find('a'):
+                    self.pronouns = pronoundiv.find('div', class_='pi-data-value').find('a').getText().strip()
+                else:
+                    self.pronouns = "Unknown"
+            except Exception:
+                self.pronouns = "Unknown"
 
-		pronoundiv = soup.find('div', attrs={'data-source':'pronouns'})
-		self.pronouns = pronoundiv.findAll('a')[1].getText()
+            # NEW TARGETED METHOD for finding the cookie type
+            try:
+                # Look for main paragraphs that have both type and position info
+                for paragraph in soup.find_all('p'):
+                    # Find links to category pages for cookie types
+                    type_link = paragraph.find('a', title=lambda t: t and t.startswith('Category:') and t.endswith('_Cookies'))
+                    
+                    if type_link:
+                        # Extract type from the title attribute
+                        title = type_link.get('title', '')
+                        if 'Category:' in title and '_Cookies' in title:
+                            self.ctype = title.split('Category:')[1].split('_Cookies')[0].upper()
+                            break
+                        
+                        # If no title found with the pattern, check the text content
+                        if type_link.text.strip():
+                            self.ctype = type_link.text.strip().upper()
+                            break
+                    
+                    # If we haven't found the type yet, try looking for images with alt text
+                    # that matches cookie types
+                    if self.ctype == "Unknown":
+                        type_img = paragraph.find('img', alt=lambda alt: alt in [
+                            'Magic', 'Charge', 'Defense', 'Support', 
+                            'Ambush', 'Bombing', 'Healing', 'Ranged'
+                        ])
+                        
+                        if type_img and type_img.get('alt'):
+                            self.ctype = type_img.get('alt').upper()
+                            break
+            except Exception:
+                pass  # Keep default type
+                
+            # Similar approach for position
+            try:
+                for paragraph in soup.find_all('p'):
+                    position_link = paragraph.find('a', title=lambda t: t and t.startswith('Category:') and 
+                                                ('Front_Cookies' in t or 'Middle_Cookies' in t or 'Rear_Cookies' in t))
+                    
+                    if position_link:
+                        title = position_link.get('title', '')
+                        if 'Category:' in title and '_Cookies' in title:
+                            self.position = title.split('Category:')[1].split('_Cookies')[0].upper()
+                            break
+                    
+                    # Try from image alt text
+                    if self.position == "Unknown":
+                        position_img = paragraph.find('img', alt=lambda alt: alt in ['Front', 'Middle', 'Rear'])
+                        if position_img and position_img.get('alt'):
+                            self.position = position_img.get('alt').upper()
+                            break
+            except Exception:
+                pass  # Keep default position
 
-		try:
-			posdiv = soup.find('td', attrs={'data-source':'position'})
-			self.position = posdiv.findAll('a')[1].getText()
-		except IndexError:
-			self.position = 'Unknown'
-
-		self.rarity = soup.find('div', attrs={'data-source':'rarity'}).div.a.img['alt']
-		if self.rarity[:2] == 'Ep':
-			self.rarity = 'Epic'
-
-
-def basic_cookie_scrape():
-	'''
-	Function to scrape the cookies information.
-
-	returns:
-		cookies (list[Cookie]) : a list of Cookie objects
-	'''
-	r = requests.get(base_url + "/wiki/List_of_Cookies")
-
-	soup = BeautifulSoup(r.content, 'html5lib')
-	cookies = []
-
-	for div in soup.findAll("div", attrs = {'class' : 'scrolly scrollyflex'}):
-		div = div.div
-		for div2 in div.findAll("div", attrs= {'style' : 'background-color:var(--theme-table-content-2); padding:0; margin:10px; overflow:hidden; width:165px; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid var(--theme-dark-accent); box-shadow:3px 3px var(--theme-table-outline),-3px 3px var(--theme-table-outline),-3px -3px var(--theme-table-outline),3px -3px var(--theme-table-outline); border-radius:3px;'}):
-			name = div2.div.a['title']
-			link = div2.div.a['href']
-			c = Cookie(name, link)
-			cookies.append(c)
-	
-	return cookies
+            # Rarity (keeping existing code)
+            try:
+                rarity_div = soup.find('div', class_='pi-data-value pi-font')
+                if rarity_div and rarity_div.find('a') and rarity_div.find('a').find('img', alt=True):
+                    self.rarity = rarity_div.find('a').find('img')['alt']
+                    self.rarity_img_url = rarity_div.find('a').find('img')['src']
+                else:
+                    self.rarity = "Unknown"
+            except Exception:
+                self.rarity = "Unknown"
 
 
-async def indepth_cookie_scrape(cookies: list[Cookie], cookieCSV, bot):
-	'''
-	Deep dives each cookie info if information is not known yet
+async def basic_cookie_scrape(session):
+    '''
+    Function to scrape the cookies information.
+    returns:
+        cookies (list[Cookie]) : a list of Cookie objects
+    '''
+    
+    async with session.get(base_url + "/wiki/List_of_Cookies") as response:
+        html = await response.text()
+        soup = BeautifulSoup(html, 'html5lib')
+        cookies = []
+        
+        for cookie_card in soup.select(".scrolly.scrollyflex > div > div[class*='loccard']"):
+            try:
+                name = cookie_card.select_one("div[style*='text-align:center'] a").get('title')
+                link = cookie_card.select_one("div[style*='text-align:center'] a").get('href')
+                
+                position_div = cookie_card.select_one("div[style*='Front_Cookies'] a, div[style*='Middle_Cookies'] a, div[style*='Rear_Cookies'] a")
+                position = position_div.get('title').replace("_Cookies", "") if position_div else "Unknown"
+                
+                # FOR TYPE: First try to find a link to the cookie's details page
+                cookie_link = cookie_card.select_one("div[style*='text-align:center'] a").get('href')
+                
+                # Set a default type
+                ctype = "Unknown"
+                
+                # Enhanced type detection - look for divs containing category links
+                type_div = cookie_card.select_one("div:has(a[href*='Category:Magic_Cookies']), " + 
+                                               "div:has(a[href*='Category:Charge_Cookies']), " +
+                                               "div:has(a[href*='Category:Defense_Cookies']), " +
+                                               "div:has(a[href*='Category:Support_Cookies']), " +
+                                               "div:has(a[href*='Category:Ambush_Cookies']), " +
+                                               "div:has(a[href*='Category:Bombing_Cookies']), " +
+                                               "div:has(a[href*='Category:Healing_Cookies']), " +
+                                               "div:has(a[href*='Category:Ranged_Cookies'])")
+                
+                if type_div:
+                    type_link = type_div.select_one("a")
+                    if type_link and 'href' in type_link.attrs:
+                        href = type_link['href']
+                        if 'Category:' in href and '_Cookies' in href:
+                            ctype = href.split('Category:')[1].split('_Cookies')[0].upper()
+                
+                # If we couldn't find the type through the div approach, try direct link detection
+                if ctype == "Unknown":
+                    type_link = cookie_card.select_one("a[href*='Category:Magic_Cookies'], a[href*='Category:Charge_Cookies'], a[href*='Category:Defense_Cookies'], a[href*='Category:Support_Cookies'], a[href*='Category:Ambush_Cookies'], a[href*='Category:Bombing_Cookies'], a[href*='Category:Healing_Cookies'], a[href*='Category:Ranged_Cookies']")
+                    
+                    if type_link:
+                        # Extract type from href - something like "/wiki/Category:Magic_Cookies"
+                        href = type_link.get('href', '')
+                        if 'Category:' in href and '_Cookies' in href:
+                            ctype = href.split('Category:')[1].split('_Cookies')[0].upper()
+                        else:
+                            # Try to get from text content
+                            ctype = type_link.text.strip().upper()
+                
+                cookies.append(Cookie(name, position, ctype, link))
+            except Exception as e:
+                # Skip this cookie if there's an error
+                pass
+        
+        return cookies
 
-	params:
-		cookies (list[Cookie]): list of basic Cookie objects
-		cookieCSV (str): csv file of known cookie info
-
-	returns:
-		cookies (list[Cookie]): list of all required updated cookies
-	'''
-	# Open the data
-	async with bot.db.acquire() as conn:
-		async with conn.cursor() as cursor:
-			await cursor.execute("SELECT Name, Link, Released, Type FROM cookie_info")
-			cookies_db = await cursor.fetchall()
-			
-
-			# Identify what cookies are new!
-			# Check if name is not found first. If name found, check the release date for difference. Otherwise add to list.
-			new_cookies = []
-			update_cookies = []
-
-			for cookie in cookies:
-				releaseChange = False
-				found = False
-				for row in cookies_db:
-					if cookie.name == row[0] or cookie.link == row[1]:
-						found = True
-					if found and cookie.release != row[3]:
-						releaseChange = True
-					if found:
-						break
-					
-				if not found:
-					new_cookies.append(cookie)
-				if releaseChange:
-					update_cookies.append(cookie)
-
-			# Register information and add new cookies
-			for cookie in new_cookies:
-				cookie.find_info()
-				await cursor.execute("INSERT INTO cookie_info (Name,Link,Gender,Released,Type,Position,Picture,Rarity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", tuple(cookie.to_list()))
-			for cookie in update_cookies:
-				await cursor.execute("UPDATE cookie_info SET Released = %s, Type = %s WHERE Name = %s AND Link = %s", (cookie.release, cookie.ctype, cookie.name, cookie.link))
-		await conn.commit()
-
-	return new_cookies
+async def indepth_cookie_scrape(cookies, bot):
+    '''
+    Deep dives each cookie info if information is not known yet
+    params:
+        cookies (list[Cookie]): list of basic Cookie objects
+        bot: bot instance with database connection
+    returns:
+        new_cookies (list[Cookie]): list of newly added cookies
+    '''
+    new_cookies = []
+    
+    # Create HTTP session for all requests
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=60)) as session:
+        # First, get release dates and info for all cookies
+        for cookie in cookies:
+            try:
+                # Get full info first
+                await cookie.find_info(session)
+                # Then get release date
+                await cookie.identify_released(session)
+            except Exception as e:
+                print(f"Error processing cookie {cookie.name}: {e}")
+                # Set defaults if we couldn't get the info
+                cookie.release = 'Unreleased/TBA'
+        
+        # Get all cookies from the database
+        cookies_db = []
+        try:
+            # Create a fresh connection with a longer timeout
+            async with bot.db.acquire() as conn:
+                # Set a longer wait_timeout for this connection
+                async with conn.cursor() as cursor:
+                    await cursor.execute("SET SESSION wait_timeout=300")  # 5 minutes
+                    await cursor.execute("SELECT Name, Link, Released, Type FROM cookie_info")
+                    cookies_db = await cursor.fetchall()
+        except Exception as e:
+            pass
+            #print(f"Database error when fetching cookies: {e}")
+            # If we can't get the database entries, we'll assume all cookies are new
+        
+        # Create lookup dictionaries
+        db_names = {row[0]: row for row in cookies_db}
+        db_links = {row[1]: row for row in cookies_db}
+        
+        # Process cookies in smaller batches to avoid long transactions
+        batch_size = 5
+        cookie_batches = [cookies[i:i+batch_size] for i in range(0, len(cookies), batch_size)]
+        
+        for batch in cookie_batches:
+            try:
+                # Get a fresh connection for each batch
+                async with bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        # Set a longer wait_timeout
+                        await cursor.execute("SET SESSION wait_timeout=300")
+                        
+                        # Process this batch of cookies
+                        for cookie in batch:
+                            try:
+                                db_cookie = db_names.get(cookie.name) or db_links.get(cookie.link)
+                                
+                                if not db_cookie:
+                                    # New cookie - add to database
+                                    new_cookies.append(cookie)
+                                    await cursor.execute("INSERT INTO cookie_info (Name, Link, Gender, Released, Type, Position, Picture, Rarity) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", tuple(cookie.to_list()))
+                                elif hasattr(cookie, 'release') and cookie.release != db_cookie[2]:
+                                    # Update existing cookie with new release date and type
+                                    await cursor.execute("UPDATE cookie_info SET Released = %s, Type = %s WHERE Name = %s", 
+                                                        (cookie.release, cookie.ctype, cookie.name))
+                            except Exception as e:
+                                #print(f"Error processing cookie {cookie.name} in database: {e}")
+                                continue
+                        
+                        # Commit after each batch
+                        await conn.commit()
+            except Exception as e:
+                pass
+                #print(f"Database error processing batch: {e}")
+                # Continue with the next batch if there's an error
+    
+    return new_cookies
 		
 async def scrape_cookies(bot):
-	cookies = basic_cookie_scrape()
-
-	cookies_to_update = await indepth_cookie_scrape(cookies=cookies, cookieCSV=cookieCSVFile, bot=bot)
-	return cookies_to_update
+    '''
+    Main scraping function
+    '''
+    # Use a single session for all HTTP requests
+    async with aiohttp.ClientSession() as session:
+        cookies = await basic_cookie_scrape(session)
+        cookies_to_update = await indepth_cookie_scrape(cookies=cookies, bot=bot)
+        return cookies_to_update

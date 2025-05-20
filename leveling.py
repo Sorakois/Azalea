@@ -179,7 +179,7 @@ class Leveling(commands.Cog):
 
                     valid_time = True
 
-                    xp += random.randint(self.MINEXP, self.MAXEXP)
+                    xp += random.randrange(int(self.MINEXP), int(self.MAXEXP)) #ensure both numbers are ints
                     await cursor.execute("UPDATE USER SET USER_XP = %s WHERE USER_ID = %s", (xp, author.id,))
                     await cursor.execute("UPDATE USER SET USER_LAST_MSG = %s WHERE USER_ID = %s", (datetime.datetime.strftime(currentTime, '%Y-%m-%d %H:%M:%S'), author.id,)) # time
 
@@ -217,45 +217,65 @@ class Leveling(commands.Cog):
             if index > 0 and getRole(index-1) in user.roles:
                 roleToRemove = getRole(index-1)
                 await user.remove_roles(roleToRemove)      
+            
+            # For some reason, previous role not removed when rankup
+            # Diamond -> Master, Master -> Elite, etc.
 
+        # Chocolate II, I
         if level <= 3:
             await checkAssign(0)
         elif level <= 6:
             await checkAssign(1)
+
+        # Bronze II, I
         elif level == 7:
             await checkAssign(2)
         elif level == 8:
             await checkAssign(3)
+
+        # Silver III, II, I
         elif level == 9:
             await checkAssign(4)
         elif level == 10:
             await checkAssign(5)
         elif level == 11:
             await checkAssign(6)
+
+        # Gold III, II, I
         elif level == 12:
             await checkAssign(7)
         elif level == 13:
             await checkAssign(8)
         elif level == 14:
             await checkAssign(9)
+
+        # Crystal III, II, I
         elif level == 15:
             await checkAssign(10)
         elif level == 16:
             await checkAssign(11)
         elif level == 17:
             await checkAssign(12)
+
+        # Diamond III, II, I
         elif level == 18:
             await checkAssign(13)
         elif level == 19:
             await checkAssign(14)
         elif level == 20:
             await checkAssign(15)
+
+        # Grandmaster I
         elif level == highest_level and level >= 50:
             await checkAssign(28)
+
+        # Grandmaster II, III
         elif level >= highest_level * .9 and level >= 50:
             await checkAssign(27)
         elif level >= highest_level * .8 and level >= 50:
             await checkAssign(26)
+
+        # Elite I, II, III, IV, V
         elif level >= highest_level * .7 and level > 20:
             await checkAssign(25)
         elif level >= highest_level * .6 and level > 20:
@@ -266,6 +286,8 @@ class Leveling(commands.Cog):
             await checkAssign(22)
         elif level >= highest_level * .3 and level > 20:
             await checkAssign(21)
+
+        # Master I, II, III, IV, V
         elif level >= highest_level * .25 and level > 20:
             await checkAssign(20)
         elif level >= highest_level * .2 and level > 20:
