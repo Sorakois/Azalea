@@ -106,10 +106,10 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         buffer (BytesIO) : Byte stream of the generated image
     '''
 
-    font1 = ImageFont.truetype('assets/cookieRunFont.ttf', size=30)
-    font2 = ImageFont.truetype('assets/cookieRunFont.ttf', size=20)
+    font1 = ImageFont.truetype('assets/cookieRunFont.ttf', size=50)
+    font2 = ImageFont.truetype('assets/cookieRunFont.ttf', size=25)
 
-    with Image.open('assets/level/Nurture_XP_Bot.jpg') as background:
+    with Image.open('assets/level/azalea-level-page.png') as background:
         
         # load background
         background.load()
@@ -121,7 +121,7 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
             pfpImg = Image.open(pfp)
         
         # Resizing PFP
-        pfpImg = pfpImg.resize((176,176), resample=Resampling.LANCZOS)
+        pfpImg = pfpImg.resize((192,192), resample=Resampling.LANCZOS)
 
         # Add a circular mask to the PFP image
         bigsize = (pfpImg.size[0] * 3, pfpImg.size[1] * 3)
@@ -132,14 +132,16 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         pfpImg.putalpha(mask)
 
         # Paste pfp into background
-        background.paste(pfpImg, (18, 23), mask)
+        # 18, 23
+        background.paste(pfpImg, (15,12), mask)
 
         # Place the rank icon
         rank, rankNum = rankingHandler(level, highest_level, ranking, user_id)
 
         rankImg = Image.open(rank)
+        rankImg = rankImg.resize((90,98), Image.LANCZOS)
 
-        background.paste(rankImg, (207, 25), rankImg)
+        background.paste(rankImg, (150, 120), rankImg)
 
         # determine the xp needed and pasting the current progression
         xpStr = xp
@@ -152,18 +154,18 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
 
         # Crop the progression bar
         percentage = int((xp/xpNeeded)*320)
-        xpStatus = Image.open('assets/level/Green-XP-Bar.png')
-        xpStatus = xpStatus.crop((0,0,percentage,21))
+        xpStatus = Image.open('assets/level/Azalea-XP-Bar.png')
+        xpStatus = xpStatus.crop((0,0,percentage,80))
 
-        background.paste(xpStatus, (255,162), xpStatus)
+        background.paste(xpStatus, (240,146), xpStatus)
         
         # Create ImageDraw to add text 
         backgroundDraw = ImageDraw.Draw(background)
 
         # Drawing all of the text
-        backgroundDraw.text((575,154), f"{xpStr}/{xpNeededStr}", (7,114,42), font=font2, align='left', anchor='rb')
-        backgroundDraw.text((260,32), f"# {rankNum}", (7,114,42), font=font1)
-        backgroundDraw.text((312,102), f'{level}', (7,114,42), font=font1)
+        backgroundDraw.text((615,140), f"{xpStr}/{xpNeededStr}", (240, 217, 108), font=font2, align='left', anchor='rb')
+        backgroundDraw.text((370,70), f"{rankNum}", (240, 217, 108), font=font1)
+        backgroundDraw.text((440,5), f'{level}', (240, 217, 108), font=font1)
 
         # save to a file-like data
         buffer = BytesIO()     

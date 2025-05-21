@@ -221,6 +221,8 @@ class Leveling(commands.Cog):
             # For some reason, previous role not removed when rankup
             # Diamond -> Master, Master -> Elite, etc.
 
+            # Check if user has no rank role... give them choco ii if no role
+
         # Chocolate II, I
         if level <= 3:
             await checkAssign(0)
