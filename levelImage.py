@@ -1,10 +1,10 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageSequence
 from PIL.Image import Resampling
 from io import BytesIO
 import numpy as np
 import requests
 
-def rankingHandler(level, highest_level, ranking, user_id) -> (str, int):
+def rankingHandler(level, highest_level, ranking, user_id):
     '''
     Badge ranking image
 
@@ -106,70 +106,114 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         buffer (BytesIO) : Byte stream of the generated image
     '''
 
+    # Load fonts | 1 for level and rank, 2 for level progress
     font1 = ImageFont.truetype('assets/cookieRunFont.ttf', size=50)
     font2 = ImageFont.truetype('assets/cookieRunFont.ttf', size=25)
 
-    with Image.open('assets/level/azalea-level-page.png') as background:
+    # Load animated background and get dimensions
+    gif = Image.open('assets/level/testing-me.gif')
+    width, height = gif.size
+    
+    # Set fixed framerate for stability (24 fps = ~41.67ms per frame)
+    fixed_duration = round(1000 / 24)  # Calculate ms per frame for 24fps
+    loop = 0  # 0 means infinite loop
+    
+    # Load static overlay (azalea-level-page)
+    overlay = Image.open('assets/level/azalea-level-page.png').convert("RGBA")
+
+    # Prepare PFP
+    if url:
+        pfpImg = Image.open(requests.get(pfp, stream=True).raw).convert("RGBA")
+    else:
+        pfpImg = Image.open(pfp).convert("RGBA")
+
+    pfpImg = pfpImg.resize((195, 195), resample=Resampling.LANCZOS)
+
+    # Circular mask for PFP
+    bigsize = (pfpImg.size[0] * 3, pfpImg.size[1] * 3)
+    mask = Image.new('L', bigsize, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0) + bigsize, fill=255)
+    mask = mask.resize(pfpImg.size, Resampling.LANCZOS)
+    pfpImg.putalpha(mask)
+
+    # Load rank icon
+    rank, rankNum = rankingHandler(level, highest_level, ranking, user_id)
+    rankImg = Image.open(rank).convert("RGBA")
+    rankImg = rankImg.resize((90, 98), Image.LANCZOS)
+
+    # XP bar processing
+    xpStr = f"{xp//1000}.{str(xp)[-3:-1]}k" if xp >= 1000 else str(xp)
+    xpNeeded = 12 * level**2 + 60
+    xpNeededStr = f"{xpNeeded//1000}.{str(xpNeeded)[-3:-1]}k" if xpNeeded >= 1000 else str(xpNeeded)
+    percentage = int((xp / xpNeeded) * 320)
+
+    fullXPBar = Image.open('assets/level/Azalea-XP-Bar.png').convert("RGBA")
+    xpStatus = fullXPBar.crop((0, 0, percentage, 80))
+
+    # Create a palette-based version for better GIF compatibility
+    # Get all frames from the source GIF first
+    source_frames = []
+    for frame in ImageSequence.Iterator(gif):
+        source_frames.append(frame.copy())
+    
+    # Limit to max frames for stability
+    max_frames = min(24, len(source_frames))  # Limit to 24 frames or less
+    source_frames = source_frames[:max_frames]
+    
+    # Create output frames
+    frames = []
+    
+    # Process each frame
+    for i, source_frame in enumerate(source_frames):
+        # Create a new RGB background with white (for proper GIF handling)
+        composed = Image.new("RGB", (width, height), (255, 255, 255))
         
-        # load background
-        background.load()
-
-        # Open the PFP
-        if url:
-            pfpImg = Image.open(requests.get(pfp, stream=True).raw)
-        else:
-            pfpImg = Image.open(pfp)
+        # Convert source frame to RGB and paste it
+        if hasattr(source_frame, 'convert'):
+            bg_frame = source_frame.convert("RGB")
+            composed.paste(bg_frame, (0, 0))
         
-        # Resizing PFP
-        pfpImg = pfpImg.resize((192,192), resample=Resampling.LANCZOS)
-
-        # Add a circular mask to the PFP image
-        bigsize = (pfpImg.size[0] * 3, pfpImg.size[1] * 3)
-        mask = Image.new('L', bigsize, 0)
-        draw = ImageDraw.Draw(mask) 
-        draw.ellipse((0, 0) + bigsize, fill=255)
-        mask = mask.resize(pfpImg.size, Resampling.LANCZOS)
-        pfpImg.putalpha(mask)
-
-        # Paste pfp into background
-        # 18, 23
-        background.paste(pfpImg, (15,12), mask)
-
-        # Place the rank icon
-        rank, rankNum = rankingHandler(level, highest_level, ranking, user_id)
-
-        rankImg = Image.open(rank)
-        rankImg = rankImg.resize((90,98), Image.LANCZOS)
-
-        background.paste(rankImg, (150, 120), rankImg)
-
-        # determine the xp needed and pasting the current progression
-        xpStr = xp
-        if xp >= 1000:
-             xpStr = str(xp//1000) + '.' + str(xp)[-3:-1] + 'k'
-        xpNeeded = 12*level**2+60
-        xpNeededStr = xpNeeded
-        if xpNeeded >= 1000:
-            xpNeededStr = str(xpNeeded//1000) + '.' + str(xpNeeded)[-3:-1] + 'k'
-
-        # Crop the progression bar
-        percentage = int((xp/xpNeeded)*320)
-        xpStatus = Image.open('assets/level/Azalea-XP-Bar.png')
-        xpStatus = xpStatus.crop((0,0,percentage,80))
-
-        background.paste(xpStatus, (240,146), xpStatus)
+        # Now overlay all the UI elements
+        # Using Image.alpha_composite requires RGBA mode
+        composed_rgba = composed.convert("RGBA")
         
-        # Create ImageDraw to add text 
-        backgroundDraw = ImageDraw.Draw(background)
+        # Create a separate RGBA image for all the UI elements
+        ui_layer = Image.new("RGBA", composed.size, (0, 0, 0, 0))
+        
+        # Add all UI elements to the UI layer
+        ui_layer.paste(xpStatus, (240, 146), xpStatus)
+        ui_layer.paste(pfpImg, (15, 13), pfpImg)
+        ui_layer.paste(overlay, (0, 0), overlay)
+        ui_layer.paste(rankImg, (150, 121), rankImg)
 
-        # Drawing all of the text
-        backgroundDraw.text((615,140), f"{xpStr}/{xpNeededStr}", (240, 217, 108), font=font2, align='left', anchor='rb')
-        backgroundDraw.text((370,70), f"{rankNum}", (240, 217, 108), font=font1)
-        backgroundDraw.text((440,5), f'{level}', (240, 217, 108), font=font1)
+        
+        # Add text to UI layer
+        draw = ImageDraw.Draw(ui_layer)
+        draw.text((615, 140), f"{xpStr}/{xpNeededStr}", (240, 217, 108), font=font2, align='left', anchor='rb')
+        draw.text((370, 70), f"{rankNum}", (240, 217, 108), font=font1)
+        draw.text((440, 5), f'{level}', (240, 217, 108), font=font1)
+        
+        # Composite the UI layer onto the background
+        composed_final = Image.alpha_composite(composed_rgba, ui_layer)
+        
+        # Convert back to RGB mode for GIF compatibility
+        frames.append(composed_final.convert("RGB"))
 
-        # save to a file-like data
-        buffer = BytesIO()     
-        background.save(buffer, 'png') 
-        buffer.seek(0)  
+    # Save animated GIF to buffer
+    buffer = BytesIO()
+    
+    # Use PIL's GIF-specific save parameters
+    frames[0].save(
+        buffer,
+        format="GIF",
+        save_all=True,
+        append_images=frames[1:],
+        duration=fixed_duration,
+        loop=loop,
+        optimize=False,
+        disposal=2  # Restore to background color
+    )
+    buffer.seek(0)
 
-        return buffer
+    return buffer

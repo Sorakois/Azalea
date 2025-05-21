@@ -136,7 +136,7 @@ class Leveling(commands.Cog):
 
                 res = await createImage(pfp, level, xp, online, highest_level[0], rankings, member.id)
 
-                await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.png')])
+                await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.gif')])
 
             
     async def levelUp(self, message: discord.Message):
