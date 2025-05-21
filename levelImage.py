@@ -22,65 +22,87 @@ def rankingHandler(level, highest_level, ranking, user_id):
     defaultDir = 'assets/level/'
 
     rank = ''
+    reward_bool = 0
 
     if level <= 3:
         rank = defaultDir + 'ranks/Chocolate-2.png'
     elif level <= 6:
         rank = defaultDir + 'ranks/Chocolate-1.png'
+
     elif level == 7:
         rank = defaultDir + 'ranks/Bronze-2.png'
     elif level == 8:
         rank = defaultDir + 'ranks/Bronze-1.png'
+
     elif level == 9:
         rank = defaultDir + 'ranks/Silver-3.png'
     elif level == 10:
         rank = defaultDir + 'ranks/Silver-2.png'
     elif level == 11:
         rank = defaultDir + 'ranks/Silver-1.png'
+
     elif level == 12:
         rank = defaultDir + 'ranks/Gold-3.png'
     elif level == 13:
         rank = defaultDir + 'ranks/Gold-2.png'
     elif level == 14:
         rank = defaultDir + 'ranks/Gold-1.png'
+
     elif level == 15:
         rank = defaultDir + 'ranks/Crystal-3.png'
     elif level == 16:
         rank = defaultDir + 'ranks/Crystal-2.png'
     elif level == 17:
         rank = defaultDir + 'ranks/Crystal-1.png'
+
     elif level == 18:
         rank = defaultDir + 'ranks/Diamond-3.png'
     elif level == 19:
         rank = defaultDir + 'ranks/Diamond-2.png'
     elif level == 20:
         rank = defaultDir + 'ranks/Diamond-1.png'
+
     elif level == highest_level and level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-1.png'
+        reward_bool = 3
     elif level >= highest_level*.9 and level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-2.png'
+        reward_bool = 3
     elif level >= highest_level*.8 and level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-3.png'
+        reward_bool = 3
+
     elif level >= highest_level*.7 and level > 20:
         rank = defaultDir + 'ranks/Elite-1.png'
+        reward_bool = 2
     elif level >= highest_level*.6 and level > 20:
         rank = defaultDir + 'ranks/Elite-2.png'
+        reward_bool = 2
     elif level >= highest_level*.5 and level > 20:
         rank = defaultDir + 'ranks/Elite-3.png'
+        reward_bool = 2
     elif level >= highest_level*.4 and level > 20:
         rank = defaultDir + 'ranks/Elite-4.png'
+        reward_bool = 2
     elif level >= highest_level*.3 and level > 20:
         rank = defaultDir + 'ranks/Elite-5.png'
+        reward_bool = 2
+
     elif level >= highest_level*.25 and level > 20:
         rank = defaultDir + 'ranks/Master-1.png'
+        reward_bool = 1
     elif level >= highest_level*.2 and level > 20:
         rank = defaultDir + 'ranks/Master-2.png'
+        reward_bool = 1
     elif level >= highest_level*.15 and level > 20:
         rank = defaultDir + 'ranks/Master-3.png'
+        reward_bool = 1
     elif level >= highest_level*.1 and level > 20:
         rank = defaultDir + 'ranks/Master-4.png'
+        reward_bool = 1
     elif level > 20:
         rank = defaultDir + 'ranks/Master-5.png'
+        reward_bool = 1
 
     rankNum = 0
     for i in ranking:
@@ -88,7 +110,7 @@ def rankingHandler(level, highest_level, ranking, user_id):
             rankNum = i[0]
             break
     
-    return rank, rankNum
+    return rank, rankNum, reward_bool
 
 async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     '''
@@ -111,7 +133,7 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     font2 = ImageFont.truetype('assets/cookieRunFont.ttf', size=25)
 
     # Load animated background and get dimensions
-    gif = Image.open('assets/level/testing-me.gif')
+    gif = Image.open('assets/level/azalea-level-bg.gif')
     width, height = gif.size
     
     # Set fixed framerate for stability (24 fps = ~41.67ms per frame)
@@ -138,7 +160,7 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     pfpImg.putalpha(mask)
 
     # Load rank icon
-    rank, rankNum = rankingHandler(level, highest_level, ranking, user_id)
+    rank, rankNum, reward_check = rankingHandler(level, highest_level, ranking, user_id)
     rankImg = Image.open(rank).convert("RGBA")
     rankImg = rankImg.resize((90, 98), Image.LANCZOS)
 
@@ -148,8 +170,40 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     xpNeededStr = f"{xpNeeded//1000}.{str(xpNeeded)[-3:-1]}k" if xpNeeded >= 1000 else str(xpNeeded)
     percentage = int((xp / xpNeeded) * 320)
 
+    # Load XP bar images
     fullXPBar = Image.open('assets/level/Azalea-XP-Bar.png').convert("RGBA")
-    xpStatus = fullXPBar.crop((0, 0, percentage, 80))
+    
+    # Create a crop of the XP bar based on progress percentage
+    if percentage > 0:
+        xpStatus = fullXPBar.crop((0, 0, percentage, 80))
+    else:
+        # Create an empty transparent image if percentage is 0
+        xpStatus = Image.new("RGBA", (1, 80), (0, 0, 0, 0))
+
+    clouds = Image.open('assets/level/funny-clouds.png').convert("RGBA")
+
+    '''
+    RANK BONUSES!
+    '''
+    M_gem = None
+    E_gem = None
+    grand_gem = None
+
+    if reward_check > 0: # 1, 2, or 3
+        M_gem = Image.open('assets/level/Master-gem.png').convert("RGBA")
+    if reward_check > 1: # 2 or 3
+        E_gem = Image.open('assets/level/Elite-gem.png').convert("RGBA")
+    if reward_check > 2: # 3 only
+        grand_gem = Image.open('assets/level/GM-gem.png').convert("RGBA")
+
+    # Helper function to draw text with drop shadow
+    def draw_text_with_shadow(draw_obj, position, text, color, font, shadow_color=(60, 50, 20), offset=(2, 2), align='left', anchor=None):
+        """Draw text with drop shadow effect"""
+        x, y = position
+        # Draw the shadow first
+        draw_obj.text((x + offset[0], y + offset[1]), text, shadow_color, font=font, align=align, anchor=anchor)
+        # Draw the main text on top
+        draw_obj.text((x, y), text, color, font=font, align=align, anchor=anchor)
 
     # Create a palette-based version for better GIF compatibility
     # Get all frames from the source GIF first
@@ -158,7 +212,7 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         source_frames.append(frame.copy())
     
     # Limit to max frames for stability
-    max_frames = min(24, len(source_frames))  # Limit to 24 frames or less
+    max_frames = min(30, len(source_frames))  # Limit to 24 frames or less
     source_frames = source_frames[:max_frames]
     
     # Create output frames
@@ -182,18 +236,40 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         ui_layer = Image.new("RGBA", composed.size, (0, 0, 0, 0))
         
         # Add all UI elements to the UI layer
-        ui_layer.paste(xpStatus, (240, 146), xpStatus)
+        ui_layer.paste(clouds, (0, 0), clouds)
+        
+        # Carefully handle XP bar - only paste if there's progress to show
+        if percentage > 0:
+            ui_layer.paste(xpStatus, (240, 146), xpStatus)
+            
         ui_layer.paste(pfpImg, (15, 13), pfpImg)
         ui_layer.paste(overlay, (0, 0), overlay)
         ui_layer.paste(rankImg, (150, 121), rankImg)
 
-        
-        # Add text to UI layer
+        '''RANKING REWARDS'''
+        if M_gem is not None:
+            ui_layer.paste(M_gem, (0, 0), M_gem)
+            
+        if E_gem is not None:
+            ui_layer.paste(E_gem, (0, 0), E_gem)
+            
+        if grand_gem is not None:
+            ui_layer.paste(grand_gem, (0, 0), grand_gem)
+
+
+        # Add text to UI layer with drop shadows
         draw = ImageDraw.Draw(ui_layer)
-        draw.text((615, 140), f"{xpStr}/{xpNeededStr}", (240, 217, 108), font=font2, align='left', anchor='rb')
-        draw.text((370, 70), f"{rankNum}", (240, 217, 108), font=font1)
-        draw.text((440, 5), f'{level}', (240, 217, 108), font=font1)
         
+        # Text with drop shadows
+        draw_text_with_shadow(draw, (610, 150), f"{xpStr}/{xpNeededStr}", 
+                             (240, 217, 108), font2, shadow_color=(0, 0, 0), align='left', anchor='rb')
+        
+        draw_text_with_shadow(draw, (370, 70), f"{rankNum}", 
+                             (240, 217, 108), font1, shadow_color=(0, 0, 0))
+        
+        draw_text_with_shadow(draw, (440, 5), f'{level}', 
+                             (240, 217, 108), font1, shadow_color=(0, 0, 0))
+
         # Composite the UI layer onto the background
         composed_final = Image.alpha_composite(composed_rgba, ui_layer)
         
