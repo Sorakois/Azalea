@@ -3,6 +3,17 @@ from PIL.Image import Resampling
 from io import BytesIO
 import numpy as np
 import requests
+import discord
+from discord import app_commands
+from discord.ext import commands, tasks
+
+'''Special People'''
+experienced = {
+    "shane": 329669053838917632, 
+    "sorakoi": 836367313502208040, 
+    "thomas": 400443611105460234
+    }
+
 
 def rankingHandler(level, highest_level, ranking, user_id):
     '''
@@ -103,6 +114,11 @@ def rankingHandler(level, highest_level, ranking, user_id):
     elif level > 20:
         rank = defaultDir + 'ranks/Master-5.png'
         reward_bool = 1
+    
+    # Check to see for "Exprienced" role
+    if user_id in experienced.values():
+        rank = defaultDir + 'ranks/special.png'
+
 
     rankNum = 0
     for i in ranking:
@@ -112,7 +128,7 @@ def rankingHandler(level, highest_level, ranking, user_id):
     
     return rank, rankNum, reward_bool
 
-async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
+async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, interaction):
     '''
     Implements template of the leveling banner
 
@@ -132,12 +148,17 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     font1 = ImageFont.truetype('assets/cookieRunFont.ttf', size=50)
     font2 = ImageFont.truetype('assets/cookieRunFont.ttf', size=25)
 
+    '''
+    Make new "general" image
+    paste/merge that ontop of the gif
+    '''
+
     # Load animated background and get dimensions
     gif = Image.open('assets/level/azalea-level-bg.gif')
     width, height = gif.size
     
     # Set fixed framerate for stability (24 fps = ~41.67ms per frame)
-    fixed_duration = round(1000 / 24)  # Calculate ms per frame for 24fps
+    fixed_duration = round(1000 / 30)  # Calculate ms per frame for 24fps
     loop = 0  # 0 means infinite loop
     
     # Load static overlay (azalea-level-page)
@@ -196,6 +217,35 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     if reward_check > 2: # 3 only
         grand_gem = Image.open('assets/level/GM-gem.png').convert("RGBA")
 
+    '''BOOSTER SPECIAL!'''
+    if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.user.roles:
+        # Boosters get their own role icon also added to the /level screen!
+
+        # Booster icon will be their top role
+        top_role_with_icon = None
+        # Start from highest role
+        for role in reversed(interaction.user.roles):  
+            # Check if role has an icon
+            if role.icon:  
+                top_role_with_icon = role
+                break
+        
+        if top_role_with_icon:
+            # Get the icon URL
+            icon_url = top_role_with_icon.icon.url
+            
+            # Download the image
+            response = requests.get(icon_url)
+            
+            # Open with PIL
+            boost_icon = Image.open(BytesIO(response.content))
+        else:
+            # No booster icon... so let's use a default as a fallback
+            boost_icon = Image.open('assets/level/boost_diamond.png').convert("RGBA")
+
+        # Resize the boost icon to prevent cropping
+        boost_icon = boost_icon.resize((60, 60), Image.LANCZOS)
+
     # Helper function to draw text with drop shadow
     def draw_text_with_shadow(draw_obj, position, text, color, font, shadow_color=(60, 50, 20), offset=(2, 2), align='left', anchor=None):
         """Draw text with drop shadow effect"""
@@ -218,6 +268,13 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
     # Create output frames
     frames = []
     
+    '''Last second changes for EXPERIENCED'''
+    if user_id in experienced.values():
+        xpStr = "∞"
+        xpNeededStr = "∞"
+        rankNum = "∞"
+        level = "∞"
+
     # Process each frame
     for i, source_frame in enumerate(source_frames):
         # Create a new RGB background with white (for proper GIF handling)
@@ -238,12 +295,12 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         # Add all UI elements to the UI layer
         ui_layer.paste(clouds, (0, 0), clouds)
         
-        # Carefully handle XP bar - only paste if there's progress to show
+        # Only paste if there's progress to show
         if percentage > 0:
             ui_layer.paste(xpStatus, (240, 146), xpStatus)
-            
-        ui_layer.paste(pfpImg, (15, 13), pfpImg)
+    
         ui_layer.paste(overlay, (0, 0), overlay)
+        ui_layer.paste(pfpImg, (15, 13), pfpImg)
         ui_layer.paste(rankImg, (150, 121), rankImg)
 
         '''RANKING REWARDS'''
@@ -256,6 +313,9 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         if grand_gem is not None:
             ui_layer.paste(grand_gem, (0, 0), grand_gem)
 
+        '''BOOST REWARDS'''
+        if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.user.roles:
+            ui_layer.paste(boost_icon, (570, 152), boost_icon)
 
         # Add text to UI layer with drop shadows
         draw = ImageDraw.Draw(ui_layer)
@@ -264,10 +324,10 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id):
         draw_text_with_shadow(draw, (610, 150), f"{xpStr}/{xpNeededStr}", 
                              (240, 217, 108), font2, shadow_color=(0, 0, 0), align='left', anchor='rb')
         
-        draw_text_with_shadow(draw, (370, 70), f"{rankNum}", 
+        draw_text_with_shadow(draw, (370, 80), f"{rankNum}", 
                              (240, 217, 108), font1, shadow_color=(0, 0, 0))
         
-        draw_text_with_shadow(draw, (440, 5), f'{level}', 
+        draw_text_with_shadow(draw, (440, 10), f'{level}', 
                              (240, 217, 108), font1, shadow_color=(0, 0, 0))
 
         # Composite the UI layer onto the background

@@ -134,7 +134,7 @@ class Leveling(commands.Cog):
                 await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY USER_LEVEL DESC), USER_ID FROM USER")
                 rankings = await cursor.fetchall()
 
-                res = await createImage(pfp, level, xp, online, highest_level[0], rankings, member.id)
+                res = await createImage(pfp, level, xp, online, highest_level[0], rankings, member.id, interaction)
 
                 await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.gif')])
 

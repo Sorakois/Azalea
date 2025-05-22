@@ -55,6 +55,151 @@ if data['xp_modifier']['enabled']:
     Leveling.MINEXP *= data['xp_modifier']['multiplier']
     Leveling.MAXEXP *= data['xp_modifier']['multiplier']
 
+
+async def award_gems_to_thread_participants(bot, thread_id: int, gem_amount: int = 300):
+    """
+    Awards gems to all unique users who posted in a specific thread.
+    
+    Args:
+        bot: The discord bot instance
+        thread_id: The ID of the thread to scan
+        gem_amount: Amount of gems to award (default: 300)
+    
+    Returns:
+        dict: Dictionary with user_id as key and tuple of (old_gems, new_gems) as value
+        None: If thread not found or error occurred
+    """
+    try:
+        # Get the thread
+        thread = await bot.fetch_channel(thread_id)
+        if not isinstance(thread, discord.Thread):
+            return None
+        
+        # Grab all unique user IDs from thread messages
+        thread_user_ids = set()
+        async for message in thread.history(limit=None):
+            if message.author and not message.author.bot:  # Exclude bot messages
+                thread_user_ids.add(message.author.id)
+        
+        if not thread_user_ids:
+            return {}
+        
+        # Award gems to users
+        awarded_users = {}
+        async with bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                for user_id in thread_user_ids:
+                    # Get current gems
+                    await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (user_id,))
+                    gems_old_result = await cursor.fetchone()
+                    gems_old = gems_old_result[0] if gems_old_result else 0
+                    
+                    # Update gems
+                    await cursor.execute("UPDATE USER SET USER_GEMS = USER_GEMS + %s WHERE USER_ID = %s", (gem_amount, user_id))
+                    
+                    # Get new gems amount
+                    await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (user_id,))
+                    gems_new_result = await cursor.fetchone()
+                    gems_new = gems_new_result[0] if gems_new_result else gem_amount
+                    
+                    awarded_users[user_id] = (gems_old, gems_new)
+            
+            await conn.commit()
+        
+        return awarded_users
+    
+    except Exception as e:
+        print(f"Error awarding gems to thread {thread_id}: {e}")
+        return None
+
+async def scan_and_reward_unreacted_threads(bot, channel_id: int, interaction):
+    """
+    Scans a channel for threads with no reactions and awards gems to participants.
+    
+    Args:
+        bot: The discord bot instance
+        channel_id: The ID of the channel to scan
+        interaction: The discord interaction object
+    """
+    try:
+        # Get the channel
+        channel = await bot.fetch_channel(channel_id)
+        if not channel:
+            await interaction.followup.send("Channel not found!")
+            return
+        
+        # Find all threads with no reactions
+        unreacted_threads = []
+        total_threads_processed = 0
+        
+        # Get active threads
+        async for thread in channel.archived_threads(limit=None):
+            total_threads_processed += 1
+            
+            # Check if thread has any reactions
+            has_reactions = False
+            async for message in thread.history(limit=1):  # Just check the first message (thread starter)
+                if message.reactions:
+                    has_reactions = True
+                    break
+            
+            if not has_reactions:
+                unreacted_threads.append(thread)
+        
+        # Also check currently active threads
+        if hasattr(channel, 'threads'):
+            for thread in channel.threads:
+                total_threads_processed += 1
+                
+                has_reactions = False
+                async for message in thread.history(limit=1):
+                    if message.reactions:
+                        has_reactions = True
+                        break
+                
+                if not has_reactions:
+                    unreacted_threads.append(thread)
+        
+        if not unreacted_threads:
+            await interaction.followup.send(f"No unreacted threads found in the channel! (Scanned {total_threads_processed} threads)")
+            return
+        
+        # Process each unreacted thread
+        processed_threads = []
+        failed_threads = []
+        
+        for thread in unreacted_threads:
+            result = await award_gems_to_thread_participants(bot, thread.id)
+            
+            if result is not None:
+                processed_threads.append({
+                    'thread': thread,
+                    'awarded_users': result
+                })
+            else:
+                failed_threads.append(thread)
+        
+        # Send results
+        if processed_threads:
+            await interaction.followup.send(f"✅ Successfully processed {len(processed_threads)} unreacted threads:")
+            
+            for thread_data in processed_threads:
+                thread = thread_data['thread']
+                awarded_users = thread_data['awarded_users']
+                
+                if awarded_users:
+                    user_mentions = [f"<@{user_id}>" for user_id in awarded_users.keys()]
+                    await interaction.followup.send(f"**Thread:** {thread.name} ({thread.mention})\n**Users awarded 300 gems:** {', '.join(user_mentions)}")
+                else:
+                    await interaction.followup.send(f"**Thread:** {thread.name} ({thread.mention}) - No users to award")
+        
+        if failed_threads:
+            thread_links = [f"[{thread.name}]({thread.jump_url})" for thread in failed_threads]
+            await interaction.followup.send(f"❌ **Failed to process these threads:**\n" + "\n".join(thread_links))
+            
+    except Exception as e:
+        await interaction.followup.send(f"Error scanning channel: {e}")
+
 class General(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -228,6 +373,7 @@ class General(commands.Cog):
                     await interaction.followup.send(f"This does not work.")
 
         if prompt == Prompt.EXPAND_FIX.value:
+            return # not needed rn
             '''
             Since essence to expand now costs 15x less, 
             compensate users who spent essence to expand already
@@ -272,50 +418,13 @@ class General(commands.Cog):
                     await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
 
         if prompt == Prompt.QOTD_GEMS.value:
-            
-            '''
-            The idea:
-                - parameters would be the thread id
-                - taking the thread id, scan the messages to find unique user IDS
-                - award 300 gems to each unique user
-            '''
             await interaction.response.defer()
-            await interaction.followup.send(f"Enter the thread ID to reward users.")
 
-            def check(message: discord.Message):
-                    return message.author.id == member.id and message.channel.id == interaction.channel.id
+            QOTD_CHANNEL_ID = 1095876259315204226
             
-            try:
-                msg = await interaction.client.wait_for('message', check=check, timeout=90.0)
-                thread_id = int(msg.content)
-
-                #get the thread
-                thread = await bot.fetch_channel(thread_id)
-                if isinstance(thread, discord.Thread):
-                    #grab all QOTD answer-ers
-                    qotd_user_ids = set()
-                    async for message in thread.history(limit=None):
-                        if message.author:  # Ensure the author is valid
-                            qotd_user_ids.add(message.author.id)
-                    qotd_awarded = {}
-
-                    #now, reward people with gems!
-                    qotd_award = 300
-                    async with self.bot.db.acquire() as conn:
-                        async with conn.cursor() as cursor:
-                            for qotd_user in qotd_user_ids:
-                                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (qotd_user,))
-                                gems_old = await cursor.fetchone()
-                                await cursor.execute("UPDATE USER SET USER_GEMS = USER_GEMS + %s WHERE USER_ID = %s", (qotd_award,qotd_user,))
-                                await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (qotd_user,))
-                                gems_new = await cursor.fetchone()
-                                qotd_awarded[qotd_user] = (gems_old[0], gems_new[0])
-                        await conn.commit()
-                    #print to show who was given gems
-                    for key, value in qotd_awarded.items():
-                        await interaction.followup.send(f"Added {qotd_award} gems to <@{key}>.\nNew vs Old Gems: {value}.")
-            except:
-                await interaction.followup.send(f"Invalid thread ID")
+            await interaction.followup.send("🔍 Scanning for threads with no reactions and awarding gems...")
+            
+            await scan_and_reward_unreacted_threads(bot, QOTD_CHANNEL_ID, interaction)
 
     ''' This section is for the "daily reminder" for CRK for guild contri'''
     # Send the message!
