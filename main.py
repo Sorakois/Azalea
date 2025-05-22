@@ -55,7 +55,6 @@ if data['xp_modifier']['enabled']:
     Leveling.MINEXP *= data['xp_modifier']['multiplier']
     Leveling.MAXEXP *= data['xp_modifier']['multiplier']
 
-
 async def award_gems_to_thread_participants(bot, thread_id: int, gem_amount: int = 300):
     """
     Awards gems to all unique users who posted in a specific thread.
@@ -112,7 +111,104 @@ async def award_gems_to_thread_participants(bot, thread_id: int, gem_amount: int
         print(f"Error awarding gems to thread {thread_id}: {e}")
         return None
 
+
 async def scan_and_reward_unreacted_threads(bot, channel_id: int, interaction):
+    """
+    Scans a channel for threads with no reactions and awards gems to participants.
+    
+    Args:
+        bot: The discord bot instance
+        channel_id: The ID of the channel to scan
+        interaction: The discord interaction object
+    """
+    try:
+        # Get the channel
+        channel = await bot.fetch_channel(channel_id)
+        if not channel:
+            await interaction.followup.send("Channel not found!")
+            return
+        
+        # Find all threads with no reactions
+        unreacted_threads = []
+        total_threads_processed = 0
+        
+        # Get active threads
+        async for thread in channel.archived_threads(limit=None):
+            total_threads_processed += 1
+            
+            # Check if thread has any reactions
+            has_reactions = False
+            async for message in thread.history(limit=1):  # Just check the first message (thread starter)
+                if message.reactions:
+                    has_reactions = True
+                    break
+            
+            if not has_reactions:
+                unreacted_threads.append(thread)
+        
+        # Also check currently active threads
+        if hasattr(channel, 'threads'):
+            for thread in channel.threads:
+                total_threads_processed += 1
+                
+                has_reactions = False
+                async for message in thread.history(limit=1):
+                    if message.reactions:
+                        has_reactions = True
+                        break
+                
+                if not has_reactions:
+                    unreacted_threads.append(thread)
+        
+        if not unreacted_threads:
+            await interaction.followup.send(f"No unreacted threads found in the channel! (Scanned {total_threads_processed} threads)")
+            return
+        
+        # Process each unreacted thread
+        processed_threads = []
+        failed_threads = []
+        
+        for thread in unreacted_threads:
+            result = await award_gems_to_thread_participants(bot, thread.id)
+            
+            if result is not None:
+                processed_threads.append({
+                    'thread': thread,
+                    'awarded_users': result
+                })
+                
+                # Add ✅ reaction to the thread's first message after processing
+                try:
+                    async for message in thread.history(limit=1, oldest_first=True):
+                        await message.add_reaction("✅")
+                        break
+                except Exception as e:
+                    print(f"Failed to add reaction to thread {thread.name}: {e}")
+            else:
+                failed_threads.append(thread)
+        
+        # Send results
+        if processed_threads:
+            await interaction.followup.send(f"✅ Successfully processed {len(processed_threads)} unreacted threads:")
+            
+            for thread_data in processed_threads:
+                thread = thread_data['thread']
+                awarded_users = thread_data['awarded_users']
+                
+                if awarded_users:
+                    user_mentions = [f"<@{user_id}>" for user_id in awarded_users.keys()]
+                    await interaction.followup.send(f"**Thread:** {thread.name} ({thread.mention})\n**Users awarded 300 gems:** {', '.join(user_mentions)}")
+                else:
+                    await interaction.followup.send(f"**Thread:** {thread.name} ({thread.mention}) - No users to award")
+        
+        if failed_threads:
+            thread_links = [f"[{thread.name}]({thread.jump_url})" for thread in failed_threads]
+            await interaction.followup.send(f"❌ **Failed to process these threads:**\n" + "\n".join(thread_links))
+            
+    except Exception as e:
+        await interaction.followup.send(f"Error scanning channel: {e}")
+
+
     """
     Scans a channel for threads with no reactions and awards gems to participants.
     
