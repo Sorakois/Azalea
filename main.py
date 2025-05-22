@@ -132,19 +132,38 @@ async def scan_and_reward_unreacted_threads(bot, channel_id: int, interaction):
         unreacted_threads = []
         total_threads_processed = 0
         
-        # Get active threads
-        async for thread in channel.archived_threads(limit=None):
-            total_threads_processed += 1
-            
-            # Check if thread has any reactions
-            has_reactions = False
-            async for message in thread.history(limit=1):  # Just check the first message (thread starter)
-                if message.reactions:
-                    has_reactions = True
-                    break
-            
-            if not has_reactions:
-                unreacted_threads.append(thread)
+        await interaction.followup.send("🔍 Scanning archived threads...")
+        
+        # Get archived threads with progress updates
+        try:
+            async for thread in channel.archived_threads(limit=100):  # Limit to prevent timeout
+                total_threads_processed += 1
+                
+                # Progress update every 10 threads
+                if total_threads_processed % 10 == 0:
+                    await interaction.followup.send(f"📊 Scanned {total_threads_processed} archived threads so far...")
+                
+                # Check if thread has any reactions
+                has_reactions = False
+                try:
+                    async for message in thread.history(limit=1):  # Just check the first message (thread starter)
+                        if message.reactions:
+                            has_reactions = True
+                            break
+                except:
+                    # Skip threads we can't access
+                    continue
+                
+                if not has_reactions:
+                    unreacted_threads.append(thread)
+                    
+                # Add small delay to prevent rate limiting
+                await asyncio.sleep(0.1)
+                    
+        except Exception as e:
+            await interaction.followup.send(f"⚠️ Error scanning archived threads: {e}")
+        
+        await interaction.followup.send("🔍 Scanning active threads...")
         
         # Also check currently active threads
         if hasattr(channel, 'threads'):
@@ -152,23 +171,33 @@ async def scan_and_reward_unreacted_threads(bot, channel_id: int, interaction):
                 total_threads_processed += 1
                 
                 has_reactions = False
-                async for message in thread.history(limit=1):
-                    if message.reactions:
-                        has_reactions = True
-                        break
+                try:
+                    async for message in thread.history(limit=1):
+                        if message.reactions:
+                            has_reactions = True
+                            break
+                except:
+                    continue
                 
                 if not has_reactions:
                     unreacted_threads.append(thread)
         
+        await interaction.followup.send(f"📋 Found {len(unreacted_threads)} unreacted threads out of {total_threads_processed} total threads.")
+        
         if not unreacted_threads:
-            await interaction.followup.send(f"No unreacted threads found in the channel! (Scanned {total_threads_processed} threads)")
+            await interaction.followup.send(f"No unreacted threads found in the channel!")
             return
         
-        # Process each unreacted thread
+        # Process each unreacted thread with progress updates
         processed_threads = []
         failed_threads = []
         
-        for thread in unreacted_threads:
+        await interaction.followup.send(f"⚙️ Processing {len(unreacted_threads)} unreacted threads...")
+        
+        for i, thread in enumerate(unreacted_threads, 1):
+            # Progress update
+            await interaction.followup.send(f"🔄 Processing thread {i}/{len(unreacted_threads)}: {thread.name}")
+            
             result = await award_gems_to_thread_participants(bot, thread.id)
             
             if result is not None:
@@ -184,94 +213,9 @@ async def scan_and_reward_unreacted_threads(bot, channel_id: int, interaction):
                         break
                 except Exception as e:
                     print(f"Failed to add reaction to thread {thread.name}: {e}")
-            else:
-                failed_threads.append(thread)
-        
-        # Send results
-        if processed_threads:
-            await interaction.followup.send(f"✅ Successfully processed {len(processed_threads)} unreacted threads:")
-            
-            for thread_data in processed_threads:
-                thread = thread_data['thread']
-                awarded_users = thread_data['awarded_users']
-                
-                if awarded_users:
-                    user_mentions = [f"<@{user_id}>" for user_id in awarded_users.keys()]
-                    await interaction.followup.send(f"**Thread:** {thread.name} ({thread.mention})\n**Users awarded 300 gems:** {', '.join(user_mentions)}")
-                else:
-                    await interaction.followup.send(f"**Thread:** {thread.name} ({thread.mention}) - No users to award")
-        
-        if failed_threads:
-            thread_links = [f"[{thread.name}]({thread.jump_url})" for thread in failed_threads]
-            await interaction.followup.send(f"❌ **Failed to process these threads:**\n" + "\n".join(thread_links))
-            
-    except Exception as e:
-        await interaction.followup.send(f"Error scanning channel: {e}")
-
-
-    """
-    Scans a channel for threads with no reactions and awards gems to participants.
-    
-    Args:
-        bot: The discord bot instance
-        channel_id: The ID of the channel to scan
-        interaction: The discord interaction object
-    """
-    try:
-        # Get the channel
-        channel = await bot.fetch_channel(channel_id)
-        if not channel:
-            await interaction.followup.send("Channel not found!")
-            return
-        
-        # Find all threads with no reactions
-        unreacted_threads = []
-        total_threads_processed = 0
-        
-        # Get active threads
-        async for thread in channel.archived_threads(limit=None):
-            total_threads_processed += 1
-            
-            # Check if thread has any reactions
-            has_reactions = False
-            async for message in thread.history(limit=1):  # Just check the first message (thread starter)
-                if message.reactions:
-                    has_reactions = True
-                    break
-            
-            if not has_reactions:
-                unreacted_threads.append(thread)
-        
-        # Also check currently active threads
-        if hasattr(channel, 'threads'):
-            for thread in channel.threads:
-                total_threads_processed += 1
-                
-                has_reactions = False
-                async for message in thread.history(limit=1):
-                    if message.reactions:
-                        has_reactions = True
-                        break
-                
-                if not has_reactions:
-                    unreacted_threads.append(thread)
-        
-        if not unreacted_threads:
-            await interaction.followup.send(f"No unreacted threads found in the channel! (Scanned {total_threads_processed} threads)")
-            return
-        
-        # Process each unreacted thread
-        processed_threads = []
-        failed_threads = []
-        
-        for thread in unreacted_threads:
-            result = await award_gems_to_thread_participants(bot, thread.id)
-            
-            if result is not None:
-                processed_threads.append({
-                    'thread': thread,
-                    'awarded_users': result
-                })
+                    
+                # Small delay to prevent rate limiting
+                await asyncio.sleep(0.5)
             else:
                 failed_threads.append(thread)
         
@@ -518,7 +462,7 @@ class General(commands.Cog):
 
             QOTD_CHANNEL_ID = 1095876259315204226
             
-            await interaction.followup.send("🔍 Scanning for threads with no reactions and awarding gems...")
+            await interaction.followup.send("🚀 Starting QOTD gems distribution process...")
             
             await scan_and_reward_unreacted_threads(bot, QOTD_CHANNEL_ID, interaction)
 
