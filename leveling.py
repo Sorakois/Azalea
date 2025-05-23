@@ -210,7 +210,7 @@ class Leveling(commands.Cog):
             guild (discord.Guild) : Guild object that the user is in.
         '''
         async def checkAssign(index):
-            getRole = lambda i : discord.utils.get(guild.roles, name=list(roles.keys())[i])
+            getRole = lambda i : discord.utils.get(guild.roles, id=list(roles.values())[i])
             if getRole(index) not in user.roles:
                 roleToAdd = getRole(index)
                 await user.add_roles(roleToAdd)

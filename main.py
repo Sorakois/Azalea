@@ -300,6 +300,9 @@ class General(commands.Cog):
             member (discord.User) : User object of the user that joined
         '''
 
+        # Give "divider" roles
+
+
         # Automatically set the user to level 0 [choco II]
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
@@ -307,7 +310,7 @@ class General(commands.Cog):
                 userExists = await cursor.fetchone()
                 if userExists:
                     # User was here before... let's give them their role back
-                    
+
                     return
                 
                 # NEW MEMBER!
