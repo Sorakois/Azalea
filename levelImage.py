@@ -118,6 +118,7 @@ def rankingHandler(level, highest_level, ranking, user_id):
     # Check to see for "Exprienced" role
     if user_id in experienced.values():
         rank = defaultDir + 'ranks/special.png'
+        reward_bool = 3
 
 
     rankNum = 0
@@ -188,8 +189,15 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
     # XP bar processing
     xpStr = f"{xp//1000}.{str(xp)[-3:-1]}k" if xp >= 1000 else str(xp)
     xpNeeded = 12 * level**2 + 60
+
+    # Experienced are infinite level
+    if user_id in experienced.values():
+        xp = xpNeeded
+
     xpNeededStr = f"{xpNeeded//1000}.{str(xpNeeded)[-3:-1]}k" if xpNeeded >= 1000 else str(xpNeeded)
-    percentage = int((xp / xpNeeded) * 320)
+    percentage = int((xp / xpNeeded) * 380)
+
+
 
     # Load XP bar images
     fullXPBar = Image.open('assets/level/Azalea-XP-Bar.png').convert("RGBA")
@@ -218,13 +226,13 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
         grand_gem = Image.open('assets/level/GM-gem.png').convert("RGBA")
 
     '''BOOSTER SPECIAL!'''
-    if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.user.roles:
+    if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.guild.get_member(user_id).roles:
         # Boosters get their own role icon also added to the /level screen!
 
         # Booster icon will be their top role
         top_role_with_icon = None
         # Start from highest role
-        for role in reversed(interaction.user.roles):  
+        for role in reversed(interaction.guild.get_member(user_id).roles):
             # Check if role has an icon
             if role.icon:  
                 top_role_with_icon = role
@@ -314,7 +322,7 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
             ui_layer.paste(grand_gem, (0, 0), grand_gem)
 
         '''BOOST REWARDS'''
-        if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.user.roles:
+        if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.guild.get_member(user_id).roles:
             ui_layer.paste(boost_icon, (570, 152), boost_icon)
 
         # Add text to UI layer with drop shadows
