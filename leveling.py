@@ -10,8 +10,8 @@ import aiomysql
 
 roles = {
     "Chocolate II": 1083845379893772350,
-    "Chocolate I": 1083845379893772350, 
-    "Bronze II": 1083845379893772350, 
+    "Chocolate I": 1075548364814434464, 
+    "Bronze II": 1075548426021912586, 
     "Bronze I": 1083846147359117332,
     "Silver III": 1083846231886934106, 
     "Silver II": 1083846281031594134,
@@ -119,7 +119,7 @@ class Leveling(commands.Cog):
                     return
 
                 try:
-                    pfpURL = member.avatar.url
+                    pfpURL = member.guild_avatar.url if member.guild_avatar else member.avatar.url
                     pfp = re.search('^.+?(?=\..{3}\?)', pfpURL).group()
                     pfp += '.jpg?size=1024'
                     online = True
@@ -202,7 +202,6 @@ class Leveling(commands.Cog):
     async def assign_role(self, user, level, highest_level, guild):
         '''
         Called when a user levels up, will remove and add roles of each level accordingly.
-
         params:
             user (discord.User) : User object to change role of
             level (int) : the new level of the user
@@ -217,86 +216,273 @@ class Leveling(commands.Cog):
             if index > 0 and getRole(index-1) in user.roles:
                 roleToRemove = getRole(index-1)
                 await user.remove_roles(roleToRemove)      
-            
-            # For some reason, previous role not removed when rankup
-            # Diamond -> Master, Master -> Elite, etc.
-
-            # Check if user has no rank role... give them choco ii if no role
-
-        # Chocolate II, I
+        
+        # Chocolate II (Levels 1-3)
         if level <= 3:
             await checkAssign(0)
+        # Chocolate I (Levels 4-6)
         elif level <= 6:
             await checkAssign(1)
-
-        # Bronze II, I
+        # Bronze II (Level 7)
         elif level == 7:
             await checkAssign(2)
+        # Bronze I (Level 8)
         elif level == 8:
             await checkAssign(3)
-
-        # Silver III, II, I
+        # Silver III (Level 9)
         elif level == 9:
             await checkAssign(4)
+        # Silver II (Level 10)
         elif level == 10:
             await checkAssign(5)
+        # Silver I (Level 11)
         elif level == 11:
             await checkAssign(6)
-
-        # Gold III, II, I
+        # Gold III (Level 12)
         elif level == 12:
             await checkAssign(7)
+        # Gold II (Level 13)
         elif level == 13:
             await checkAssign(8)
+        # Gold I (Level 14)
         elif level == 14:
             await checkAssign(9)
-
-        # Crystal III, II, I
+        # Crystal III (Level 15)
         elif level == 15:
             await checkAssign(10)
+        # Crystal II (Level 16)
         elif level == 16:
             await checkAssign(11)
+        # Crystal I (Level 17)
         elif level == 17:
             await checkAssign(12)
-
-        # Diamond III, II, I
+        # Diamond III (Level 18)
         elif level == 18:
             await checkAssign(13)
+        # Diamond II (Level 19)
         elif level == 19:
             await checkAssign(14)
+        # Diamond I (Level 20)
         elif level == 20:
             await checkAssign(15)
-
-        # Grandmaster I
+        
+        # Grandmaster I (Level 50+, 1st Place)
         elif level == highest_level and level >= 50:
             await checkAssign(28)
-
-        # Grandmaster II, III
-        elif level >= highest_level * .9 and level >= 50:
+        # Grandmaster II (Level 50+, Top 30% of Grandmaster)
+        elif level >= highest_level * 0.7 and level >= 50:
             await checkAssign(27)
-        elif level >= highest_level * .8 and level >= 50:
+        # Grandmaster III (Level 50+)
+        elif level >= 50:
             await checkAssign(26)
-
-        # Elite I, II, III, IV, V
-        elif level >= highest_level * .7 and level > 20:
+        
+        # Elite I (Level 40-49, Top 30% of Elite)
+        elif level >= highest_level * 0.7 and 40 <= level <= 49:
             await checkAssign(25)
-        elif level >= highest_level * .6 and level > 20:
+        # Elite II (Level 40-49, Top 40% of Elite)
+        elif level >= highest_level * 0.6 and 40 <= level <= 49:
             await checkAssign(24)
-        elif level >= highest_level * .5 and level > 20:
+        # Elite III (Level 40-49, Top 50% of Elite)
+        elif level >= highest_level * 0.5 and 40 <= level <= 49:
             await checkAssign(23)
-        elif level >= highest_level * .4 and level > 20:
+        # Elite IV (Level 40-49, Top 60% of Elite)
+        elif level >= highest_level * 0.4 and 40 <= level <= 49:
             await checkAssign(22)
-        elif level >= highest_level * .3 and level > 20:
+        # Elite V (Level 40-49)
+        elif 40 <= level <= 49:
             await checkAssign(21)
-
-        # Master I, II, III, IV, V
-        elif level >= highest_level * .25 and level > 20:
+        
+        # Master I (Level 21-39, Top 30% of Master)
+        elif level >= highest_level * 0.7 and 21 <= level <= 39:
             await checkAssign(20)
-        elif level >= highest_level * .2 and level > 20:
+        # Master II (Level 21-39, Top 40% of Master)
+        elif level >= highest_level * 0.6 and 21 <= level <= 39:
             await checkAssign(19)
-        elif level >= highest_level * .15 and level > 20:
+        # Master III (Level 21-39, Top 50% of Master)
+        elif level >= highest_level * 0.5 and 21 <= level <= 39:
             await checkAssign(18)
-        elif level >= highest_level * .1 and level > 20:
+        # Master IV (Level 21-39, Top 60% of Master)
+        elif level >= highest_level * 0.4 and 21 <= level <= 39:
             await checkAssign(17)
-        elif level > 20:
+        # Master V (Level 21-39)
+        elif 21 <= level <= 39:
             await checkAssign(16)
+
+    async def check_user_roles(self, guild):
+        '''
+        Audits all users' roles and fixes any mismatched roles based on their current levels.
+        
+        params:
+            bot (commands.Bot): Bot instance to access database
+            bot (commands.Bot): Bot instance to access database
+            guild (discord.Guild): Guild object to check roles in
+            str: Summary of role changes made
+        '''
+        changes_made = 0
+        users_checked = 0
+        errors = []
+        
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                # Get all users with levels from database
+                await cursor.execute("SELECT USER_ID, USER_LEVEL FROM USER WHERE USER_LEVEL > 0")
+                user_data = await cursor.fetchall()
+                
+                # Get highest level for percentage calculations
+                await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
+                highest_level_result = await cursor.fetchone()
+                highest_level = highest_level_result[0] if highest_level_result else 1
+                
+                for user_id, user_level in user_data:
+                    try:
+                        # Get guild member
+                        member = guild.get_member(user_id)
+                        if not member:
+                            continue
+                            
+                        users_checked += 1
+                        
+                        # Calculate what role they should have
+                        expected_role_index = self.get_expected_role_index(user_level, highest_level)
+                        
+                        if expected_role_index is not None:
+                            expected_role_id = list(roles.values())[expected_role_index]
+                            expected_role = discord.utils.get(guild.roles, id=expected_role_id)
+                            
+                            # Check if user has the correct role
+                            current_level_roles = [role for role in member.roles if role.id in list(roles.values())]
+                            
+                            # If they don't have the expected role or have wrong roles
+                            if expected_role not in member.roles or len(current_level_roles) != 1:
+                                # Remove all level roles
+                                for role in current_level_roles:
+                                    if role != expected_role:
+                                        await member.remove_roles(role)
+                                        changes_made += 1
+                                
+                                # Add correct role if not already present
+                                if expected_role not in member.roles and expected_role:
+                                    await member.add_roles(expected_role)
+                                    changes_made += 1
+                        
+                    except Exception as e:
+                        errors.append(f"Error processing user {user_id}: {str(e)}")
+                        continue
+        
+        # Prepare summary message
+        summary = f"Checked {users_checked} users, made {changes_made} role changes"
+        if errors:
+            summary += f"\nErrors encountered: {len(errors)}"
+            # Log first few errors for debugging
+            for error in errors[:3]:
+                summary += f"\n- {error}"
+            if len(errors) > 3:
+                summary += f"\n- ... and {len(errors) - 3} more errors"
+        
+        return summary
+
+
+    def get_expected_role_index(self, level, highest_level):
+        '''
+        Helper function to determine what role index a user should have based on their level.
+        
+        params:
+            level (int): User's current level
+            highest_level (int): Highest level in the server
+            
+        returns:
+            int or None: Index of the role they should have, or None if no role
+        '''
+        # Chocolate II (Levels 1-3)
+        if level <= 3:
+            return 0
+        # Chocolate I (Levels 4-6)
+        elif level <= 6:
+            return 1
+        # Bronze II (Level 7)
+        elif level == 7:
+            return 2
+        # Bronze I (Level 8)
+        elif level == 8:
+            return 3
+        # Silver III (Level 9)
+        elif level == 9:
+            return 4
+        # Silver II (Level 10)
+        elif level == 10:
+            return 5
+        # Silver I (Level 11)
+        elif level == 11:
+            return 6
+        # Gold III (Level 12)
+        elif level == 12:
+            return 7
+        # Gold II (Level 13)
+        elif level == 13:
+            return 8
+        # Gold I (Level 14)
+        elif level == 14:
+            return 9
+        # Crystal III (Level 15)
+        elif level == 15:
+            return 10
+        # Crystal II (Level 16)
+        elif level == 16:
+            return 11
+        # Crystal I (Level 17)
+        elif level == 17:
+            return 12
+        # Diamond III (Level 18)
+        elif level == 18:
+            return 13
+        # Diamond II (Level 19)
+        elif level == 19:
+            return 14
+        # Diamond I (Level 20)
+        elif level == 20:
+            return 15
+        
+        # Grandmaster I (Level 50+, 1st Place)
+        elif level == highest_level and level >= 50:
+            return 28
+        # Grandmaster II (Level 50+, Top 30% of Grandmaster)
+        elif level >= highest_level * 0.7 and level >= 50:
+            return 27
+        # Grandmaster III (Level 50+)
+        elif level >= 50:
+            return 26
+        
+        # Elite I (Level 40-49, Top 30% of Elite)
+        elif level >= highest_level * 0.7 and 40 <= level <= 49:
+            return 25
+        # Elite II (Level 40-49, Top 40% of Elite)
+        elif level >= highest_level * 0.6 and 40 <= level <= 49:
+            return 24
+        # Elite III (Level 40-49, Top 50% of Elite)
+        elif level >= highest_level * 0.5 and 40 <= level <= 49:
+            return 23
+        # Elite IV (Level 40-49, Top 60% of Elite)
+        elif level >= highest_level * 0.4 and 40 <= level <= 49:
+            return 22
+        # Elite V (Level 40-49)
+        elif 40 <= level <= 49:
+            return 21
+        
+        # Master I (Level 21-39, Top 30% of Master)
+        elif level >= highest_level * 0.7 and 21 <= level <= 39:
+            return 20
+        # Master II (Level 21-39, Top 40% of Master)
+        elif level >= highest_level * 0.6 and 21 <= level <= 39:
+            return 19
+        # Master III (Level 21-39, Top 50% of Master)
+        elif level >= highest_level * 0.5 and 21 <= level <= 39:
+            return 18
+        # Master IV (Level 21-39, Top 60% of Master)
+        elif level >= highest_level * 0.4 and 21 <= level <= 39:
+            return 17
+        # Master V (Level 21-39)
+        elif 21 <= level <= 39:
+            return 16
+        
+        # If level doesn't match any criteria, return None
+        return None

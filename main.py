@@ -300,7 +300,7 @@ class General(commands.Cog):
             member (discord.User) : User object of the user that joined
         '''
 
-        # Give "divider" roles
+        # Give "divider" roles (?)
 
 
         # Automatically set the user to level 0 [choco II]
@@ -320,7 +320,24 @@ class General(commands.Cog):
                     await member.add_roles(roleToAdd)
 
         # Send a welcome message!
-        #await member.send("Welcome to the server!")
+        welcome_gif = discord.File("assets/nekowave.gif")
+        await member.send(
+            "# Welcome to Nurture!\n"
+            "## Here's a quick few things you should know!\n"
+            "### 1.) Nurture has a level system in place to hinder spammers/raiders\n"
+            "> - There are cool perks for leveling up, so check here! https://ptb.discord.com/channels/996903185685946490/1084978040821514241)\n"
+            "### 2.) If you have any questions, please reach out to mods!\n"
+            "> - Answers to our FAQ can be found here! https://ptb.discord.com/channels/996903185685946490/1365023830145499259\n"
+            "### 3.) Please follow rules!"
+            "> - Read more about them here if you often break them, just to know :) https://ptb.discord.com/channels/996903185685946490/1042241938730012783"
+            "### 4.) Feel free to ping @helper roles! We are here to help!\n\n #Above all else... enjoy your stay! :)",
+            file=welcome_gif
+        )
+
+    async def on_member_remove(self, member: discord.User):
+        channel = self.bot.get_channel(1069755829126971392)
+        if channel:
+            await channel.send(f"📤 **Member Left**\n{member.mention} ({member.id}) has left the server.")
 
     @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
@@ -478,6 +495,43 @@ class General(commands.Cog):
             await interaction.followup.send("🚀 Starting QOTD gems distribution process...")
             
             await scan_and_reward_unreacted_threads(bot, QOTD_CHANNEL_ID, interaction)
+
+        if prompt == Prompt.DEBUG_ROLE_CHECK.value:
+            await interaction.response.defer()
+            res = await cogs['leveling'].check_user_roles(interaction.guild)
+            await interaction.followup.send(f'Role check complete! {res}', ephemeral=True)
+
+        if prompt == Prompt.MASS_DM.value:
+            await interaction.response.defer(ephemeral=True)
+
+            # Get message content from the interaction
+            if not interaction.message or not interaction.message.content.strip():
+                return await interaction.followup.send("❗ You must provide a message to send.", ephemeral=True)
+
+            dm_message = interaction.message.content.strip()
+            file = None
+            if interaction.message.attachments:
+                file = await interaction.message.attachments[0].to_file()
+
+            failed = []
+            success = 0
+
+            for member in interaction.guild.members:
+                if member.bot:
+                    continue
+                try:
+                    if file:
+                        await member.send(content=dm_message, file=file)
+                    else:
+                        await member.send(content=dm_message)
+                    success += 1
+                except Exception:
+                    failed.append(member)
+
+            await interaction.followup.send(
+                f"✅ Sent DMs to {success} members.\n❌ Failed to send to {len(failed)}.",
+                ephemeral=True
+            )
 
     ''' This section is for the "daily reminder" for CRK for guild contri'''
     # Send the message!

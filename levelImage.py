@@ -39,33 +39,28 @@ def rankingHandler(level, highest_level, ranking, user_id):
         rank = defaultDir + 'ranks/Chocolate-2.png'
     elif level <= 6:
         rank = defaultDir + 'ranks/Chocolate-1.png'
-
     elif level == 7:
         rank = defaultDir + 'ranks/Bronze-2.png'
     elif level == 8:
         rank = defaultDir + 'ranks/Bronze-1.png'
-
     elif level == 9:
         rank = defaultDir + 'ranks/Silver-3.png'
     elif level == 10:
         rank = defaultDir + 'ranks/Silver-2.png'
     elif level == 11:
         rank = defaultDir + 'ranks/Silver-1.png'
-
     elif level == 12:
         rank = defaultDir + 'ranks/Gold-3.png'
     elif level == 13:
         rank = defaultDir + 'ranks/Gold-2.png'
     elif level == 14:
         rank = defaultDir + 'ranks/Gold-1.png'
-
     elif level == 15:
         rank = defaultDir + 'ranks/Crystal-3.png'
     elif level == 16:
         rank = defaultDir + 'ranks/Crystal-2.png'
     elif level == 17:
         rank = defaultDir + 'ranks/Crystal-1.png'
-
     elif level == 18:
         rank = defaultDir + 'ranks/Diamond-3.png'
     elif level == 19:
@@ -76,44 +71,45 @@ def rankingHandler(level, highest_level, ranking, user_id):
     elif level == highest_level and level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-1.png'
         reward_bool = 3
-    elif level >= highest_level*.9 and level >= 50:
+    elif level >= highest_level * 0.7 and level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-2.png'
         reward_bool = 3
-    elif level >= highest_level*.8 and level >= 50:
+    elif level >= 50:
         rank = defaultDir + 'ranks/Grandmaster-3.png'
         reward_bool = 3
 
-    elif level >= highest_level*.7 and level > 20:
+    elif level >= highest_level * 0.7 and 40 <= level <= 49:
         rank = defaultDir + 'ranks/Elite-1.png'
         reward_bool = 2
-    elif level >= highest_level*.6 and level > 20:
+    elif level >= highest_level * 0.6 and 40 <= level <= 49:
         rank = defaultDir + 'ranks/Elite-2.png'
         reward_bool = 2
-    elif level >= highest_level*.5 and level > 20:
+    elif level >= highest_level * 0.5 and 40 <= level <= 49:
         rank = defaultDir + 'ranks/Elite-3.png'
         reward_bool = 2
-    elif level >= highest_level*.4 and level > 20:
+    elif level >= highest_level * 0.4 and 40 <= level <= 49:
         rank = defaultDir + 'ranks/Elite-4.png'
         reward_bool = 2
-    elif level >= highest_level*.3 and level > 20:
+    elif 40 <= level <= 49:
         rank = defaultDir + 'ranks/Elite-5.png'
         reward_bool = 2
 
-    elif level >= highest_level*.25 and level > 20:
+    elif level >= highest_level * 0.7 and 21 <= level <= 39:
         rank = defaultDir + 'ranks/Master-1.png'
         reward_bool = 1
-    elif level >= highest_level*.2 and level > 20:
+    elif level >= highest_level * 0.6 and 21 <= level <= 39:
         rank = defaultDir + 'ranks/Master-2.png'
         reward_bool = 1
-    elif level >= highest_level*.15 and level > 20:
+    elif level >= highest_level * 0.5 and 21 <= level <= 39:
         rank = defaultDir + 'ranks/Master-3.png'
         reward_bool = 1
-    elif level >= highest_level*.1 and level > 20:
+    elif level >= highest_level * 0.4 and 21 <= level <= 39:
         rank = defaultDir + 'ranks/Master-4.png'
         reward_bool = 1
-    elif level > 20:
+    elif 21 <= level <= 39:
         rank = defaultDir + 'ranks/Master-5.png'
         reward_bool = 1
+
     
     # Check to see for "Exprienced" role
     if user_id in experienced.values():
