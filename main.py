@@ -299,14 +299,25 @@ class General(commands.Cog):
         params:
             member (discord.User) : User object of the user that joined
         '''
+
+        # Automatically set the user to level 0 [choco II]
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_ID FROM USER WHERE USER_ID = %s", member.id)
-                userExists = await cursor.fetchall()
-                if len(userExists) != 0:
+                await cursor.execute("SELECT USER_ID FROM USER WHERE USER_ID = %s", (member.id,))
+                userExists = await cursor.fetchone()
+                if userExists:
+                    # User was here before... let's give them their role back
+                    
                     return
-                roleToAdd = discord.utils.get(member.guild.roles, name='Chocolate II')
-                await member.add_roles(roleToAdd)
+                
+                # NEW MEMBER!
+                # Numbers = ID for level 0 role
+                roleToAdd = member.guild.get_role(1083845379893772350)
+                if roleToAdd:
+                    await member.add_roles(roleToAdd)
+
+        # Send a welcome message!
+        #await member.send("Welcome to the server!")
 
     @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
@@ -323,7 +334,6 @@ class General(commands.Cog):
         if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
             split = prompt.split(' ')
 
-        '''fix this'''
         if prompt == Prompt.XP_BOOST.value: 
             boost = int(split[1])
             days = int(split[2])
