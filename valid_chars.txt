@@ -1,5 +1,6 @@
 Acheron Nihility
 Aglaea Remembrance
+Anaxa Erudition
 Argenti Erudition
 Arlan Destruction
 Asta Harmony
@@ -26,6 +27,7 @@ Herta Erudition
 Himeko Erudition
 Hook Destruction
 Huohuo Abundance
+Hyacine Remembrance
 Jade Erudition
 Jiaoqiu Nihility
 Jing Yuan Erudition
@@ -66,6 +68,7 @@ Xueyi Destruction
 Yanqing Hunt
 Yukong Harmony
 Yunli Destruction
-Anaxa Erudition
+Archer Hunt
 Cipher Nihility
-Hyacine Remembrance
+Phainon Destruction
+Saber Destruction

@@ -480,7 +480,7 @@ class fullScrape(BuildScrape):
                 count2 += 1
             else:
                 counted += 1
-                if char_name.lower() == "anaxa": #or char_name.lower() == "castorice":
+                if char_name.lower() == "cipher": #or char_name.lower() == "castorice":
                     print(f"This characters is coming soon, but no build exists yet: {wiki_entry}")
                     unreleased_chars.append((char_name, path))
                 else:
@@ -513,8 +513,36 @@ class fullScrape(BuildScrape):
                 best_planar = str(Character.best_planar).replace(", ", "\n").replace("~~","==").replace(r"\n","").replace('"', '')
                 best_team = str(Character.best_team).replace(", ", "\n").replace(r"\n","").replace('"', '') if Character.best_team else "N/A"
                 #if Character.notes
-                notes = str(Character.notes).replace(", ", "\n") #if len(Character.notes) < 800 else (str(Character.notes[0]).replace(", ", " | ") if len(Character.notes) > 1 else "N/A")
+                processed_notes = str(Character.notes).replace(", ", "\n")
+                notes = processed_notes if len(processed_notes) < 1400 else "Notes too long... will fix soon :)"
                 build_author = "Sorakoi"
+
+                # check for bugs
+                trace_items = []
+                if Character.trace_prio:
+                    for item in Character.trace_prio:
+                        content = item.strip()
+                        if content == "M.":
+                            content = "M. Talent"
+                        trace_items.append(content)
+
+                # Fix sequence numbers and ensure consistent spacing
+                for i in range(len(trace_items)):
+                    item = trace_items[i]
+                    expected_num = i + 1
+                    
+                    # Remove any existing numbering and extract the actual content
+                    content = re.sub(r'^\d+\.\)\s*', '', item)
+                    
+                    # Apply consistent formatting: number.) space content
+                    trace_items[i] = f"{expected_num}.) {content}"
+
+                # Join with newlines
+                trace_prio = '\n'.join(trace_items)
+
+                # if name.lower() == "hyacine":
+                #     print(f"I am hyacine\n{trace_prio}")
+
                 #print(f"test: this is char. {Character}")
                 await cursor.execute("SELECT name FROM HSR_BUILD WHERE name = %s", name)
                 querycheck = await cursor.fetchone()
@@ -542,7 +570,7 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, stat_focus, trace_prio, substats, gear_mainstats, best_lc, best_relics, best_planar, best_team, notes, build_author, name))
-                    print(f"Updated: {name.title()}")
+                    print(f"Updated Released: {name.title()}")
                 # Insert query if not existent
                 elif querycheck is None:
                     await cursor.execute("""
@@ -560,7 +588,7 @@ class fullScrape(BuildScrape):
                         gear_mainstats, best_lc, best_relics,
                         best_planar, best_team, notes, build_author
                     ))
-                    print(f"Inserted: {name}")
+                    print(f"Inserted Released: {name}")
                 
             # Let's add images for unreleased characters even though we got no info!
             for char in unreleased_chars:
@@ -596,7 +624,7 @@ class fullScrape(BuildScrape):
                             buildauthor = %s
                         WHERE name = %s
                     """, (path, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", build_author, name))
-                    print(f"Updated: {name.title()}")
+                    print(f"Updated Unreleased: {name.title()}")
                     
                 # Insert query if not existent
                 elif querycheck is None:
@@ -615,7 +643,7 @@ class fullScrape(BuildScrape):
                         "N/A", "N/A", "N/A",
                         "N/A", "N/A", "N/A", build_author
                         ))
-                    print(f"Inserted: {name}")
+                    print(f"Inserted Unreleased: {name}")
             # Done!
             await conn.commit()
         except Exception as e:

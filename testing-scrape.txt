@@ -1,16 +1,15 @@
 !!! Notice !!!
-We are aware of a glitch that occasionally causes formatting inconsistenciesto appear across random cells in the sheet.The issue isn't on our end, and we hope that it is resolved soon.For the time being, waiting for a few minutes and then refreshing the page may fix the issue.Using the "Index" section below may fix the issue too.
-There is now a Terminology page.This will be kept up to date with shorthand terminology for relics.Please consult this page if you have any questions about what relic set is being refered to.
+There is a glitch that occasionally causes formatting inconsistencies to appearacross random cells in the sheet. This issue is not on our end.Waiting and refreshing the page or using the "Index" section below may fix this issue.
+The Terminology page shows the abbreviations used for relic sets.
 Disclaimer
 This is a general guide on how to build characters and other important information.
 This guide does not go into specifics on the following:
-All Light Cones for a specific character.In-depth character analysis.Best teams.
+All Light Cones for a specific characterIn-depth character analysisBest teams
 !!!!!Please read this for all new characters!!!!!
-Please note that all new characters are subject to change within the first weeks of release.
+Please note that all new characters are subject to change within the first weeks of release
 Index
-Credits
 ChangeLog
-Terminology
+Relic Terminology
 Physical
 Fire
 Ice
@@ -18,35 +17,29 @@ Wind
 Lightning
 Quantum
 Imaginary
+Credits
 For Energy Regeneration Sheet, Please refer to:
 Various Energy Requirements
-Credits
-Active Contributors
-DarkAngel
-Shuma
-Tsuru
-Ataraxia1339
-Plutoniumrooster
-Kuratine
-.regnum771
-xaale
-json.jason
-skayomi
-Extensive References
-Aimgo
-HunterKee
-Puns101
-edisonsmathclub
-mystathi
-NLRem
-PhantomHearts331
-GuobaCertified
 Document ChangeLogs
 Date Changes Applied Applied By
+5/21/25 Added images for Hyacine and CipherUpdated Title Screen image json.Jason
+5/20/25 Updated Abundance characters and Fu Xuan to include Warrior Goddess of Sun and ThunderUpdated characters with 2-PC: Scholar as an option to also include 2-PC: WavestriderUpdated Remembrance Trailblazer and Aglaea to include Long May Rainbows Adorn the SkyUpdated Anaxa to include 4-PC: Wavestrider Captain with a note Ataraxia
+5/20/25 Added Hyacine.Added 2-PC Warrior Goddess of Sun and Thunder to the Terminology page for SPD%. Dark Angel
+5/17/25 Updated Ruan Mei's notes Ataraxia
+5/9/25 Added Hyacine and Cipher Previews json.Jason
+5/8/25 Updated Anaxa's notes and adjusted rankings for his Light Cones Ataraxia
+4/30/25 Added image for Anaxa, fixed images for multiple characters json.Jason
+4/25/25 Reworded notice to be more concise.Moved Credits to the end.Changed Terminology page to be "Relic Terminology"Added a link to the terminology page for all relic sets that use it in the build. AtaraxiaDark Angel
+4/24/25 Updated Castorice's baseline stats to be consistent with the assumption of using 4-PC: Poet of Mourning Collapse, and adjusted the corresponding note accordingly Ataraxia
+4/22/25 Added a note to Castorice on Light Cones for her sustain Dark AngelAtaraxia
+4/21/25 Added E4 to Seele's notable Eidolons Ataraxia
+4/19/25 Slightly reworded Castorice's note on sphere mainstat Ataraxia
+4/14/25 Updated Castorice's Light Cones and notes to mention 1058 base HP Light Cones Ataraxia
+4/12/25 Changed [Event] to [Free] for Ninja Record: Sound Hunt since it was added to Herta's Store in v3.2 Ataraxia
 4/9/25 Added image for CastoriceAdjusted images for Quantum characters json.Jason
 4/8/25 Reverted the removal of Giant Tree of Rapt Brooding from Gallagher and Lingsha (since they may not always be against Fire-weak enemies)Added Castorice. AtaraxiaDark Angel
 4/3/25 Updated Black Swans Relics.Fixed some small notations with Tribbie Dark Angel
-4/2/25 Downgraded Title Screen Image json.Jason
+4/2/25 Downgraded Title Screen image json.Jason
 4/1/25 Improved Title Screen ImageAdded Castorice / Anaxa Previews json.JasonDark Angel
 3/31/25 Updated Jiaoqiu's sphere mainstat to include HP% / DEF% Ataraxia
 3/29/25 Adjusted images for Physical characters json.Jason
@@ -258,12 +251,14 @@ ATK% Sets 2-PC Musketeer of Wild Wheat 2-PC The Wind-Soaring Valorous
 BE% Sets 2-PC Thief of Shooting Meteor 2-PC Iron Cavalry Against the Scourge
 2-PC Watchmaker, Master of Dream Machinations
 SPD% Sets 2-PC Messenger Traversing Hackerspace 2-PC Sacerdos' Relived Ordeal
+2-PC Warrior Goddess of Sun and Thunder
+Planar Terms
 5% ERR Sets Lushaka, the Sunken Seas Sprightly Vonwacq
 Penacony, Land of the Dreams
 5★ Characters
 Yunli Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Dance at Sunset 5★2 - The Unreachable Side 5★3 - Brighter Than the Sun 5★ ³4 - Something Irreplaceable 5★5 - On the Fall of an Aeon 5★ [Free]6 - Under the Blue Sky 4★~~ A Secret Vow 4★~~ Indelible Promise 4★ 1.) 4-PC: The Wind-Soaring Valorous2.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Longevous Disciple~~ 4-PC: Poet of Mourning Collapse ¹3.) 4-PC: Champion of Streetwise Boxing 4.) 2-PC: Champion / Grand Duke / Scholar [Choose 2]~~ 4-PC: Genius of Brilliant Stars 1.) CRIT Rate2.) CRIT DMG3.) ATK% E1
+1 - Dance at Sunset 5★2 - The Unreachable Side 5★3 - Brighter Than the Sun 5★ ³4 - Something Irreplaceable 5★5 - On the Fall of an Aeon 5★ [Free]6 - Under the Blue Sky 4★~~ A Secret Vow 4★~~ Indelible Promise 4★ 1.) 4-PC: The Wind-Soaring Valorous2.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Longevous Disciple~~ 4-PC: Poet of Mourning Collapse ¹3.) 4-PC: Champion of Streetwise Boxing 4.) 2-PC: Champion / Grand Duke / Scholar / Wavestrider [Choose 2]~~ 4-PC: Genius of Brilliant Stars 1.) CRIT Rate2.) CRIT DMG3.) ATK% E1
 CRIT Rate 1.) Talent
 ATK% ~~ Ultimate
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -299,7 +294,7 @@ Other Notes ³ But The Battle Isn't Over utiility is to provide extra ERR% for f
 References Robin's Calculations
 Argenti Erudition Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - An Instant Before A Gaze 5★~~ Into the Unreachable Veil 5★2 - Before Dawn 5★3 - Today Is Another Peaceful Day 4★4 - Night on the Milky Way 5★ ⁴5 - Geniuses' Repose 4★6 - Make the World Clamor 4★7 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Champion of Streetwise Boxing3.) 2-PC: Champion / Scholar / ATK% Set [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E6
+1 - An Instant Before A Gaze 5★~~ Into the Unreachable Veil 5★2 - Before Dawn 5★3 - Today Is Another Peaceful Day 4★4 - Night on the Milky Way 5★ ⁴5 - Geniuses' Repose 4★6 - Make the World Clamor 4★7 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Champion of Streetwise Boxing3.) 2-PC: Champion / Scholar / Wavestrider / ATK% Set [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E6
 CRIT Rate / CRIT DMG 1.) Ultimate
 ATK% / SPD 2.) Skill
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -311,7 +306,7 @@ Other Notes ⁴ If used in Pure Fiction, Night on the Milky Way ranks higher, an
 References Argenti's Calculations
 Clara Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Dance at Sunset 5★2 - Brighter Than the Sun 5★ ³3 - Something Irreplaceable 5★4 - On the Fall of an Aeon 5★ [Free]5 - Under the Blue Sky 4★6 - A Secret Vow 4★ 1.) 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Champion of Streetwise Boxing3.) 2-PC: Champion / Grand Duke / Scholar [Choose 2]4.) 4-PC: Longevous Disciple ² 1.) CRIT Rate / CRIT DMG2.) ATK% E1E6
+1 - Dance at Sunset 5★2 - Brighter Than the Sun 5★ ³3 - Something Irreplaceable 5★4 - On the Fall of an Aeon 5★ [Free]5 - Under the Blue Sky 4★6 - A Secret Vow 4★ 1.) 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Champion of Streetwise Boxing3.) 2-PC: Champion / Grand Duke / Scholar / Wavestrider [Choose 2]4.) 4-PC: Longevous Disciple ² 1.) CRIT Rate / CRIT DMG2.) ATK% E1E6
 CRIT Rate / CRIT DMG 1.) Talent
 ATK% 2.) Ultimate
 Role:Sub / Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -323,7 +318,7 @@ Other Notes ³ Brighter Than the Sun requires Clara to alternate between Skill a
 References Clara's Calculations & Clara Relics
 Destruction Trailblazer Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - On the Fall of an Aeon 5★ [Free]2 - Under the Blue Sky 4★3 - A Secret Vow 4★ 1.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Champion of Streetwise Boxing3.) 2-PC: Champion / ATK% Set / Scholar [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E4E6
+1 - On the Fall of an Aeon 5★ [Free]2 - Under the Blue Sky 4★3 - A Secret Vow 4★ 1.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Champion of Streetwise Boxing3.) 2-PC: Champion / ATK% Set / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E4E6
 CRIT Rate / CRIT DMG 1.) Ultimate
 SPD 2.) Skill
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -360,7 +355,7 @@ Other Notes - The recommended Effect Hit Rate is 67%.² Against Physical-weak en
 References Luka's Calculations
 Sushang Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - In the Night 5★2 - Sleep Like the Dead 5★3 - Cruising in the Stellar Sea 5★ [Free]4 - Only Silence Remains 4★5 - Swordplay 4★ ¹ 1.) 4-PC: Scholar Lost in Erudition2.) 4 PC: Champion of Streetwise Boxing3.) 2 PC: Thief + Champion / Scholar [Choose 1]4.) 4 PC: Thief of Shooting Meteor 1.) CRIT Rate / CRIT DMG2.) ATK%3.) Break Effect4.) SPD E1E6
+1 - In the Night 5★2 - Sleep Like the Dead 5★3 - Cruising in the Stellar Sea 5★ [Free]4 - Only Silence Remains 4★5 - Swordplay 4★ ¹ 1.) 4-PC: Scholar Lost in Erudition2.) 4 PC: Champion of Streetwise Boxing3.) 2 PC: Thief + Champion / Scholar / Wavestrider [Choose 1]4.) 4 PC: Thief of Shooting Meteor 1.) CRIT Rate / CRIT DMG2.) ATK%3.) Break Effect4.) SPD E1E6
 CRIT Rate / CRIT DMG 1.) Skill
 ATK% 2.) Ultimate
 Role:Sub / Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -372,11 +367,11 @@ Other Notes ¹ Swordplay gains 2 stacks per Skill and 1 stack per Ultimate. Swor
 References Sushang's Calculations
 Natasha Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Post-Op Conversation 4★ ³2 - Time Waits for No One 5★3 - Perfect Timing 4★ ⁴4 - Quid Pro Quo 4★ [Free]5 - Multiplication 3★ [S5] ⁵* Shared Feeling 4★ ⁶ 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Passerby [Choose 1]* 4-PC: Sacerdos' Relived Ordeal ⁶ 1.) SPD2.) HP%3.) Effect RES~~ DEF% E1E2
+1 - Post-Op Conversation 4★ ³2 - Time Waits for No One 5★3 - Perfect Timing 4★ ⁴4 - Quid Pro Quo 4★ [Free]5 - Multiplication 3★ [S5] ⁵* Shared Feeling 4★ ⁶ 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + SPD% Set / Longevous / Passerby [Choose 1]* 4-PC: Sacerdos' Relived Ordeal ⁶ 1.) SPD2.) HP%3.) Effect RES~~ DEF% E1E2
 Outgoing Healing% / HP% ² 1.) Ultimate
 SPD 2.) Skill
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) HP: 4000+DEF: 1000SPD: 140+ Leveling Basic ATK can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) HP: 4000+DEF: 1000SPD: 140+ Leveling Basic ATK can be ignored.
 HP% 3.) Talent
 ERR% / HP% 4.) Basic ATK
 Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with same type DPS.² HP% is more survivability but less healing compared to Outgoing Healing%.
@@ -397,11 +392,11 @@ Other Notes ⁴ Fugue wants 220% Break Effect in combat to maximize her A6 trace
 References Fugue's Calculations
 Lingsha Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Scent Alone Stays True 5★2 - Echoes of the Coffin 5★ ⁴3 - Night of Fright 5★ ⁵~~ Dream's Montage 4★4 - Post-Op Conversation 4★ ⁶5 - Quid Pro Quo 4★ [Free]6 - Multiplication 3★7 - What is Real 4★ 1.) 4-PC: Iron Cavalry Against the Scourge ¹2.) 2-PC: BE% Set / SPD% Set / Passerby [Choose 2] 1.) SPD2.) Break Effect3.) ATK%4.) Effect RES E1E6
+1 - Scent Alone Stays True 5★2 - Echoes of the Coffin 5★ ⁴3 - Night of Fright 5★ ⁵~~ Dream's Montage 4★4 - Post-Op Conversation 4★ ⁶5 - Quid Pro Quo 4★ [Free]6 - Multiplication 3★7 - What is Real 4★ 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 4-PC: Iron Cavalry Against the Scourge ¹3.) 2-PC: BE% Set / SPD% Set / Passerby [Choose 2] 1.) SPD2.) Break Effect3.) ATK%4.) Effect RES E1E6
 Outgoing Healing% / ATK% 1.) Ultimate
 SPD 2.) Talent
 Roles:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (if you need more healing) ATK: 2200+SPD: 150+Break Effect: 100%+~~ 150%+ if on Sig LC Leveling Basic ATK can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (for more healing) ATK: 2200+SPD: 150+Break Effect: 100%+~~ 150%+ if on Sig LC Leveling Basic ATK can be ignored.
 ATK% ~~ Skill
 ERR% 3.) Basic ATK
 Relic Notes ¹ 4-PC: Iron Cavalry Against the Scourge can be used if Harmony Trailblazer or Fugue is in the team for extra damage.² Forge of the Kalpagni Lantern is preferred if Lingsha is in a Break / Super Break team. Otherwise, Fleet of the Ageless, Broken Keel or Lushaka, the Sunken Seas is preferred.³ Penacony, Land of the Dreams can be used if paired with Fire DPS other than Firefly.
@@ -433,11 +428,11 @@ Other Notes ² Firefly needs 150 SPD to take 4 actions inside Combustion state, 
 References Firefly's Calculations
 Topaz & Numby Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Worrisome, Blissful 5★2 - Cruising in the Stellar Sea 5★ [Free]3 - Final Victor 4★ [Free]4 - Only Silence Remains 4★ 5 - Swordplay 4★ 1.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Pioneer Diver of Dead Waters ¹2.) 2-PC: Grand Duke + ATK% Set / Pioneer / Scholar [Choose 1] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E1
+1 - Worrisome, Blissful 5★2 - Cruising in the Stellar Sea 5★ [Free]3 - Final Victor 4★ [Free]4 - Only Silence Remains 4★ 5 - Swordplay 4★ 1.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Pioneer Diver of Dead Waters ¹2.) 2-PC: Grand Duke + ATK% Set / Pioneer / Scholar / Wavestrider [Choose 1] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E1
 CRIT Rate / CRIT DMG 1.) Skill
 SPD / ATK% ² ~~ Talent
 Role:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Duran, Dynasty of Running Wolves~~ The Wondrous BananAmusement Park2.) Inert Salsotto~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member)3.) Rutilant Arena 4.) Firmament Frontline: Glamoth ATK: 2500+CRIT Rate: 70%CRIT DMG: 140%SPD: 110 / 134+
+1.) Duran, Dynasty of Running Wolves~~ The Wondrous BananAmusement Park2.) Inert Salsotto~~ Izumo Gensei and Takama Divine Realm (with Hunt ally)3.) Rutilant Arena 4.) Firmament Frontline: Glamoth ATK: 2500+CRIT Rate: 70%CRIT DMG: 140%SPD: 110 / 134+
 Fire DMG% ~~ Ultimate
 ATK% 2.) Basic ATK
 Relic Notes ¹ 4-PC: Pioneer Diver of Dead Waters is comparable to The Ashblazing Grand Duke if Topaz can maintain uptime on the 4-PC effect. If not, The Ashblazing Grand Duke is better.
@@ -445,7 +440,7 @@ Other Notes ² If Topaz is used as a hypercarry with Sparkle, ATK% feet is recom
 References Topaz's Calculations (v1.5), with Dr. Ratio (v2.3), and with Feixiao (v2.5)
 Himeko Erudition Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-For Memory of Chaos / Apocalyptic Shadow:1 - Before Dawn 5★2 - Night on the Milky Way 5★3 - Today Is Another Peaceful Day 4★4 - The Seriousness of Breakfast 4★ [Free]For Pure Fiction:1 - Night on the Milky Way 5★~~ Yet Hope Is Priceless 5★ ⁴2 - Before Dawn 5★3 - Geniuses' Repose 4★4 - Today Is Another Peaceful Day 4★5 - The Day The Cosmos Fell 4★ [Free]6 - Eternal Calculus 5★ [Free]7 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Poet of Mourning Collapse ¹2.) 2-PC: Grand Duke + ATK% Set / Scholar [Choose 1] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E1E6
+For Memory of Chaos / Apocalyptic Shadow:1 - Before Dawn 5★2 - Night on the Milky Way 5★3 - Today Is Another Peaceful Day 4★4 - The Seriousness of Breakfast 4★ [Free]For Pure Fiction:1 - Night on the Milky Way 5★~~ Yet Hope Is Priceless 5★ ⁴2 - Before Dawn 5★3 - Geniuses' Repose 4★4 - Today Is Another Peaceful Day 4★5 - The Day The Cosmos Fell 4★ [Free]6 - Eternal Calculus 5★ [Free]7 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Poet of Mourning Collapse ¹2.) 2-PC: Grand Duke + ATK% Set / Scholar / Wavestrider [Choose 1] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E1E6
 CRIT Rate / CRIT DMG 1.) Talent
 ATK% / SPD 2.) Ultimate
 Role:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -470,11 +465,11 @@ References Various Energy Requirements
 4★ Characters
 Gallagher Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Multiplication 3★ [S5]~~ Quid Pro Quo 4★ [Free]~~ Scent Alone Stays True 5★2 - Post-Op Conversation 4★~~ Dream's Montage 4★3 - What Is Real 4★ [Free]* Shared Feeling 4★ ⁴ 1.) 2-PC: SPD% Set + BE% Set / SPD% Set [Choose 1]2.) 4-PC: Iron Cavalry Against the Scourge ¹* 4-PC: Sacerdos' Relived Ordeal ⁴ 1.) SPD2.) Break Effect3.) HP% / DEF%4.) Effect RES E2E4
+1 - Multiplication 3★ [S5]~~ Quid Pro Quo 4★ [Free]~~ Scent Alone Stays True 5★2 - Post-Op Conversation 4★~~ Dream's Montage 4★3 - What Is Real 4★ [Free]* Shared Feeling 4★ ⁴ 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + BE% Set / SPD% Set [Choose 1]3.) 4-PC: Iron Cavalry Against the Scourge ¹* 4-PC: Sacerdos' Relived Ordeal ⁴ 1.) SPD2.) Break Effect3.) HP% / DEF%4.) Effect RES E2E4
 Outgoing Healing% 1.) Talent
 SPD 2.) Skill
 Role: Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (if you need more healing) HP: 3000DEF: 1000SPD: 150+Break Effect: 100%+ Leveling Ultimate can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Forge of the Kalpagni Lantern ²2.) Penacony, Land of the Dreams ³* Giant Tree of Rapt Brooding (for more healing) HP: 3000DEF: 1000SPD: 150+Break Effect: 100%+ Leveling Ultimate can be ignored.
 HP% / DEF% 3.) Basic ATK
 Break Effect% / ERR% 4.) Ultimate
 Relic Notes ¹ 4-PC: Iron Cavalry Against the Scourge can be used if Harmony Trailblazer is in the team for extra damage.² Forge of the Kalpagni Lantern is preferred if Gallagher is in a Break / Super Break team. Otherwise, either of the first two Planar Ornament options is preferred.³ Penacony, Land of the Dreams can be used if paired with Fire DPS other than Firefly.
@@ -519,7 +514,7 @@ References Hook's Calculations
 5★ Characters
 The Herta Erudition Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Into the Unreachable Veil 5★2 - Night on the Milky Way 5★3 - Today Is Another Peaceful Day 4★4 - Geniuses' Repose 4★5 - The Day The Cosmos Fell 4★ [Free]6 - Eternal Calculus 5★ [Free]7 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: Hunter of Glacial Forest3.) 2-PC: Scholar / Hunter / ATK% Set [Choose 2] 1.) CRIT Rate / CRIT DMG2.) SPD~~ ATK% E2
+1 - Into the Unreachable Veil 5★2 - Night on the Milky Way 5★3 - Today Is Another Peaceful Day 4★4 - Geniuses' Repose 4★5 - The Day The Cosmos Fell 4★ [Free]6 - Eternal Calculus 5★ [Free]7 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: Hunter of Glacial Forest3.) 2-PC: Scholar / Wavestrider / Hunter / ATK% Set [Choose 2] 1.) CRIT Rate / CRIT DMG2.) SPD~~ ATK% E2
 CRIT Rate / CRIT DMG 1.) Talent
 ATK% / SPD ² 2.) Ultimate
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -531,7 +526,7 @@ Other Notes - The Herta should be run with at least one other Erudition characte
 References The Herta's Calculations
 RemembranceTrailblazer Remembrance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Victory In a Blink 4★ [Free]~~ Memory's Curtain Never Falls 5★ [Free]2 - Shadowburn 3★ [S5] ³ 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Knight [Choose 1]~~ 4-PC: Hero of Triumphant Song 1.) SPD2.) CRIT DMG3.) HP% / DEF% E1
+1 - Long May Rainbows Adorn the Sky 5★2 - Victory In a Blink 4★ [Free]~~ Memory's Curtain Never Falls 5★ [Free]3 - Shadowburn 3★ [S5] ³ 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Knight [Choose 1]~~ 4-PC: Hero of Triumphant Song 1.) SPD2.) CRIT DMG3.) HP% / DEF% E1
 CRIT DMG
 1.) M. Skill
 2.) M. Talent
@@ -547,7 +542,7 @@ Other Notes ³ Shadowburn can allow Mem to reach 100% Charge earlier, which may 
 References Youtube Video done by GuobaCertified
 Ruan Mei Harmony Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Past Self in Mirror 5★2 - Memories of the Past 4★ [S5]3 - Meshing Cogs 3★ [S5]4 - Planetary Rendezvous 4★ ¹ 1.) 2-PC: SPD% Set + BE% Set~~ 4-PC: Watchmaker, Master of Dream Machinations ²2.) 4-PC: Thief of Shooting Meteor 1.) SPD / Break Effect2.) HP% / DEF%3.) Effect RES E1E6
+1 - Past Self in Mirror 5★ ⁴2 - Memories of the Past 4★ [S5]3 - Meshing Cogs 3★ [S5]4 - Planetary Rendezvous 4★ ¹ 1.) 2-PC: SPD% Set + BE% Set~~ 4-PC: Watchmaker, Master of Dream Machinations ²2.) 4-PC: Thief of Shooting Meteor 1.) SPD / Break Effect2.) HP% / DEF%3.) Effect RES E1E6
 HP% / DEF% 1.) Skill
 SPD ~~ Ultimate
 Role:Support 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -555,7 +550,7 @@ Role:Support 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
 HP% / DEF% 2.) Talent
 ERR% 3.) Basic ATK
 Relic Notes ¹ Planetary Rendezvous and Penacony, Land of the Dreams can be used if paired with Ice DPS.² 4-PC: Watchmaker, Master of Dream Machinations may be preferable in break teams.
-Other Notes - If speedtuning her to go before the DPS, take into consideration that her speed buff doesn't apply to herself.- Requirement for 3-turn Ultimate: Meshing Cogs (S5) or Memories of the Past (S5), ERR rope, A4 trace, and a 5% ERR Planar Ornament set.³ To cap the DMG Boost from her A6 trace, Ruan Mei wants 160% Break Effect out of combat as she gains 20% Break Effect in combat from her A2 trace.
+Other Notes - If speedtuning her to go before the DPS, take into consideration that her speed buff doesn't apply to herself.- Requirement for 3-turn Ultimate: Meshing Cogs (S5) or Memories of the Past (S5), ERR rope, A4 trace, and a 5% ERR Planar Ornament set.³ To cap the DMG Boost from her A6 trace, Ruan Mei wants 160% Break Effect out of combat as she gains 20% Break Effect in combat from her A2 trace.⁴ While Past Self in Mirror does not allow for a consistent 3-turn Ultimate rotation, the utility it provides often makes it better than Memories of the Past (S5). In situations where the Energy and Skill Points are not as important, the benefit it has over Memories of the Past (S5) would be less significant.
 References Ruan Mei's Calculations
 Jingliu Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
@@ -566,7 +561,7 @@ Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
 1.) Rutliant Arena 2.) Firmament Frontline: Glamoth3.) Space Sealing Station ATK: 2200+CRIT Rate: 40% ¹CRIT DMG: 200%SPD: 134+ Leveling Basic ATK can be ignored.
 Ice DMG% 2.) Ultimate
 ATK% 3.) Basic ATK
-Relic Sets
+Relic Notes
 Other Notes ¹ The baseline CRIT Rate of 40% is just a baseline. If possible, try to reach 50% CRIT Rate in combat before accounting for her Talent, so that she reaches 100% CRIT Rate in her Spectral Transmigration state.--- For example, if Sunday is the only CRIT Rate buffer in the team, try to reach 30% CRIT Rate, so that the additional 20% from Sunday and 50% from her Talent get her to 100% CRIT Rate.- The total HP needed across all other allies to maximize Jingliu's ATK buff is around 10.5k HP (the exact value depends on Jingliu's Light Cone).
 References Jingliu's Calculations (v1.6) and with Sunday (v2.7)
 Gepard Preservation Equipment Relic Stats Ability Priority NotableEidolons
@@ -583,7 +578,7 @@ Other Notes - Gepard can solo sustain a team with enough SPD and an ERR% rope.²
 References Gepard's Calculations
 Yanqing Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Baptism of Pure Thought 5★2 - In the Night 5★3 - Sleep like the Dead 5★4 - Swordplay 4★ ¹~~ Cruising in the Stellar Sea 5★ [Free]5 - Only Silence Remains 4★6 - River Flows in Spring 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: The Wind-Soaring Valorous3.) 4-PC: Hunter of Glacial Forest4.) 2-PC: Scholar / Hunter / ATK% Set [Choose 2] 1.) CRIT DMG / CRIT Rate2.) ATK%3.) SPD E2E4
+1 - Baptism of Pure Thought 5★2 - In the Night 5★3 - Sleep like the Dead 5★4 - Swordplay 4★ ¹~~ Cruising in the Stellar Sea 5★ [Free]5 - Only Silence Remains 4★6 - River Flows in Spring 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: The Wind-Soaring Valorous3.) 4-PC: Hunter of Glacial Forest4.) 2-PC: Scholar / Wavestrider / Hunter / ATK% Set [Choose 2] 1.) CRIT DMG / CRIT Rate2.) ATK%3.) SPD E2E4
 CRIT DMG 1.) Ultimate
 SPD / ATK% 2.) Talent
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -608,11 +603,11 @@ Other Notes ¹ Adding EHR on top of Misha's A2 trace should make it easier to fr
 References Misha's Calculations
 Herta Erudition Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Before Dawn 5★2 - Night on the Milky Way 5★3 - Geniuses' Repose 4★4 - An Instant Before A Gaze 5★5 - Today Is Another Peaceful Day 4★6 - Eternal Calculus 5★ [Free]7 - The Seriousness of Breakfast 4★ [Free]~~ The Day The Cosmos Fell 4★ [Free]8 - The Birth of the Self 4★ 1.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Hunter of Glacial Forest3.) 2-PC: ATK% Set / Duke / Hunter / Scholar [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
+1 - Before Dawn 5★2 - Night on the Milky Way 5★3 - Geniuses' Repose 4★4 - An Instant Before A Gaze 5★5 - Today Is Another Peaceful Day 4★6 - Eternal Calculus 5★ [Free]7 - The Seriousness of Breakfast 4★ [Free]~~ The Day The Cosmos Fell 4★ [Free]8 - The Birth of the Self 4★ 1.) 4-PC: The Ashblazing Grand Duke~~ 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Hunter of Glacial Forest3.) 2-PC: ATK% Set / Duke / Hunter / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
 CRIT Rate / CRIT DMG 1.) Talent
 ATK% / SPD 2.) Ultimate
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Sigonia, the Unclaimed Desolation~~ Duran, Dynasty of Running Wolves2.) Izumo Gensei and Takama Divine Realm (with another Erudition team member)3.) Inert Salsotto4.) Firmament Frontline: Glamoth ATK: 2500+CRIT Rate: 70%CRIT DMG: 140%
+1.) Sigonia, the Unclaimed Desolation~~ Duran, Dynasty of Running Wolves2.) Izumo Gensei and Takama Divine Realm (with Erudition ally)3.) Inert Salsotto4.) Firmament Frontline: Glamoth ATK: 2500+CRIT Rate: 70%CRIT DMG: 140%
 Ice DMG% ² ~~ Skill
 ATK% 3.) Basic ATK
 Relic Notes ¹ 4-PC: Poet of Mourning Collapse should only be used if Herta's SPD out of combat is less than 95, and if her being this slow works with your team.² Ice DMG% Sphere is usually better than ATK%, but good substats can make up for that difference.
@@ -643,19 +638,41 @@ Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with Ice DPS.
 Other Notes ² Landau's Choice provides aggro, while Day One of My New Life gives more effective HP for the team. Both are good, depending on the situation and team composition.³ Although Texture of Memories can perform better in some situations, the cost in Herta Bonds doesn't justify the gain over Landau's Choice and Day One of My New Life, unless you already have everything else you need from Herta's Store.
 References March 7th's Calculations
 5★ Characters
+Hyacine Remembrance Equipment Relic Stats Ability Priority NotableEidolons
+Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
+1 - Long May Rainbows Adorn the Sky 5★2 - Memory's Curtain Never Falls 5★ [Free]3 - Shadowburn 3★ [S5] 1.) 4-PC: Warrior Goddess of Sun and Thunder         2.) 2-PC: SPD% Set + SPD% Set [Choose 1] ¹ 1.) SPD2.) HP3.) CRIT Damage E1³E2
+Outgoing Healing%
+1.) Skill
+2.) Ult
+SPD
+Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats 3.) M. Talent Ability Notes
+1.) Giant Tree of Rapt Brooding2.) Fleet of the Ageless ²~~ Broken Keel~~ Lushaka, the Sunken Seas~~ Penacony, Land of the Dreams HP: 4500+SPD: 200+ 4.)  Talent Leveling Basic ATK can be ignored.
+HP%
+5.) M. Skill
+6.) Basic ATK
+ERR%
+Relic Notes ¹ One of the 2-PC sets can be replaced with 2-PC Longevous.² Bone Collection's Serene Demesne is not listed because Giant Tree of Rapt Brooding would give more utility and personal damage at the same time.
+Other Notes ³ E1 is mainly useful for HP-scaling teams.
+References Hyacine's Calculations
 Anaxa Erudition Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-Roles: 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-Relic Notes
-Other Notes
-References
+1 - Life Should Be Cast to Flames 5★~~ Into the Unreachable Veil 5★ ⁶2 - Night on the Milky Way 5★ ⁷~~ The Great Cosmic Enterprise 4★ [Event] ⁷3 - Today Is Another Peaceful Day 4★4 - Geniuses' Repose 4★5 - The Seriousness of Breakfast 4★ [Free] 1.) 4-PC: Genius of Brilliant Stars ¹2.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Pioneer Diver of Dead Waters~~ 4-PC: Wavestrider Captain ²* 4-PC: Eagle of Twilight Line ³ 1.) CRIT Rate / CRIT DMG~~ ATK%2.) SPD E2E4E6
+CRIT Rate 1.) Skill
+SPD / ATK% ⁴ 2.) Talent
+Roles:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
+1.) Rutilant Arena2.) Izumo Gensei and Takama Divine Realm (with Erudition ally)3.) Space Sealing Station~~ Firmament Frontline: Glamoth ATK: 2900+SPD: 134+CRIT Rate: 80%CRIT DMG: 120%
+ATK% ⁸ ~~ Ultimate
+ATK% / ERR% ⁵ 3.) Basic ATK
+Relic Notes ¹ 4-PC: Genius of Brilliant Stars is usually around 2% better than 4-PC: Scholar Lost in Erudition / 4-PC: Pioneer Diver of Dead Waters, though it can be less efficient to farm.² 4-PC: Wavestrider Captain should only be used if Anaxa is paired with allies that target him frequently, such as Sunday or Sparkle.³ 4-PC: Eagle of Twilight Line can be used to improve Anaxa's potential as a main DPS (which requires SPD tuning), or as a sub DPS (where the action advance helps to give him more turns), and may outperform other relic sets if used effectively.⁴ Anaxa should generally use SPD boots. ATK% boots can be considered if he is paired with Sparkle, or if he's using 4-PC: Eagle of Twilight Line as a main DPS where his SPD is tuned around the action advance.⁵ If Anaxa is a sub DPS and does not have his signature Light Cone Life Should Be Cast to Flames, he can use an ERR% rope. Otherwise, he should use an ATK% rope.
+Other Notes ⁶ While Into the Unreachable Veil does not guarantee Anaxa's 2-turn Ultimate rotation if he's on an ATK% rope, teams that need the Skill Points may have a slight preference for this Light Cone.⁷ Night on the Milky Way is usually better than The Great Cosmic Enterprise against 3 or more enemies, and the converse is usually true against 2 or fewer enemies.⁸ Wind DMG% sphere is not mentioned here, since it usually needs 4+ useful substats over an ATK% sphere to be better.- If Anaxa is a sub DPS for another Erudition character, that character can use The Great Cosmic Enterprise if they do not have better options (such as their Signature Light Cone). In this case, if Anaxa's purpose is to serve as a battery for a character such as The Herta or Jade, he may prefer Eternal Calculus over the 4★ options mentioned above.
+References Anaxa's Calculations
 Feixiao Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - I Venture Forth to Hunt 5★2 - Baptism of Pure Thought 5★3 - Worrisome, Blissful 5★4 - Sleep Like the Dead 5★5 - Cruising on the Stellar Sea 5★ [Free]6 - Swordplay 4★7 - Only Silence Remains 4★8 - Final Victor 4★ [Free] 1.) 4-PC: The Wind-Soaring Valorous~~ 4-PC: The Ashblazing Grand Duke ¹2.) 2-PC: ATK% Set / Duke / Eagle / Scholar [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
+1 - I Venture Forth to Hunt 5★2 - Baptism of Pure Thought 5★3 - Worrisome, Blissful 5★4 - Sleep Like the Dead 5★5 - Cruising on the Stellar Sea 5★ [Free]6 - Swordplay 4★7 - Only Silence Remains 4★8 - Final Victor 4★ [Free] 1.) 4-PC: The Wind-Soaring Valorous~~ 4-PC: The Ashblazing Grand Duke ¹2.) 2-PC: ATK% Set / Duke / Eagle / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
 CRIT Rate 1.) Ultimate
 SPD / ATK% ² 2.) Talent
 Roles:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Duran, Dynasty of Running Wolves2.) Inert Salsotto~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member) ATK: 2500+SPD: 134+CRIT Rate: 80%CRIT DMG: 120% Leveling Basic ATK can be ignored.
+1.) Duran, Dynasty of Running Wolves2.) Inert Salsotto~~ Izumo Gensei and Takama Divine Realm (with Hunt ally) ATK: 2500+SPD: 134+CRIT Rate: 80%CRIT DMG: 120% Leveling Basic ATK can be ignored.
 Wind DMG% / ATK% ³ ~~ Skill
 ATK% 3.) Basic
 Relic Notes ¹ 4-PC: The Wind-Soaring Valorous is around 1% better than 4-PC: The Ashblazing Grand Duke, so you can use whichever has better substats.² SPD feet are generally better than ATK%, but ATK% is also viable and their relative performance will depend on your team's rotation.³ Wind DMG% sphere is usually better than ATK%, but good substats can make up for that difference.
@@ -675,11 +692,11 @@ Other Notes - All Light Cone options below Reforged Remembrance are roughly on p
 References Black Swan's Calculations (v2.0) and Light Cones (v2.4)
 Huohuo Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Night of Fright 5★ 2 - Post-Op Conversation 4★3 - Dream's Montage 4★4 - Time Waits for No One 5★5 - Shared Feeling 4★6 - Perfect Timing 4★ ³7 - Multiplication 3★ [S5] 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Passerby [Choose 1]2.) 4-PC: Passerby of Wandering Cloud 1.) HP%~~ SPD2.) Effect RES~~ DEF% E1 ⁴E6
+1 - Night of Fright 5★ 2 - Post-Op Conversation 4★3 - Dream's Montage 4★4 - Time Waits for No One 5★5 - Shared Feeling 4★6 - Perfect Timing 4★ ³7 - Multiplication 3★ [S5] 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + SPD% Set / Longevous / Passerby [Choose 1]3.) 4-PC: Passerby of Wandering Cloud 1.) HP%~~ SPD2.) Effect RES~~ DEF% E1 ⁴E6
 Outgoing Healing / HP% ² 1.) Ultimate
 SPD 2.) Skill
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) HP: 5000+DEF: 1000SPD: 140+ Leveling Basic ATK can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) HP: 5000+DEF: 1000SPD: 140+ Leveling Basic ATK can be ignored.
 HP% ~~ Talent
 ERR% 3.) Basic ATK
 Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with same type DPS.² HP% is more survivability but less healing as compared to Outgoing Healing%.
@@ -687,7 +704,7 @@ Other Notes - For Huohuo to be Skill Point positive and maintain a 4 turn Ultima
 References Various Energy Requirements
 Blade Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - The Unreachable Side 5★2 - Ninja Record: Sound Hunt 4★ [Event]3 - A Secret Vow 4★ ³4 - Dance at Sunset 5★5 - Flames Afar 4★ [Free]6 - Mutual Demise 3★7 - Collapsing Sky 3★ 1.) 4-PC: Longevous Disciple~~ 4-PC: Poet of Mourning Collapse ¹ 1.) CRIT Rate / CRIT DMG2.) HP%3.) SPD4.) ATK% E2E6
+1 - The Unreachable Side 5★2 - Ninja Record: Sound Hunt 4★ [Free]3 - A Secret Vow 4★ ³4 - Dance at Sunset 5★5 - Flames Afar 4★ [Free]6 - Mutual Demise 3★7 - Collapsing Sky 3★ 1.) 4-PC: Longevous Disciple~~ 4-PC: Poet of Mourning Collapse ¹ 1.) CRIT Rate / CRIT DMG2.) HP%3.) SPD4.) ATK% E2E6
 CRIT Rate / CRIT DMG 1.) Basic ATK
 SPD / HP% 2.) Ultimate
 Role:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -712,7 +729,7 @@ References Various Energy Requirements
 4★ Characters
 Dan Heng Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - In The Night 5★2 - Cruising in the Stellar Sea 5★ [Free]3 - Swordplay 4★ ²4 - Only Silence Remains 4★ ² 1.) 4-PC: Pioneer Diver of Dead Waters ¹~~ 4-PC: Scholar Lost in Erudition2.) 2-PC: ATK% Set / Eagle / Scholar [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2E4
+1 - In The Night 5★2 - Cruising in the Stellar Sea 5★ [Free]3 - Swordplay 4★ ²4 - Only Silence Remains 4★ ² 1.) 4-PC: Pioneer Diver of Dead Waters ¹~~ 4-PC: Scholar Lost in Erudition2.) 2-PC: ATK% Set / Eagle / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2E4
 CRIT Rate / CRIT DMG 1.) Skill
 ATK% ³ 2.) Ultimate
 Role:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -737,7 +754,7 @@ References Sampo's Light Cones
 5★ Characters
 Aglaea Remembrance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Time Woven into Gold 5★2 - Sweat Now, Cry Less 4★3 - Reminiscence 3★ 4 - Geniuses' Greetings 4★5 - Victory In a Blink 4★ [Free] 1.) 4-PC: Hero of Triumphant Song2.) 4-PC: Musketeer of Wild Wheat~~ 2-PC: ATK% Set / SPD% Set / Thunder [Choose 2] 1.) CRIT Rate / CRIT DMG2.) SPD3.) ATK% E1
+1 - Time Woven into Gold 5★2 - Long May Rainbows Adorn the Sky 5★3 - Sweat Now, Cry Less 4★4 - Reminiscence 3★ 5 - Geniuses' Greetings 4★6 - Victory In a Blink 4★ [Free] 1.) 4-PC: Hero of Triumphant Song2.) 4-PC: Musketeer of Wild Wheat~~ 2-PC: ATK% Set / SPD% Set / Thunder [Choose 2] 1.) CRIT Rate / CRIT DMG2.) SPD3.) ATK% E1
 CRIT Rate / CRIT DMG
 1.) Basic ATK
 2.) Ultimate
@@ -777,7 +794,7 @@ Other Notes - The recommended Effect Hit Rate is 28%.² Patience Is All You Need
 References Kafka's Calculations
 Jing Yuan Erudition Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Before Dawn 5★2 - Today Is Another Peaceful Day 4★3 - Night on the Milky Way 5★4 - The Seriousness of Breakfast 4★ [Free]5 - Geniuses' Repose 4★6 - The Birth of Self 4★ 1.) 4-PC: The Ashblazing Grand Duke 2.) 2-PC: Duke + ATK% Set / Thunder / Scholar  [Choose 1] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD4.) Effect RES E1
+1 - Before Dawn 5★2 - Today Is Another Peaceful Day 4★3 - Night on the Milky Way 5★4 - The Seriousness of Breakfast 4★ [Free]5 - Geniuses' Repose 4★6 - The Birth of Self 4★ 1.) 4-PC: The Ashblazing Grand Duke 2.) 2-PC: Duke + ATK% Set / Thunder / Scholar / Wavestrider [Choose 1] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD4.) Effect RES E1
 CRIT Rate / CRIT DMG 1.) Talent
 SPD / ATK% ¹ 2.) Ultimate
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -789,11 +806,11 @@ Other Notes
 References Jing Yuan's Calculations (v2.3) and with Sunday (v2.7)
 Bailu Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Post-Op Conversation 4★ 2 - Time Waits for No One 5★3 - Perfect Timing 4★ ³4 - Multiplication 3★ [S5] ⁴* Shared Feeling 4★ ⁵ 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Passerby [Choose 1]2.) 4-PC: Passerby of Wandering Cloud* 4-PC: Sacerdos' Relived Ordeal ⁵ 1.) SPD2.) HP%3.) Effect RES E4E6
+1 - Post-Op Conversation 4★ 2 - Time Waits for No One 5★3 - Perfect Timing 4★ ³4 - Multiplication 3★ [S5] ⁴* Shared Feeling 4★ ⁵ 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Passerby [Choose 1]3.) 4-PC: Passerby of Wandering Cloud* 4-PC: Sacerdos' Relived Ordeal ⁵ 1.) SPD2.) HP%3.) Effect RES E4E6
 Outgoing Healing% / HP% ² 1.) Ultimate
 SPD 2.) Talent
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) HP: 5000+DEF: 1000SPD: 150+ Leveling Basic ATK can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) HP: 5000+DEF: 1000SPD: 150+ Leveling Basic ATK can be ignored.
 HP% 3.) Skill
 ERR% 4.) Basic ATK
 Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with same type DPS.² HP% is more survivability but less healing compared to Outgoing Healing%.
@@ -802,11 +819,11 @@ References Various Energy Requirements
 4★ Characters
 Moze Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Worrisome, Blissful 5★ ³2 - Baptism of Pure Thought 5★3 - Cruising on the Stellar Sea 5★ [Free]~~ Swordplay 4★4 - Only Silence Remains 4★5 - Final Victor 4★ 1.) 4-PC: Pioneer Diver of Dead Waters~~ 4-PC: The Ashblazing Grand Duke ¹2.) 2-PC: ATK% Set / Pioneer / Duke / Thunder / Scholar [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
+1 - Worrisome, Blissful 5★ ³2 - Baptism of Pure Thought 5★3 - Cruising on the Stellar Sea 5★ [Free]~~ Swordplay 4★4 - Only Silence Remains 4★5 - Final Victor 4★ 1.) 4-PC: Pioneer Diver of Dead Waters~~ 4-PC: The Ashblazing Grand Duke ¹2.) 2-PC: ATK% Set / Pioneer / Duke / Thunder / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
 CRIT Rate / CRIT DMG 1.) Talent
 ATK% 2.) Ultimate
 Role:Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Duran, Dynasty of Running Wolves2.) Inert Salsotto~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member) ATK: 2500+CRIT Rate: 80%CRIT DMG: 120% Leveling Basic ATK can be ignored.
+1.) Duran, Dynasty of Running Wolves2.) Inert Salsotto~~ Izumo Gensei and Takama Divine Realm (W/ Hunt Ally) ATK: 2500+CRIT Rate: 80%CRIT DMG: 120% Leveling Basic ATK can be ignored.
 Lightning DMG% / ATK% ² 3.) Skill
 ATK% 4.) Basic ATK
 Relic Notes ¹ 4-PC: Pioneer Diver of Dead Waters is around 2-3% better than 4-PC: The Ashblazing Grand Duke, so you can use whichever has better substats.² The difference between ATK% sphere and Lightning DMG% sphere is minimal, so going for the one that has better substats is recommended.
@@ -843,7 +860,7 @@ SPD ERR%
 References Serval's Calculations
 Arlan Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - The Unreachable Side 5★2 - On the Fall of an Aeon 5★ [Free]3 - I Shall Be My Own Sword 5★4 - A Secret Vow 4★5 - Something Irreplaceable 5★6 - Ninja Record: Sound Hunt 4★ [Event]7 - Flames Afar 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: Longevous Disciple3.) 4-PC: Genius of Brilliant Stars 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD4.) HP% E2E4
+1 - The Unreachable Side 5★2 - On the Fall of an Aeon 5★ [Free]3 - I Shall Be My Own Sword 5★4 - A Secret Vow 4★5 - Something Irreplaceable 5★6 - Ninja Record: Sound Hunt 4★ [Free]7 - Flames Afar 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: Longevous Disciple3.) 4-PC: Genius of Brilliant Stars 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD4.) HP% E2E4
 CRIT Rate / CRIT DMG 1.) Skill
 SPD 2.) Ultimate
 Role:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -854,25 +871,31 @@ Relic Notes
 Other Notes
 References Arlan's Calculations
 5★ Characters
+Cipher Nihility Equipment Relic Stats Ability Priority NotableEidolons
+Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
+- 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
+Relic Notes
+Other Notes
+References
 Castorice Remembrance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Make Farewells More Beautiful 5★2 - Sweat Now, Cry Less 4★3 - Time Waits for No One 5★ ⁵4 - Victory In a Blink 4★ [Free] 1.) 4-PC: Poet of Mourning Collapse ¹2.) 2-PC: Quantum% Set / Longevous Disciple / Scholar Lost in Erudition [Choose 2] 1.) CRIT Rate / CRIT DMG2.) HP% E2E6
+1 - Make Farewells More Beautiful 5★2 - Sweat Now, Cry Less 4★3 - Time Waits for No One 5★ ⁵4 - Flames Afar 4★ [Free] ⁶~~ Victory In a Blink 4★ [Free] 1.) 4-PC: Poet of Mourning Collapse2.) 2-PC: Quantum% Set / Longevous / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) HP% E2E6
 CRIT DMG / HP% ³
-1.) M. Skil
+1.) M. Skill
 ~~ M. Talent
 HP%
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats ~~ Skill Ability Notes
-1.) Bone Collection's Serene Demesne2.) Rutilant Arena ²~~ The Wondrous BananAmusement Park ² HP: 7000CRIT Rate: 70% ¹CRIT DMG: 140% ¹SPD: <95 SPD ¹ ~~ Ultimate Leveling Basic ATK can be ignored.
+1.) Bone Collection's Serene Demesne2.) Rutilant Arena ²~~ The Wondrous BananAmusement Park ² (Assuming 4-PC: Poet of Mourning Collapse) ¹HP: 7000CRIT Rate: 58%CRIT DMG: 160%SPD: <95 SPD ~~ Ultimate Leveling Basic ATK can be ignored.
 HP% / Quantum DMG% ⁴
 ~~ Talent
 2.) Basic ATK
 HP%
-Relic Notes ¹ With 4-PC: Poet of Mourning Collapse, Castorice wants to be below 95 SPD out of combat, and have around 60% CRIT Rate & 160% CRIT DMG as a baseline out of combat.² The +20% DMG from Rutilant Arena & +32% CRIT DMG from The Wondrous BananAmusement Park do not affect Netherwing.³ CRIT DMG body is usually better than HP%, but good substats can make up for that difference.⁴ The difference between HP% sphere and Quantum DMG% sphere is minimal, so going for the one that has better substats is recommended.
-Other Notes ⁵ Any 5* Light Cone with a high base HP (e.g., Bailu's Signature LC Time Waits for No One or Mydei's Signature LC Flame of Blood, Blaze My Path) is better than Victory In a Blink (and other Remembrance LCs not mentioned here), since Remembrance Light Cones outside her Signature LC and Sweat Now, Cry Less do not really suit Castorice.
+Relic Notes ¹ If you're not using 4-PC: Poet of Mourning Collapse (though you are highly encouraged to), Castorice's baseline stats would change to around 70% CRIT Rate, 140% CRIT DMG, and base SPD.² The +20% DMG from Rutilant Arena & +32% CRIT DMG from The Wondrous BananAmusement Park do not affect Netherwing.³ CRIT DMG body is usually better than HP%, but good substats can make up for that difference.⁴ HP% sphere is usually better than Quantum DMG%, but good substats can make up for that difference.
+Other Notes ⁵ Light Cones with a base HP of 1164 or higher (e.g., Bailu's Signature LC Time Waits for No One, Mydei's Signature LC Flame of Blood, Blaze My Path) are better than Victory In a Blink (and other Remembrance Light Cones not mentioned here), since Remembrance Light Cones other than her Signature LC and Sweat Now, Cry Less do not really suit Castorice.⁶ Light Cones with a base HP of 1058 perform similarly to Victory In a Blink in calculations.It is recommended that your sustain has a Light Cone that increases their healing potential. Abundance characters would prefer one of these Light Cones (ranked roughly in this order): Warmth Shortens Cold Nights; Shared Feeling; Post-Op Conversation; Hey, Over Here.
 References Castorice's Calculations
 Tribbie Harmony Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - If Time Were a Flower 5★2 - Dance! Dance! Dance! 4★ ⁵3 - Memories of the Past 4★[S5]~~ Meshing Cogs 3★ [S5]4 - Poised to Bloom 4★ 5 - Carve the Moon, Weave the Clouds 4★ 1.) 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Genius of Brilliant Stars~~ 2-PC: Scholar / Longevous / Quantum% Set / SPD% Set [Choose 2] 1.) CRIT Rate / CRIT DMG2.) HP% E1
+1 - If Time Were a Flower 5★2 - Dance! Dance! Dance! 4★ ⁵3 - Memories of the Past 4★[S5]~~ Meshing Cogs 3★ [S5]4 - Poised to Bloom 4★ 5 - Carve the Moon, Weave the Clouds 4★ 1.) 4-PC: Poet of Mourning Collapse ¹2.) 4-PC: Genius of Brilliant Stars~~ 2-PC: Scholar / Wavestrider / Longevous / Quantum% Set / SPD% Set [Choose 2] 1.) CRIT Rate / CRIT DMG2.) HP% E1
 CRIT Rate / CRIT DMG 1.) Skill
 HP% ¹ / SPD ~~ Ultimate
 Role:Support / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -888,7 +911,7 @@ Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
 CRIT Rate 1.) Talent
 ATK% 2.) Ultimate
 Role:Main / Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Duran, Dynasty of Running Wolves~~ Sigonia, the Unclaimed Desolation ²~~ Izumo Gensei and Takama Divine Realm (with another Erudition team member)2.) Inert Salsotto ATK: 2500+CRIT Rate: 80% ³CRIT DMG: 120%
+1.) Duran, Dynasty of Running Wolves~~ Sigonia, the Unclaimed Desolation ²~~ Izumo Gensei and Takama Divine Realm (with Erudition ally)2.) Inert Salsotto ATK: 2500+CRIT Rate: 80% ³CRIT DMG: 120%
 Quantum DMG% ~~ Skill
 ATK% 3.) Basic
 Relic Notes ¹ With 4-PC: Poet of Mourning Collapse, Jade cannot have any SPD substats for her to be slower than 95 SPD.² Sigonia, the Unclaimed Desolation should only be used for Pure Fiction.
@@ -908,7 +931,7 @@ Other Notes ² Dance! Dance! Dance! requires extensive knowledge of speed and ac
 References Sparkle's Calculations
 Fu Xuan Preservation Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - She Already Shut Her Eyes 5★2 - Moment of Victory 5★3 - Day One of My New Life 4★ ²~~ Landau's Choice 4★ ²4 - Texture of Memories 5★ [Free] ³5 - Trend of the Universal Market 4★6 - We are Wildfire 4★ [Free] 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Knight [Choose 1] 1.) HP%2.) SPD3.) DEF%4.) Effect RES E1E6
+1 - She Already Shut Her Eyes 5★2 - Moment of Victory 5★3 - Day One of My New Life 4★ ²~~ Landau's Choice 4★ ²4 - Texture of Memories 5★ [Free] ³5 - Trend of the Universal Market 4★6 - We are Wildfire 4★ [Free] 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Knight [Choose 1] 1.) HP%2.) SPD3.) DEF%4.) Effect RES E1E6
 HP% / DEF% 1.) Talent
 SPD 2.) Skill
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -940,11 +963,11 @@ Notes (E2+) - Silver Wolf's E2 lowers her EHR requirement to 48%. Due to this lo
 References Various Energy Requirements
 Seele Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - In the Night 5★ ³2 - Sleep Like the Dead 5★3 - Cruising in the Stellar Sea 5★ [Free]4 - Swordplay 4★5 - Only Silence Remains 4★ 1.) 4-PC: Genius of Brilliant Stars2.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Poet of Mourning Collapse ¹ 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
+1 - In the Night 5★ ³2 - Sleep Like the Dead 5★3 - Cruising in the Stellar Sea 5★ [Free]4 - Swordplay 4★5 - Only Silence Remains 4★ 1.) 4-PC: Genius of Brilliant Stars2.) 4-PC: Scholar Lost in Erudition~~ 4-PC: Poet of Mourning Collapse ¹ 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2E4
 CRIT Rate / CRIT DMG 1.) Ultimate
 ATK% 2.) Skill
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Rutilant Arena 2.) Firmament Frontline: Glamoth3.) Space Sealing Station4.) Inert Salsotto ATK: 3000+CRIT Rate: 70%CRIT DMG: 140%SPD: 115 / 122 ²
+1.) Rutilant Arena 2.) Firmament Frontline: Glamoth3.) Space Sealing Station4.) Inert Salsotto ATK: 3000+CRIT Rate: 70%CRIT DMG: 140%SPD: 115 / 122 ³
 Quantum DMG% / ATK% ² 3.) Talent
 ATK% 4.) Basic ATK
 Relic Notes ¹ 4-PC: Poet of Mourning Collapse should only be used if Seele is not on her Signature LC In the Night or is E2+, since the SPD reduction would be detrimental for In the Night without her E2's SPD boost to compensate. Additionally, check that Seele's SPD out of combat is lower than 110 in this case.- All 4 Planar Set options are within ~3% of each other and so any can be used with a negligible difference in performance.² The difference between ATK% sphere and Quantum DMG% sphere is minimal, so going for the one that has better substats is recommended.
@@ -965,11 +988,11 @@ Other Notes ¹ ATK% sphere is better than Quantum DMG% sphere due to how much DM
 References Xueyi's Calculations
 Lynx Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Post-Op Conversation 4★ ³2 - Time Waits for No One 5★3 - Perfect Timing 4★ ⁴4 - Multiplication 3★ [S5] ⁵* Shared Feeling 4★ ⁶ 1.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Passerby [Choose 1]2.) 4-PC: Passerby of Wandering Cloud* 4-PC: Sacerdos' Relived Ordeal ⁶ 1.) HP%~~ SPD2.) Effect RES E2
+1 - Post-Op Conversation 4★ ³2 - Time Waits for No One 5★3 - Perfect Timing 4★ ⁴4 - Multiplication 3★ [S5] ⁵* Shared Feeling 4★ ⁶ 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Passerby [Choose 1]3.) 4-PC: Passerby of Wandering Cloud* 4-PC: Sacerdos' Relived Ordeal ⁶ 1.) HP%~~ SPD2.) Effect RES E2
 Outgoing Healing% / HP% ² 1.) Ultimate
 SPD 2.) Talent
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) HP: 4000+DEF: 1000SPD: 140+ Leveling Basic ATK can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) HP: 4000+DEF: 1000SPD: 140+ Leveling Basic ATK can be ignored.
 HP% 3.) Skill
 ERR% 4.) Basic ATK
 Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with same type DPS.² HP% is more survivability but less healing compared to Outgoing Healing%.
@@ -990,7 +1013,7 @@ References Qingque's Calculations
 5★ Characters
 Mydei Destruction Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Flame of Blood, Blaze My Path 5★2 - The Unreachable Side 5★3 - A Secret Vow 4★4 - Ninja Record: Sound Hunt 4★ [Event]5 - Flames Afar 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: Longevous Disciple 1.) CRIT DMG / CRIT Rate2.) HP%3.) SPD E1
+1 - Flame of Blood, Blaze My Path 5★2 - The Unreachable Side 5★3 - A Secret Vow 4★4 - Ninja Record: Sound Hunt 4★ [Free]5 - Flames Afar 4★ [Free] 1.) 4-PC: Scholar Lost in Erudition2.) 4-PC: Longevous Disciple 1.) CRIT DMG / CRIT Rate2.) HP%3.) SPD E1
 HP% / CRIT DMG ¹ 1.) Skill
 SPD / HP% ² 2.) Ultimate
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -1002,7 +1025,7 @@ Other Notes ³ The baseline CRIT Rate of 40% is just a baseline. If possible, tr
 References Mydei's Calculations
 Sunday Harmony Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - A Grounded Ascent 5★ ³2 - Earthly Escapade 5★3 - But the Battle Isn't Over 5★4 - Planetary Rendezvous 4★ ¹~~ Past and Future 4★ [Free]5 - Meshing Cogs 3★*Dance Dance Dance! 4★ ⁴ 1.) 4-PC: Sacerdos' Reviled Ordeal2.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Knight [Choose 1] ² 1.) CRIT DMG2.) SPD3.) HP% / DEF% E1
+1 - A Grounded Ascent 5★ ³2 - Earthly Escapade 5★3 - But the Battle Isn't Over 5★4 - Planetary Rendezvous 4★ ¹~~ Past and Future 4★ [Free]5 - Meshing Cogs 3★* Dance Dance Dance! 4★ ⁴ 1.) 4-PC: Sacerdos' Reviled Ordeal2.) 2-PC: SPD% Set + SPD% Set / Longevous / Guard / Knight [Choose 1] ² 1.) CRIT DMG2.) SPD3.) HP% / DEF% E1
 CRIT DMG% 1.) Skill
 SPD ~~ Ultimate
 Role:Support 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -1026,7 +1049,7 @@ Other Notes ⁴ Make the World Clamor [S5] lets Rappa get her Ultimate immediate
 References Rappa's Calculations
 Harmony Trailblazer Harmony Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Past Self in Mirror 5★2 - Memories of the Past 4★3 - Meshing Cogs 3★ [S5]*Dance! Dance! Dance! 4★ ⁴ 1.) 4-PC: Watchmaker, Master of Dream Machinations 2.) 2-PC: BE% Set / SPD% Set [Choose 2]~~ 4-PC: Iron Cavalry Against the Scourge 1.) Break Effect2.) SPD3.) HP% / DEF% E4E6
+1 - Past Self in Mirror 5★2 - Memories of the Past 4★3 - Meshing Cogs 3★ [S5]* Dance! Dance! Dance! 4★ ⁴ 1.) 4-PC: Watchmaker, Master of Dream Machinations 2.) 2-PC: BE% Set / SPD% Set [Choose 2]~~ 4-PC: Iron Cavalry Against the Scourge 1.) Break Effect2.) SPD3.) HP% / DEF% E4E6
 HP% / DEF% ² 1.) Ultimate
 SPD ~~ Talent
 Role:Support 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -1038,7 +1061,7 @@ Other Notes ⁴ Dance! Dance! Dance! requires extensive knowledge of speed and a
 References Various Energy Requirements
 Aventurine Preservation Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Inherently Unjust Destiny 5★ ²2 - Moment of Victory 5★3 - Concert For Two 4★ ~~ Day One of My New Life 4★4 - Landau's Choice 4★5 - Destiny's Threads Forewoven 4★ [Free]6 - Trend Of The Universal Market 4★ 1.) 4-PC: Knight of Purity Palace (for support)~~ 4-PC: Pioneer Diver of Dead Waters (for damage)2.) 2-PC: SPD% Set + Knight / Pioneer / Duke / Scholar [Choose 1] 1.) DEF%2.) SPD3.) CRIT Rate / CRIT DMG4.) Effect RES E1E2E6
+1 - Inherently Unjust Destiny 5★ ²2 - Moment of Victory 5★3 - Concert For Two 4★ ~~ Day One of My New Life 4★4 - Landau's Choice 4★5 - Destiny's Threads Forewoven 4★ [Free]6 - Trend Of The Universal Market 4★ 1.) 4-PC: Knight of Purity Palace (for support)~~ 4-PC: Pioneer Diver of Dead Waters (for damage)2.) 2-PC: SPD% Set + Knight / Pioneer / Duke / Scholar / Wavestrider [Choose 1] 1.) DEF%2.) SPD3.) CRIT Rate / CRIT DMG4.) Effect RES E1E2E6
 DEF% / CRIT DMG% 1.) Skill
 SPD / DEF% ¹ 2.) Talent
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
@@ -1050,11 +1073,11 @@ Other Notes - Ranking takes into consideration the effective HP + damage provide
 References Aventurine Calculations
 Dr. Ratio Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Baptism of Pure Thought 5★2 - Worrisome, Blissful 5★3 - Cruising in the Stellar Sea 5★ [Free]4 - Only Silence Remains 4★ 1.) 4-PC: Pioneer Diver of Dead Waters2.) 4-PC: Wastelander of Banditry Desert3.) 2-PC: ATK% Set / Wastelander / Pioneer / Duke / Scholar [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E6
+1 - Baptism of Pure Thought 5★2 - Worrisome, Blissful 5★3 - Cruising in the Stellar Sea 5★ [Free]4 - Only Silence Remains 4★ 1.) 4-PC: Pioneer Diver of Dead Waters2.) 4-PC: Wastelander of Banditry Desert3.) 2-PC: ATK% Set / Wastelander / Pioneer / Duke / Scholar / Wavestrider [Choose 2] 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E6
 CRIT Rate / CRIT DMG 1.) Talent
 SPD / ATK% 2.) Skill
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Firmament Frontline: Glamoth ¹~~ Duran, Dynasty of Running Wolves ²~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member)2.) Space Sealing Station~~ Inert Salsotto ATK: 3000+CRIT Rate: 70%CRIT DMG: 140%SPD: 134+ Leveling Basic ATK can be ignored.
+1.) Firmament Frontline: Glamoth ¹~~ Duran, Dynasty of Running Wolves ²~~ Izumo Gensei and Takama Divine Realm (with Hunt ally)2.) Space Sealing Station~~ Inert Salsotto ATK: 3000+CRIT Rate: 70%CRIT DMG: 140%SPD: 134+ Leveling Basic ATK can be ignored.
 ATK% / Imaginary DMG% ³ ~~ Ultimate
 ATK% 3.) Basic ATK
 Relic Notes ¹ Firmament Frontline: Glamoth performs better than Inert Salsotto if you can reach 135 SPD requirement, while also being more efficient to farm for other DPS as well.² Duran, Dynasty of Running Wolves can be used if there are other follow-up attackers in the team, otherwise it takes a while to reach max stacks.³ The difference between ATK% sphere and Imaginary DMG% sphere is minimal, so going for the one that has better substats is recommended.
@@ -1074,11 +1097,11 @@ Other Notes
 References Dan Heng • Imbibitor Lunae's Calculations
 Luocha Abundance Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Echoes of the Coffin 5★2 - Multiplication 3★ [S5] ²3 - Dream's Montage 4★4 - Quid Pro Quo 4★ [Free]5 - Perfect Timing 4★ ³* Shared Feeling 4★ ⁴ 1.) 2-PC: SPD% Set + SPD% Set / ATK% Set / Guard / Longevous / Passerby [Choose 1]~~ 4-PC: Musketeer of Wild Wheat* 4-PC: Sacerdos' Relived Ordeal ⁴ 1.) SPD2.) ATK%~~ HP% / DEF%3.) Effect RES E4E6
+1 - Echoes of the Coffin 5★2 - Multiplication 3★ [S5] ²3 - Dream's Montage 4★4 - Quid Pro Quo 4★ [Free]5 - Perfect Timing 4★ ³* Shared Feeling 4★ ⁴ 1.) 4-PC: Warrior Goddess of Sun and Thunder2.) 2-PC: SPD% Set + SPD% Set / ATK% Set / Guard / Longevous / Passerby [Choose 1]~~ 4-PC: Musketeer of Wild Wheat* 4-PC: Sacerdos' Relived Ordeal ⁴ 1.) SPD2.) ATK%~~ HP% / DEF%3.) Effect RES E4E6
 Outgoing Healing% / ATK% 1.) Talent
 SPD 2.) Skill
 Role:Sustain 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (if you need more healing) HP: 3000+ATK: 2500+DEF: 1000SPD: 150+ Leveling Ultimate and Basic ATK can be ignored.
+1.) Fleet of the Ageless~~ Broken Keel~~ Lushaka, the Sunken Seas2.) Penacony, Land of the Dreams ¹* Giant Tree of Rapt Brooding (for more healing) HP: 3000+ATK: 2500+DEF: 1000SPD: 150+ Leveling Ultimate and Basic ATK can be ignored.
 ATK% / HP% / DEF% 3.) Ultimate
 ERR% 4.) Basic ATK
 Relic Notes ¹ Penacony, Land of the Dreams can be used if paired with Imaginary DPS, but the 5% ERR doesn't change the Ultimate rotation.
@@ -1090,7 +1113,7 @@ Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
 CRIT Rate / CRIT DMG 1.) Talent
 SPD 2.) Skill
 Role:Main DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Izumo Gensei and Takama Divine Realm (with another Nihility team member)2.) Firmament Frontline: Glamoth3.) Space Sealing Station ATK: 2500+CRIT Rate: 70%CRIT DMG: 120%SPD: 134+EHR: 30% Leveling Basic ATK can be ignored.
+1.) Izumo Gensei and Takama Divine Realm (with Nihility ally)2.) Firmament Frontline: Glamoth3.) Space Sealing Station ATK: 2500+CRIT Rate: 70%CRIT DMG: 120%SPD: 134+EHR: 30% Leveling Basic ATK can be ignored.
 Imaginary DMG% 3.) Ultimate
 ATK% 4.) Basic ATK
 Relic Notes
@@ -1099,11 +1122,11 @@ References Welt's Calculations & Various Energy Requirements
 4★ Characters
 March 7th Hunt Equipment Relic Stats Ability Priority NotableEidolons
 Light Cone 4 Piece Set (Relic Set) Main Stats Sub Stats
-1 - Baptism of Pure Thought 5★~~ Worrisome, Blissful 5★~~ In the Night 5★ ¹2 - Cruising in the Stellar Sea 5★ [Free]3 - Only Silence Remains 4★~~ Swordplay 4★ 1.) 4-PC: Pioneer Diver of Dead Waters (needs Worrisome, Blissful) ²2.) 4-PC: Musketeer of Wild Wheat~~ 4-PC: Wastelander of Banditry Desert3.) 2-PC: ATK% Set / Wastelander / Pioneer / Scholar [Choose 2]4.) 4-PC: Genius of Brilliant Stars 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
+1 - Baptism of Pure Thought 5★~~ Worrisome, Blissful 5★~~ In the Night 5★ ¹2 - Cruising in the Stellar Sea 5★ [Free]3 - Only Silence Remains 4★~~ Swordplay 4★ 1.) 4-PC: Pioneer Diver of Dead Waters (needs Worrisome, Blissful) ²2.) 4-PC: Musketeer of Wild Wheat~~ 4-PC: Wastelander of Banditry Desert3.) 2-PC: ATK% Set / Wastelander / Pioneer / Scholar / Wavestrider [Choose 2]4.) 4-PC: Genius of Brilliant Stars 1.) CRIT Rate / CRIT DMG2.) ATK%3.) SPD E2
 CRIT Rate / CRIT DMG 1.) Basic ATK
 SPD / ATK% 2.) Skill
 Role:Sub DPS 2 Piece Set (Planar Ornament) Baseline Stats Ability Notes
-1.) Rutilant Arena~~ Izumo Gensei and Takama Divine Realm (with another Hunt team member)2.) Space Sealing Station~~ Duran, Dynasty of Running Wolves ATK: 2500+CRIT Rate: 80%CRIT DMG: 120%SPD: (see notes)
+1.) Rutilant Arena~~ Izumo Gensei and Takama Divine Realm (with Hunt ally)2.) Space Sealing Station~~ Duran, Dynasty of Running Wolves ATK: 2500+CRIT Rate: 80%CRIT DMG: 120%SPD: (see notes)
 Imaginary DMG% / ATK% ~~ Talent
 ATK% 3.) Ultimate
 Notes(Sub DPS) - March 7th generally wants to be slightly faster than her Shifu to maximize her Talent's advance. Remember to account for any in-combat SPD buffs when speedtuning, such as from March 7th's Skill and her E1. Having around 2+ SPD more than Shifu out of combat is generally safe.¹ The first 3 Light Cone options perform comparably in general, with the choice between them depending on the rest of her build and team. In the Night wants March 7th to be built with SPD (ideally 140+), while Worrisome, Blissful wants March 7th to be paired with a follow-up DPS.² 4-PC: Pioneer Diver of Dead Waters needs March 7th to use Worrisome, Blissful for it to be better than other Relic options.
@@ -1130,3 +1153,24 @@ ERR% 4.) Basic ATK
 Relic Notes ¹ Planetary Rendezvous and Penacony, Land of the Dreams can be used if paired with Imaginary DPS.
 Other Notes - Yukong can be built as a sub DPS (going for CRIT DMG / CRIT Rate / ATK) or defensively (going for HP% / DEF%).² Past and Future and But the Battle isn't Over can only reach their full potential if Yukong is speedtuned correctly.³ E2 grants Yukong more Energy when characters reach full Energy, making it so she can get a 3-turn Ultimate with any Light Cone. Refer to the link below for more information.⁴ E6 increases Yukong's flexibility since it allows you to activate her Ultimate to gain a stack of Roaring Bowstrings at any given time.
 References Various Energy Requirements
+Credits
+Active Contributors
+DarkAngel
+Shuma
+Tsuru
+Ataraxia1339
+Plutoniumrooster
+Kuratine
+.regnum771
+xaale
+json.jason
+skayomi
+Extensive References
+Aimgo
+HunterKee
+Puns101
+edisonsmathclub
+mystathi
+NLRem
+PhantomHearts331
+GuobaCertified
