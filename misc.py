@@ -201,7 +201,7 @@ class MiscCMD(commands.Cog):
                 if character.upper() == "TOPAZ NUMBY":
                     em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ Topaz")
                 else:
-                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title()})")
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"__Ideal Build of:__ {HSRBuildInfo[8].title()}")
                 
 
                 #grab server pfp and set up base of embed
