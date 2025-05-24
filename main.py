@@ -320,7 +320,7 @@ class General(commands.Cog):
                     await member.add_roles(roleToAdd)
 
         # Send a welcome message!
-        welcome_gif = discord.File("assets/nekowave.gif")
+        welcome_gif = discord.File("assets/neko_wave.gif")
         await member.send(
             "# Welcome to Nurture!\n"
             "## Here's a quick few things you should know!\n"
@@ -559,7 +559,25 @@ class General(commands.Cog):
     async def daily_ping(self):
         channel = self.bot.get_channel(1042253069196480542)
         if channel:
-            ping_message = f"<@&{1042250208534343763}> be sure to contribute... there's only 2 more hours until tickets refresh!"
+            today = datetime.datetime.utcnow().weekday()  # 0=Monday, 1=Tuesday, etc.
+            
+            if today == 1:  # Tuesday - send tally day message without ping
+                tally_message = "Today is a tally day! Enjoy the day off :)"
+                await channel.send(tally_message)
+                return
+            
+            # Calculate ticket count: Wed=3, Thu=6, Fri=9, Sat=12, Sun=15, Mon=18
+            # Days after Tuesday: Wed=1, Thu=2, Fri=3, Sat=4, Sun=5, Mon=6
+            if today >= 2:  # Wed-Sun (2-6)
+                days_after_tuesday = today - 1
+            else:  # Monday (0)
+                days_after_tuesday = 6
+            
+            ticket_count = days_after_tuesday * 3  # Start at 3, +3 each day
+            ticket_count = min(ticket_count, 18)  # Cap at 18
+            
+            ping_message = f"<@&{1042250208534343763}> be sure to contribute... there's only 2 more hours until tickets refresh!\nCurrent tickets: {ticket_count}/18"
+            
             await channel.send(ping_message)
             print(f"Sent daily ping at {datetime.datetime.utcnow()}")
         else:
