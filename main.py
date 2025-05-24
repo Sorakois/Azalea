@@ -334,10 +334,10 @@ class General(commands.Cog):
             file=welcome_gif
         )
 
-    async def on_member_remove(self, member: discord.User):
+    async def on_member_remove(self, member: discord.Member):
         channel = self.bot.get_channel(1069755829126971392)
         if channel:
-            await channel.send(f"📤 **Member Left**\n{member.mention} ({member.id}) has left the server.")
+            await channel.send(f"📤 **Member Left**\n{member.display_name} ({member.name}#{member.discriminator} - {member.id}) has left the server.")
 
     @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
@@ -502,36 +502,56 @@ class General(commands.Cog):
             await interaction.followup.send(f'Role check complete! {res}', ephemeral=True)
 
         if prompt == Prompt.MASS_DM.value:
-            await interaction.response.defer(ephemeral=True)
-
-            # Get message content from the interaction
-            if not interaction.message or not interaction.message.content.strip():
-                return await interaction.followup.send("❗ You must provide a message to send.", ephemeral=True)
-
-            dm_message = interaction.message.content.strip()
-            file = None
-            if interaction.message.attachments:
-                file = await interaction.message.attachments[0].to_file()
-
-            failed = []
-            success = 0
-
-            for member in interaction.guild.members:
-                if member.bot:
-                    continue
-                try:
-                    if file:
-                        await member.send(content=dm_message, file=file)
-                    else:
-                        await member.send(content=dm_message)
-                    success += 1
-                except Exception:
-                    failed.append(member)
-
-            await interaction.followup.send(
-                f"✅ Sent DMs to {success} members.\n❌ Failed to send to {len(failed)}.",
-                ephemeral=True
-            )
+             # Create a modal to get the message content
+            class MessageModal(discord.ui.Modal):
+                def __init__(self):
+                    super().__init__(title="Mass DM Message")
+                    
+                message_content = discord.ui.TextInput(
+                    label="Message to send",
+                    style=discord.TextStyle.paragraph,
+                    placeholder="Enter the message you want to send to all members...",
+                    required=True,
+                    max_length=2000
+                )
+                
+                async def on_submit(self, interaction: discord.Interaction):
+                    await interaction.response.defer(ephemeral=True)
+                    
+                    dm_message = self.message_content.value.strip()
+                    
+                    if not dm_message:
+                        return await interaction.followup.send("❗ You must provide a message to send.", ephemeral=True)
+                    
+                    # Handle file attachment if present (from original interaction)
+                    file = None
+                    if interaction.message and interaction.message.attachments:
+                        file = await interaction.message.attachments[0].to_file()
+                    
+                    failed = []
+                    success = 0
+                    
+                    # Send initial status message
+                    status_msg = await interaction.followup.send("📤 Sending DMs... This may take a while.", ephemeral=True)
+                    
+                    for member in interaction.guild.members:
+                        if member.bot:
+                            continue
+                        try:
+                            if file:
+                                await member.send(content=dm_message, file=file)
+                            else:
+                                await member.send(content=dm_message)
+                            success += 1
+                        except Exception:
+                            failed.append(member)
+                    
+                    # Update with final results
+                    await status_msg.edit(content=f"✅ Sent DMs to {success} members.\n❌ Failed to send to {len(failed)} members.")
+            
+            # Send the modal to the user
+            modal = MessageModal()
+            await interaction.response.send_modal(modal)
 
     ''' This section is for the "daily reminder" for CRK for guild contri'''
     # Send the message!
