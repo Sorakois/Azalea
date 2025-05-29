@@ -109,12 +109,12 @@ def chrono_image(chrono: int):
 
 # Database of gifs (links)
 hugging_gifs = [
-    "https://media1.tenor.com/m/8YhtDI2-uTQAAAAd/topaz-numby.gif",
-    "https://media1.tenor.com/m/uiak6BECN_sAAAAC/emunene-emu.gif",
-    "https://media1.tenor.com/m/qVWUEYImyKAAAAAC/sad-hug-anime.gif",
-    "https://media1.tenor.com/m/UnpQCW40JekAAAAC/anime-hug.gif",
-    "https://media1.tenor.com/m/b3Qvt--s_i0AAAAC/hugs.gif",
-    "https://tenor.com/view/sami-en-dina-sami-dina-dina-sami-dina-en-sami-gif-15422575992980791421",
+    "https://c.tenor.com/8YhtDI2-uTQAAAAd/tenor.gif",
+    "https://c.tenor.com/uiak6BECN_sAAAAC/tenor.gif",
+    "https://c.tenor.com/qVWUEYImyKAAAAAC/tenor.gif",
+    "https://c.tenor.com/UnpQCW40JekAAAAC/tenor.gif",
+    "https://c.tenor.com/b3Qvt--s_i0AAAAC/tenor.gif",
+    "https://c.tenor.com/1gf_Jz8WYH0AAAAd/tenor.gif",
     "https://cdn.weeb.sh/images/S1DyFuQD-.gif",
     "https://cdn.weeb.sh/images/Bkta0ExOf.gif"
 ]

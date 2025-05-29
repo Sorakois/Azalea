@@ -518,30 +518,33 @@ class fullScrape(BuildScrape):
                 build_author = "Sorakoi"
 
                 # check for bugs
-                trace_items = []
-                if Character.trace_prio:
-                    for item in Character.trace_prio:
-                        content = item.strip()
-                        if content == "M.":
-                            content = "M. Talent"
-                        trace_items.append(content)
-
-                # Fix sequence numbers and ensure consistent spacing
+                # Work with the already processed trace_prio string
+                trace_items = trace_prio.split('\n')  # Split the processed string
+                
+                # Handle M. replacements
                 for i in range(len(trace_items)):
-                    item = trace_items[i]
-                    expected_num = i + 1
-                    
-                    # Remove any existing numbering and extract the actual content
-                    content = re.sub(r'^\d+\.\)\s*', '', item)
-                    
-                    # Apply consistent formatting: number.) space content
-                    trace_items[i] = f"{expected_num}.) {content}"
-
+                    content = trace_items[i].strip()
+                    if content == "M.":
+                        trace_items[i] = "M. Talent"
+                
+                # # Fix sequence numbers and ensure consistent spacing
+                # for i in range(len(trace_items)):
+                #     item = trace_items[i]
+                #     expected_num = i + 1
+                
+                #     # Remove any existing numbering and extract the actual content
+                #     content = re.sub(r'^\d+\.\)\s*', '', item)
+                
+                #     # Apply consistent formatting: number.) space content
+                #     trace_items[i] = f"{expected_num}.) {content}"
+                
                 # Join with newlines
                 trace_prio = '\n'.join(trace_items)
 
-                # if name.lower() == "hyacine":
-                #     print(f"I am hyacine\n{trace_prio}")
+                if name.lower() == "hyacine":
+                    print(f"I am hyacine\n{trace_prio}")
+                if name.lower() == "aglaea":
+                    print(f"I am aglaea\n{trace_prio}")
 
                 #print(f"test: this is char. {Character}")
                 await cursor.execute("SELECT name FROM HSR_BUILD WHERE name = %s", name)

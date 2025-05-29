@@ -1,3 +1,4 @@
+# External Imports
 import discord
 from discord import app_commands
 from discord.ext import commands, tasks
@@ -7,9 +8,11 @@ import os
 import logging
 import json
 import datetime
-import gacha
-from leveling import Leveling
 from dotenv import load_dotenv
+import asyncio
+from asyncio import Lock
+# Internal imports
+from leveling import Leveling
 from util.scrape_wiki import scrape_cookies as scrape_cookie1
 from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
@@ -17,9 +20,10 @@ from gacha import GachaInteraction, HelpView
 from market import Business
 import misc
 from psyche import Persona
-import asyncio
-from asyncio import Lock
 from debug import Prompt, Login
+from knowledge import Smart
+
+
 
 # load the enviroment variables
 load_dotenv()
@@ -45,7 +49,8 @@ cogs = {
     'gacha' : GachaInteraction(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
-    'market': Business(bot)
+    'market': Business(bot),
+    'smart': Smart(bot)
     }
 
 # bot settings
@@ -292,7 +297,7 @@ class General(commands.Cog):
         await cogs["gacha"].crystalOnMessage(message=message, valid_time=valid_time)
 
     @commands.Cog.listener()
-    async def on_member_join(self, member: discord.User):
+    async def on_member_join(self, member: discord.Member):
         '''
         Runs whenever a user joins the server
 
@@ -301,6 +306,12 @@ class General(commands.Cog):
         '''
 
         # Give "divider" roles (?)
+
+
+        # Log join in #welcome
+        channel = self.bot.get_channel(996903186168283220)
+        if channel:
+            await channel.send(f"Welcome to Nurture, {member.display_name} (<@{member.id}>)!\nWe hope you enjoy your stay!")
 
 
         # Automatically set the user to level 0 [choco II]
@@ -337,7 +348,10 @@ class General(commands.Cog):
     async def on_member_remove(self, member: discord.Member):
         channel = self.bot.get_channel(1069755829126971392)
         if channel:
-            await channel.send(f"📤 **Member Left**\n{member.display_name} ({member.name}#{member.discriminator} - {member.id}) has left the server.")
+            await channel.send(
+                f"📤 **Member Left**\n"
+                f"{member.display_name} (<@{member.id}> - {member.id}) has left the server."
+            )
 
     @app_commands.command(name="declare", description="admin panel")
     async def declare(self, interaction: discord.Interaction, prompt: str):
@@ -350,208 +364,349 @@ class General(commands.Cog):
             interaction (discord.Interaction) : Interaction object to respond to.
             prompt (str) : the given prompt to run within the function
         '''
-        # Experienced role
-        if discord.utils.get(interaction.guild.roles, id=1083847502580695091) in interaction.user.roles:
+
+        # Check if the user is allowed to make a request
+        allowed_roles = {1083847502580695091, # Experienced
+                         1364999650762948628, # Guide
+                         1377746510816481450 # Test Server
+                         }
+        if any(role.id in allowed_roles for role in interaction.user.roles):
             split = prompt.split(' ')
 
-        if prompt == Prompt.XP_BOOST.value: 
-            boost = int(split[1])
-            days = int(split[2])
-            Leveling.MINEXP *= boost
-            Leveling.MAXEXP *= boost
-            await interaction.response.send_message(f"Double XP Started for {days} days")
-            print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
+            if prompt == Prompt.XP_BOOST.value: 
+                boost = int(split[1])
+                days = int(split[2])
+                Leveling.MINEXP *= boost
+                Leveling.MAXEXP *= boost
+                await interaction.response.send_message(f"Double XP Started for {days} days")
+                print(f'Double XP Started at {datetime.datetime.now()} for {days} days by {interaction.user.name}||{interaction.user.id}')
 
-        if prompt == Prompt.CRK_SCRAPE.value:
-            await interaction.response.defer()
-            res = await scrape_cookie1(self.bot)
+            elif prompt == Prompt.CRK_SCRAPE.value:
+                await interaction.response.defer()
+                res = await scrape_cookie1(self.bot)
+                
+                if not res:
+                    await interaction.followup.send("No new cookies found.", ephemeral=True)
+                else:
+                    # Extract cookie names from the list of Cookie objects
+                    cookie_names = [cookie.name for cookie in res]
+                    await interaction.followup.send(f"Updated {len(res)} cookies: {', '.join(cookie_names)}", ephemeral=True)
+
+            elif prompt == Prompt.CROB_SCRAPE.value:
+                await interaction.response.defer()
+                res = await scrape_cookie2(self.bot)
+                await interaction.followup.send('updated cookies!', ephemeral=True)
+
+            elif prompt == Prompt.USER_INV.value:
+                await interaction.response.defer()
+                await interaction.followup.send(f"Enter the USER_ID for who's inventory slot # needs fixed.")
+
+                # Wait for the next message
+                def check(message: discord.Message):
+                    return message.author.id == member.id and message.channel.id == interaction.channel.id
             
-            if not res:
-                await interaction.followup.send("No new cookies found.", ephemeral=True)
-            else:
-                # Extract cookie names from the list of Cookie objects
-                cookie_names = [cookie.name for cookie in res]
-                await interaction.followup.send(f"Updated {len(res)} cookies: {', '.join(cookie_names)}", ephemeral=True)
-
-        if prompt == Prompt.CROB_SCRAPE.value:
-            await interaction.response.defer()
-            res = await scrape_cookie2(self.bot)
-            await interaction.followup.send('updated cookies!', ephemeral=True)
-
-        if prompt == Prompt.USER_INV.value:
-            await interaction.response.defer()
-            await interaction.followup.send(f"Enter the USER_ID for who's inventory slot # needs fixed.")
-
-            # Wait for the next message
-            def check(message: discord.Message):
-                return message.author.id == member.id and message.channel.id == interaction.channel.id
-        
-            try:
-                msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
-                userid_to_fix = msg.content
-                async with self.bot.db.acquire() as conn:
-                    async with conn.cursor() as cursor:
-
-                        #grab EVERY SINGLE entry to check the amount
-                        await cursor.execute("SELECT ITEM_ID FROM ITEM WHERE USER_ID = %s", (userid_to_fix,))
-                        all_owned_items = await cursor.fetchall()
-                        number_of_items = len(all_owned_items)
-
-                        #see the current amount for later reference
-                        await cursor.execute("SELECT USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (userid_to_fix,))
-                        original_set_slots = await cursor.fetchone()
-                        original_set_slots = original_set_slots[0]
-
-                        #if values are equal, return no issue
-                        if original_set_slots == number_of_items:
-                            await interaction.followup.send(f"No issue found for user with ID: {userid_to_fix}.\nOriginally, they had {original_set_slots} slots. They own {number_of_items} characters.")
-                        else:
-                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = %s WHERE USER_ID = %s", (number_of_items, userid_to_fix))
-                            await conn.commit()
-                            await interaction.followup.send(f"Good catch!\nUser with ID: {userid_to_fix} originally, they had {original_set_slots} slots set. However, they own {number_of_items} characters. They now have {number_of_items} slots to match the {number_of_items} characters they own.")
-                    await conn.commit()
-            except asyncio.TimeoutError:
-                await interaction.channel.send("You didn't send a message in time.")  
-            
-        if prompt == Prompt.GIVE_GEM.value:
-            await interaction.response.defer()
-            await interaction.followup.send(f"Enter the USER_ID + gem amount to award.")
-
-            def check(message: discord.Message):
-                return message.author.id == member.id and message.channel.id == interaction.channel.id
-        
-            try:
-                msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
-                id_combo_gems = msg.content
-                gems_and_id = id_combo_gems.split()
-                gems = gems_and_id[1]
-                id_to_fix = gems_and_id[0]
-
-                async with self.bot.db.acquire() as conn:
-                    async with conn.cursor() as cursor:
-                        await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (id_to_fix,))
-                        gems_old = await cursor.fetchone()
-                        await cursor.execute("UPDATE USER SET USER_GEMS = USER_GEMS + %s WHERE USER_ID = %s", (gems,id_to_fix,))
-                        await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (id_to_fix,))
-                        gems_new = await cursor.fetchone()
-                        await interaction.followup.send(f"Old Gems: {gems_old[0]}.\nAdded {gems} gems to user with ID: {id_to_fix}.\nNew Gems: {gems_new[0]}.")
-                    await conn.commit()
-            except:
                 try:
-                    await interaction.followup.send(f"{gems_and_id} is invalid.")
-                except:
-                    await interaction.followup.send(f"This does not work.")
-
-        if prompt == Prompt.EXPAND_FIX.value:
-            return # not needed rn
-            '''
-            Since essence to expand now costs 15x less, 
-            compensate users who spent essence to expand already
-
-            Give back essence in correlation to current expand times
-            '''
-            await interaction.response.defer() #let it cook
-
-            async with self.lock:
-                try:
+                    msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                    userid_to_fix = msg.content
                     async with self.bot.db.acquire() as conn:
                         async with conn.cursor() as cursor:
-                            await cursor.execute("SELECT EXPAND_PURCHASES, USER_ID FROM USER;")
-                            expand_data = await cursor.fetchall()
-                           
-                            fixedEssencePPL = []
 
-                            for person in expand_data:
-                                person_expandAMT = person[0]
-                                personID = person[1]
-                                if person_expandAMT != 0:
-                                    '''
-                                    This equation currently compensates:
-                                    EssenceCostEquation = (125*(TimesPurchased[0]**2)) + 150
+                            #grab EVERY SINGLE entry to check the amount
+                            await cursor.execute("SELECT ITEM_ID FROM ITEM WHERE USER_ID = %s", (userid_to_fix,))
+                            all_owned_items = await cursor.fetchall()
+                            number_of_items = len(all_owned_items)
 
-                                    Changed to (Dec 25, 2024):
-                                    EssenceCostEquation = (8*(TimesPurchased[0]**2)) + 60
+                            #see the current amount for later reference
+                            await cursor.execute("SELECT USER_INV_SLOTS_USED FROM USER WHERE USER_ID = %s", (userid_to_fix,))
+                            original_set_slots = await cursor.fetchone()
+                            original_set_slots = original_set_slots[0]
 
-                                    This is changed by a factor of 1/15.
-                                    The equation compensates the difference between each sum as the return value:
-                                    returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
-                                    '''
-                                    returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
-                                    await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (returnEssence,personID,))
-                                    fixedEssencePPL.append(f"<@{personID}> gained {returnEssence} essence back. They had expanded {person_expandAMT} times.")
-                                    await conn.commit()
-                            
-                            #format response out
-                            response_message = "\n".join(fixedEssencePPL)
-                            await interaction.followup.send(f"Fixed Essences for users:\n{response_message}")
-                except Exception as e:
-                    await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
-
-        if prompt == Prompt.QOTD_GEMS.value:
-            await interaction.response.defer()
-
-            QOTD_CHANNEL_ID = 1095876259315204226
-            
-            await interaction.followup.send("🚀 Starting QOTD gems distribution process...")
-            
-            await scan_and_reward_unreacted_threads(bot, QOTD_CHANNEL_ID, interaction)
-
-        if prompt == Prompt.DEBUG_ROLE_CHECK.value:
-            await interaction.response.defer()
-            res = await cogs['leveling'].check_user_roles(interaction.guild)
-            await interaction.followup.send(f'Role check complete! {res}', ephemeral=True)
-
-        if prompt == Prompt.MASS_DM.value:
-             # Create a modal to get the message content
-            class MessageModal(discord.ui.Modal):
-                def __init__(self):
-                    super().__init__(title="Mass DM Message")
-                    
-                message_content = discord.ui.TextInput(
-                    label="Message to send",
-                    style=discord.TextStyle.paragraph,
-                    placeholder="Enter the message you want to send to all members...",
-                    required=True,
-                    max_length=2000
-                )
-                
-                async def on_submit(self, interaction: discord.Interaction):
-                    await interaction.response.defer(ephemeral=True)
-                    
-                    dm_message = self.message_content.value.strip()
-                    
-                    if not dm_message:
-                        return await interaction.followup.send("❗ You must provide a message to send.", ephemeral=True)
-                    
-                    # Handle file attachment if present (from original interaction)
-                    file = None
-                    if interaction.message and interaction.message.attachments:
-                        file = await interaction.message.attachments[0].to_file()
-                    
-                    failed = []
-                    success = 0
-                    
-                    # Send initial status message
-                    status_msg = await interaction.followup.send("📤 Sending DMs... This may take a while.", ephemeral=True)
-                    
-                    for member in interaction.guild.members:
-                        if member.bot:
-                            continue
-                        try:
-                            if file:
-                                await member.send(content=dm_message, file=file)
+                            #if values are equal, return no issue
+                            if original_set_slots == number_of_items:
+                                await interaction.followup.send(f"No issue found for user with ID: {userid_to_fix}.\nOriginally, they had {original_set_slots} slots. They own {number_of_items} characters.")
                             else:
-                                await member.send(content=dm_message)
-                            success += 1
-                        except Exception:
-                            failed.append(member)
-                    
-                    # Update with final results
-                    await status_msg.edit(content=f"✅ Sent DMs to {success} members.\n❌ Failed to send to {len(failed)} members.")
+                                await cursor.execute("UPDATE USER SET USER_INV_SLOTS_USED = %s WHERE USER_ID = %s", (number_of_items, userid_to_fix))
+                                await conn.commit()
+                                await interaction.followup.send(f"Good catch!\nUser with ID: {userid_to_fix} originally, they had {original_set_slots} slots set. However, they own {number_of_items} characters. They now have {number_of_items} slots to match the {number_of_items} characters they own.")
+                        await conn.commit()
+                except asyncio.TimeoutError:
+                    await interaction.channel.send("You didn't send a message in time.")  
+                
+            elif prompt == Prompt.GIVE_GEM.value:
+                await interaction.response.defer()
+                await interaction.followup.send(f"Enter the USER_ID + gem amount to award.")
+
+                def check(message: discord.Message):
+                    return message.author.id == member.id and message.channel.id == interaction.channel.id
             
-            # Send the modal to the user
-            modal = MessageModal()
-            await interaction.response.send_modal(modal)
+                try:
+                    msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                    id_combo_gems = msg.content
+                    gems_and_id = id_combo_gems.split()
+                    gems = gems_and_id[1]
+                    id_to_fix = gems_and_id[0]
+
+                    async with self.bot.db.acquire() as conn:
+                        async with conn.cursor() as cursor:
+                            await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (id_to_fix,))
+                            gems_old = await cursor.fetchone()
+                            await cursor.execute("UPDATE USER SET USER_GEMS = USER_GEMS + %s WHERE USER_ID = %s", (gems,id_to_fix,))
+                            await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (id_to_fix,))
+                            gems_new = await cursor.fetchone()
+                            await interaction.followup.send(f"Old Gems: {gems_old[0]}.\nAdded {gems} gems to user with ID: {id_to_fix}.\nNew Gems: {gems_new[0]}.")
+                        await conn.commit()
+                except:
+                    try:
+                        await interaction.followup.send(f"{gems_and_id} is invalid.")
+                    except:
+                        await interaction.followup.send(f"This does not work.")
+
+            elif prompt == Prompt.EXPAND_FIX.value:
+                return # not needed rn
+                '''
+                Since essence to expand now costs 15x less, 
+                compensate users who spent essence to expand already
+
+                Give back essence in correlation to current expand times
+                '''
+                await interaction.response.defer() #let it cook
+
+                async with self.lock:
+                    try:
+                        async with self.bot.db.acquire() as conn:
+                            async with conn.cursor() as cursor:
+                                await cursor.execute("SELECT EXPAND_PURCHASES, USER_ID FROM USER;")
+                                expand_data = await cursor.fetchall()
+                            
+                                fixedEssencePPL = []
+
+                                for person in expand_data:
+                                    person_expandAMT = person[0]
+                                    personID = person[1]
+                                    if person_expandAMT != 0:
+                                        '''
+                                        This equation currently compensates:
+                                        EssenceCostEquation = (125*(TimesPurchased[0]**2)) + 150
+
+                                        Changed to (Dec 25, 2024):
+                                        EssenceCostEquation = (8*(TimesPurchased[0]**2)) + 60
+
+                                        This is changed by a factor of 1/15.
+                                        The equation compensates the difference between each sum as the return value:
+                                        returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
+                                        '''
+                                        returnEssence = (117 * (person_expandAMT * (person_expandAMT + 1) * (2 * person_expandAMT + 1)) / 6) + (90 * (person_expandAMT + 1))
+                                        await cursor.execute("UPDATE USER SET USER_ESSENCE = USER_ESSENCE + %s WHERE USER_ID = %s", (returnEssence,personID,))
+                                        fixedEssencePPL.append(f"<@{personID}> gained {returnEssence} essence back. They had expanded {person_expandAMT} times.")
+                                        await conn.commit()
+                                
+                                #format response out
+                                response_message = "\n".join(fixedEssencePPL)
+                                await interaction.followup.send(f"Fixed Essences for users:\n{response_message}")
+                    except Exception as e:
+                        await interaction.response.send_message(f"Compensation cannot be compensated. Error with code! {e}")
+
+            elif prompt == Prompt.QOTD_GEMS.value:
+                await interaction.response.defer()
+
+                QOTD_CHANNEL_ID = 1095876259315204226
+                
+                await interaction.followup.send("🚀 Starting QOTD gems distribution process...")
+                
+                await scan_and_reward_unreacted_threads(bot, QOTD_CHANNEL_ID, interaction)
+
+            elif prompt == Prompt.DEBUG_ROLE_CHECK.value:
+                await interaction.response.defer()
+                res = await cogs['leveling'].check_user_roles(interaction.guild)
+                await interaction.followup.send(f'Role check complete! {res}', ephemeral=True)
+
+            elif prompt == Prompt.MASS_DM.value:
+                # Create a modal to get the message content
+                class MessageModal(discord.ui.Modal):
+                    def __init__(self):
+                        super().__init__(title="Mass DM Message")
+                        
+                    message_content = discord.ui.TextInput(
+                        label="Message to send",
+                        style=discord.TextStyle.paragraph,
+                        placeholder="Enter the message you want to send to all members...",
+                        required=True,
+                        max_length=2000
+                    )
+                    
+                    async def on_submit(self, interaction: discord.Interaction):
+                        await interaction.response.defer(ephemeral=True)
+                        
+                        dm_message = self.message_content.value.strip()
+                        
+                        if not dm_message:
+                            return await interaction.followup.send("❗ You must provide a message to send.", ephemeral=True)
+                        
+                        # Handle file attachment if present (from original interaction)
+                        file = None
+                        if interaction.message and interaction.message.attachments:
+                            file = await interaction.message.attachments[0].to_file()
+                        
+                        failed = []
+                        success = 0
+                        
+                        # Send initial status message
+                        status_msg = await interaction.followup.send("📤 Sending DMs... This may take a while.", ephemeral=True)
+                        
+                        for member in interaction.guild.members:
+                            if member.bot:
+                                continue
+                            try:
+                                if file:
+                                    await member.send(content=dm_message, file=file)
+                                else:
+                                    await member.send(content=dm_message)
+                                success += 1
+                            except Exception:
+                                failed.append(member)
+                        
+                        # Update with final results
+                        await status_msg.edit(content=f"✅ Sent DMs to {success} members.\n❌ Failed to send to {len(failed)} members.")
+                
+                # Send the modal to the user
+                modal = MessageModal()
+                await interaction.response.send_modal(modal)
+
+            elif prompt == Prompt.META_CHANGE.value:
+
+                await interaction.response.defer()
+
+                async with self.bot.db.acquire() as conn:
+                        async with conn.cursor() as cursor:
+                            await cursor.execute("SELECT DISTINCT GAME FROM META")
+                            valid_games = await cursor.fetchall()
+                            valid_games = tuple(game[0] for game in valid_games)
+
+                            # Ask for what game
+                            form_valid_games = "\n".join([f"> {game}" for game in valid_games])
+                            await interaction.followup.send(f"What game would you like to tweak?\n{form_valid_games}")
+
+                            # Only continue if valid input
+                            async def getValidOption(valid_choices):
+                                while (True):
+                                    def check(message: discord.Message):
+                                        return message.author.id == member.id and message.channel.id == interaction.channel.id
+                                
+                                    try:
+                                        msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                                        chosen = msg.content.strip()
+                                        if chosen.lower() in (choice.lower() for choice in valid_choices):
+                                            # Done!
+                                            return chosen
+                                        else:
+                                            # Try again
+                                            raise NameError
+
+                                    except TimeoutError:
+                                        await interaction.followup.send(f"You took to long to respond! Please try again.", ephemeral=True)
+                                        return None
+                                    except NameError:
+                                        await interaction.followup.send(f"{chosen} is invalid. Please try again.", ephemeral=True)     
+                                        return None                   
+
+                            # If we continue, valid game chosen
+                            game_chose = await getValidOption(valid_games)
+                            if game_chose:
+                                await cursor.execute("SELECT DISTINCT MODE FROM META WHERE GAME = %s", game_chose.title())
+                                valid_modes = await cursor.fetchall()
+                                valid_modes = tuple(mode[0] for mode in valid_modes)
+
+                            else:
+                                # Stop if no valid input returned
+                                return
+
+                            # Ask for what gamemode after formatting
+                            form_valid_modes = "\n".join([f"> {mode}" for mode in valid_modes])
+                            await interaction.followup.send(f"What {game_chose} gamemode would you like to tweak?\n{form_valid_modes}")
+                            mode_chose = await getValidOption(valid_modes)
+
+                            # Loop to change links
+                            while(True):
+                                if mode_chose:
+                                    await cursor.execute("SELECT LINK1, LINK2, LINK3 FROM META WHERE GAME = %s AND MODE = %s", (game_chose, mode_chose),)
+                                    current_links = await cursor.fetchall()
+
+                                    # Get the first row (since you're querying for a specific game/mode combination)
+                                    row = current_links[0]  
+                                    # Now convert each column, replacing None with "N/A"
+                                    current_links = tuple(link if link is not None else "N/A" for link in row)
+                                else:
+                                    # Stop if no valid input returned
+                                    return
+                                
+                                # Quick formatting, then ask for what link to change
+                                formatted_links = "\n".join([f"> {i}: {link}" for i, link in enumerate(current_links, start=1)])
+                                await interaction.followup.send(f"Here are the current links:\n{formatted_links}\n\nWhich would you like to change?\nGive a number like 1, 2, 3")
+                                link_change = await getValidOption(("1", "2", "3"))
+
+                                # If valid link number given, update that link! But first lets ask what to change it with
+                                if link_change:
+                                    await interaction.followup.send(f"What would you like to change link #{link_change} to?")
+                                    def check(message: discord.Message):
+                                        return message.author.id == member.id and message.channel.id == interaction.channel.id
+                                
+                                    try:
+                                        msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                                        new_link = msg.content.strip()
+                                    except TimeoutError:
+                                        await interaction.followup.send(f"You didnt send a message in time! Please try again.")
+                                        return
+                                    
+                                    # Let's update!
+                                    if link_change == "1":
+                                        await cursor.execute(f"UPDATE META SET LINK1 = %s WHERE GAME = %s AND MODE = %s", (new_link, game_chose, mode_chose),)
+                                    elif link_change == "2":
+                                        await cursor.execute(f"UPDATE META SET LINK2 = %s WHERE GAME = %s AND MODE = %s", (new_link, game_chose, mode_chose),)
+                                    elif link_change == "3":
+                                        await cursor.execute(f"UPDATE META SET LINK3 = %s WHERE GAME = %s AND MODE = %s", (new_link, game_chose, mode_chose),)
+                                    else:
+                                        pass
+
+                                    # Done!
+                                    
+                                    await interaction.followup.send(f"Successfuly changed the link for {game_chose} | {mode_chose} to now be {new_link}!\nDo /meta to view your change.", ephemeral=False)
+                                    
+                                    # Log it all to a channnel!
+                                    log_channel = 1280965631625396277
+                                    channel = self.bot.get_channel(log_channel)
+                                    if channel:
+                                        await channel.send(f"<@{interaction.user.id}> has successfully changed the link for {game_chose}->{mode_chose} to now be {new_link}!\nDo /meta to view your change.")
+                                    else:
+                                        await interaction.followup.send(f"No channel message b/c this is on test server. It would be https://ptb.discord.com/channels/996903185685946490/{log_channel}", ephemeral=True)
+
+                                    # Add logging of who and when into the database
+                                    await cursor.execute("UPDATE META SET last_edit = %s, EDIT_AUTH = %s WHERE GAME = %s AND MODE = %s", (datetime.datetime.utcnow(), interaction.user.id, game_chose, mode_chose),)
+                                    await conn.commit()
+
+                                    # Ask if theres another link to add?
+                                    await interaction.followup.send(f"Would you like to add another link? (Y/N)")
+                                    while (True):
+                                        def check(message: discord.Message):
+                                            return message.author.id == member.id and message.channel.id == interaction.channel.id
+                                    
+                                        try:
+                                            msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                                            again_link = msg.content.strip()
+                                        except TimeoutError:
+                                            await interaction.followup.send(f"You didnt send a message in time! Please try again.")
+                                            return
+                                        
+                                        if again_link:
+                                            if again_link.upper() == "Y":
+                                                continue
+                                            elif again_link.upper() == "N":
+                                                break
+                                        
+                                    # Done!
+                                    return
+
+        else:
+            await interaction.response.send_message('Not gonna happen 🤓', ephemeral=True)
 
     ''' This section is for the "daily reminder" for CRK for guild contri'''
     # Send the message!
@@ -601,6 +756,7 @@ class General(commands.Cog):
     
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
+
 
 @bot.event
 async def on_ready():

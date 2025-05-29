@@ -8,111 +8,144 @@ from typing import Literal
 from buildcommand import HSRCharacter
 import logging
 
-# class Smart(commands.Cog):
-    
-#     # meta command keeps users up to date with the best current strategies
-#     @app_commands.command(name="meta", description="Check the current HSR/CRK Metas!")
-#     async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom']):
-#         member = interaction.user
-#         await interaction.response.defer()
+class Smart(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-#         # list containing all games as keys and valid meta information user can look up
-#         valid_options = {
-#             "Honkai: Star Rail": ['Memory of Chaos', 'Pure Fiction', 'Apocalyptic Shadow', 'General Tier List'],
-#             "Cookie Run Kingdom": ['Arena', 'Guild Boss', 'Alliance', 'Limited Time Mode', 'Story', 'Bounties', '...']
-#         }
-#         # dictionary for sub options for a mode (ex. guild boss -> LA, RVD, AOD)
-#         sub_options = {
-#             "Guild Boss" : ["RVD", "AOD", "LA"]
-#         }
+    # class to handle the select menu interaction view
+    class MetaView(discord.ui.View):
+        def __init__(self, bot, game, valid_options, sub_options, user):
+            super().__init__(timeout=90)
+            self.bot = bot
+            self.game = game
+            self.valid_options = valid_options
+            self.sub_options = sub_options
+            self.user = user
+            self.mode_look = None
 
-#         if game in valid_options:
-#             #use a while loop to keep looking for a valid user input
-#             get_mode = True
-#             while(get_mode):
-#                 # output options given the choice user makes
-#                 await interaction.followup.send("Which would you like to learn more about?:\n",ephemeral=True)
-#                 options = valid_options[game]
-#                 formatted_options = '\n'.join(f"{index + 1}. {option}" for index, option in enumerate(options))
-#                 await interaction.followup.send(formatted_options,ephemeral=True)
+            # add dropdown for the main game mode selection
+            self.add_item(Smart.ModeSelect(valid_options[game]))
 
-#                 # grab user response
-#                 def check(message: discord.Message):
-#                         return message.author.id == member.id and message.channel.id == interaction.channel.id
+        async def interaction_check(self, interaction: discord.Interaction):
+            return interaction.user.id == self.user.id
 
-#                 # only keep going if user input is valid
-#                 try:
-#                     msg = await interaction.client.wait_for('message', check=check, timeout=90.0)
-#                     learn_more = int(msg.content)
+        async def on_timeout(self):
+            for child in self.children:
+                child.disabled = True
 
-#                     #check if valid input
-#                     if 1<= learn_more <= len(options):
-#                         mode_look = valid_options[game][learn_more-1]
-#                         get_mode = False
+    # dropdown for main mode selection
+    class ModeSelect(discord.ui.Select):
+        def __init__(self, options):
+            formatted = [discord.SelectOption(label=opt, value=opt) for opt in options]
+            super().__init__(placeholder="Choose a mode...", options=formatted)
 
-#                         # check for sub-options
-#                         if mode_look in sub_options:
-#                             get_mode = True
-#                             while(get_mode):
-#                                 await interaction.followup.send("Please specify:\n",ephemeral=True)
-#                                 sub_options_list = sub_options[mode_look]
-#                                 formatted_sub_options = '\n'.join(f"{index + 1}. {option}" for index, option in enumerate(sub_options_list))
-#                                 await interaction.followup.send(formatted_sub_options, ephemeral=True)
+        async def callback(self, interaction: discord.Interaction):
+            view: Smart.MetaView = self.view
+            mode = self.values[0]
+            # check for sub-options
+            if mode in view.sub_options:
+                view.clear_items()
+                # dropdown for sub-options
+                view.add_item(Smart.SubModeSelect(mode, view.sub_options[mode]))
+            else:
+                view.mode_look = mode
+                view.stop()
+            await interaction.response.edit_message(view=view)
 
-#                                 # grab user response
-#                                 def check(message: discord.Message):
-#                                         return message.author.id == member.id and message.channel.id == interaction.channel.id
-#                                 try:
-#                                     msg = await interaction.client.wait_for('message', check=check, timeout=90.0)
-#                                     sub_choice = int(msg.content)
+    # dropdown for sub-mode selection
+    class SubModeSelect(discord.ui.Select):
+        def __init__(self, parent_mode, options):
+            self.parent_mode = parent_mode
+            formatted = [discord.SelectOption(label=opt, value=opt) for opt in options]
+            super().__init__(placeholder="Choose a sub-mode...", options=formatted)
 
-#                                     if 1 <= sub_choice <= len(sub_options_list):
-#                                         mode_look = sub_options_list[sub_choice - 1]
-#                                         get_mode = False
-#                                     else:
-#                                         await interaction.followup.send("Invalid input! Try again.",ephemeral=True)
-#                                 except:
-#                                     await interaction.followup.send("Invalid input! Try again.",ephemeral=True)
-#                     else:
-#                         await interaction.followup.send("Invalid input! Try again.",ephemeral=True)
-#                 except:
-#                     await interaction.followup.send("Error! Invalid input. Try again.",ephemeral=True)
-                    
-#             await interaction.followup.send(f"YOU CHOSE: {mode_look}",ephemeral=True)
-#             # get corresponding info from DB
-#             async with self.bot.db.acquire() as conn:
-#                 async with conn.cursor() as cursor:
-#                     await cursor.execute("SELECT LINK1, LINK2, LINK3 FROM META WHERE GAME = %s and MODE = %s", (game,))
-#                     links = await cursor.fetchall()
-#                     try:
-#                         em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=valid_options[game][learn_more-1])
-#                         em.set_thumbnail(url=interaction.user.guild.icon.url)
+        async def callback(self, interaction: discord.Interaction):
+            view: Smart.MetaView = self.view
+            view.mode_look = self.values[0]
+            view.stop()
+            await interaction.response.edit_message(view=view)
 
-#                         # gifs that will randomly be chosen to be sent alongside the meta info
-#                         game_gifs = {
-#                             "Honkai: Star Rail" : [
-#                                 "https://media.tenor.com/AM2qQ1ErSesAAAAj/pom-pom-pom-pom-honkai-star-rail.gif",
-#                                 "https://media.tenor.com/3oOJfWP8Rf0AAAAj/bronya-hsr.gif"],
-#                             "Cookie Run Kingdom" : [
-#                                 "https://media1.tenor.com/m/Pn1VrqlAC6oAAAAd/cookierun-milky-way-cookie.gif",
-#                                 "https://media1.tenor.com/m/6O2uFeYTDOMAAAAd/cookierun-milky-way-cookie.gif"],
-#                         }
+    @app_commands.command(name="meta", description="Check the current metas [hsr/crk/zzz]!")
+    async def featured(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero']):
+        ''' 
+        meta command keeps users up to date with the best current strategies
+        '''
+        member = interaction.user
+        await interaction.response.defer(ephemeral=True)
 
-#                         # randomly assign corresponding image
-#                         gifs_length = len(game_gifs[game])
-#                         r = random.randrange(0,gifs_length)
-#                         embed_img = game_gifs[game][r]
-#                         em.set_image(url=embed_img)
-#                         # only send source if it exists in the database
-#                         if links[0] is not None:
-#                             em.add_field(name="First Source: ", value=links[0], inline=True)
-#                         if links[1] is not None:
-#                             em.add_field(name="Second Source: ", value=links[0], inline=True)
-#                         if links [2] is not None: 
-#                             em.add_field(name="Third Source: ", value=links[0], inline=True)
-#                         em.set_footer(text="Brought to you by... discord.gg/nurture")
-#                     except:
-#                             await interaction.followup.send("Error with embed! Here are the links instead:\n")
-#             await interaction.response.send_message(embed=em)
-#         else:
-#             await interaction.followup.send("Invalid input! Try again.\n")
+        # list containing all games as keys and valid meta information user can look up
+        valid_options = {
+            "Honkai: Star Rail": ['Memory of Chaos', 'Pure Fiction', 'Apocalyptic Shadow', 'General Tier List'],
+            "Cookie Run Kingdom": ['Arena', 'Arcane Arena', 'Guild Boss', 'Alliance', 'Limited Time Mode', 'Story'],
+            "Zenless Zone Zero": ['Deadly Assault', 'Hollow Zero']
+        }
+        # dictionary for sub options for a mode (ex. guild boss -> LA, RVD, AOD)
+        sub_options = {
+            "Guild Boss" : ["RVD", "AOD", "LA"],
+            "Story": ["..."]
+        }
+
+        # create the dropdown UI view
+        view = Smart.MetaView(self.bot, game, valid_options, sub_options, member)
+        await interaction.followup.send("Which would you like to learn more about?:", view=view, ephemeral=True)
+        await view.wait()
+
+        # return if no valid choice was made
+        if not view.mode_look:
+            return await interaction.followup.send("You didn't select a mode in time.", ephemeral=True)
+
+        # get corresponding info from DB
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+
+                # Get links and who did the editing
+                await cursor.execute("SELECT LINK1, LINK2, LINK3, LAST_EDIT, EDIT_AUTH FROM META WHERE GAME = %s and MODE = %s", (game, view.mode_look))
+                link_and_data = await cursor.fetchone()
+                links = (link_and_data[0], link_and_data[1], link_and_data[2])
+                edit_data = (link_and_data[3], link_and_data[4])
+
+                try:
+                    em = discord.Embed(color=discord.Colour.from_rgb(78, 150, 94), title=f"{view.mode_look} | {game}")
+                    em.set_thumbnail(url=interaction.user.guild.icon.url)
+
+                    # gifs that will randomly be chosen to be sent alongside the meta info
+                    game_gifs = {
+                        "Honkai: Star Rail" : [
+                            "https://media.tenor.com/AM2qQ1ErSesAAAAj/pom-pom-pom-pom-honkai-star-rail.gif",
+                            "https://media.tenor.com/3oOJfWP8Rf0AAAAj/bronya-hsr.gif"],
+                        "Cookie Run Kingdom" : [
+                            "https://c.tenor.com/Pn1VrqlAC6oAAAAd/tenor.gif",
+                            "https://c.tenor.com/6O2uFeYTDOMAAAAd/tenor.gif"],
+                        "Zenless Zone Zero" : [
+                            "https://c.tenor.com/ZOtfR1oVJRAAAAAd/tenor.gif",
+                            r"https://media.tenor.com/u3mqzhX4JcwAAAAj/anby-%EC%A0%A0%EB%A0%88%EC%8A%A4.gif"
+                        ]
+                    }
+
+                    # randomly assign corresponding image
+                    gifs_length = len(game_gifs.get(game, []))
+                    if gifs_length > 0:
+                        r = random.randrange(0, gifs_length)
+                        embed_img = game_gifs[game][r]
+                        em.set_image(url=embed_img)
+
+                    # only send source if it exists in the database
+                    if links:
+                        if links[0]:
+                            em.add_field(name="First Source: ", value=links[0], inline=True)
+                        if links[1]:
+                            em.add_field(name="Second Source: ", value=links[1], inline=True)
+                        if links[2]: 
+                            em.add_field(name="Third Source: ", value=links[2], inline=True)
+                        
+                        # Who done did it and when
+                        last_edit = edit_data[0].strftime("%B %d, %Y")
+                        who_did_edit = edit_data[1]
+
+                        em.add_field(name=f"Last edited: {last_edit}", value= f"Edited by <@{who_did_edit}>", inline=True)
+                    else:
+                        em.add_field(name="Will update soon!!! ", value="Ping a guide or @sorakoi to remind us to work on this :)", inline=True)
+                    em.set_footer(text="Brought to you by... discord.gg/nurture")
+                    await interaction.followup.send(embed=em, ephemeral=False)
+                except:
+                    await interaction.followup.send(f"Error with embed! Here are the links instead:\n{links}", ephemeral=True)
