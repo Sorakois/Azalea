@@ -306,12 +306,22 @@ class General(commands.Cog):
         '''
 
         # Give "divider" roles (?)
+        divider_roles = [1369751999809323109,
+                         1369751936395645049,
+                         1369751745927970997,
+                         1369735211306188880,
+                         1369750747658588201]
+
+        for role_id in divider_roles:
+            roleToAdd = member.guild.get_role(role_id)
+            if roleToAdd:
+                await member.add_roles(roleToAdd)
 
 
         # Log join in #welcome
         channel = self.bot.get_channel(996903186168283220)
         if channel:
-            await channel.send(f"Welcome to Nurture, {member.display_name} (<@{member.id}>)!\nWe hope you enjoy your stay!")
+            await channel.send(f"Welcome to Nurture, <@{member.id}>! :NekoLove:\nWe hope you enjoy your stay! ")
 
 
         # Automatically set the user to level 0 [choco II]
@@ -321,14 +331,14 @@ class General(commands.Cog):
                 userExists = await cursor.fetchone()
                 if userExists:
                     # User was here before... let's give them their role back
-
-                    return
-                
-                # NEW MEMBER!
-                # Numbers = ID for level 0 role
-                roleToAdd = member.guild.get_role(1083845379893772350)
-                if roleToAdd:
-                    await member.add_roles(roleToAdd)
+                    
+                    pass
+                else:
+                    # NEW MEMBER!
+                    # Numbers = ID for level 0 role
+                    roleToAdd = member.guild.get_role(1083845379893772350)
+                    if roleToAdd:
+                        await member.add_roles(roleToAdd)
 
         # Send a welcome message!
         welcome_gif = discord.File("assets/neko_wave.gif")
@@ -336,20 +346,21 @@ class General(commands.Cog):
             "# Welcome to Nurture!\n"
             "## Here's a quick few things you should know!\n"
             "### 1.) Nurture has a level system in place to hinder spammers/raiders\n"
-            "> - There are cool perks for leveling up, so check here! https://ptb.discord.com/channels/996903185685946490/1084978040821514241)\n"
+            "> - There are cool perks for leveling up, so check here! https://ptb.discord.com/channels/996903185685946490/1084978040821514241\n"
             "### 2.) If you have any questions, please reach out to mods!\n"
             "> - Answers to our FAQ can be found here! https://ptb.discord.com/channels/996903185685946490/1365023830145499259\n"
-            "### 3.) Please follow rules!"
-            "> - Read more about them here if you often break them, just to know :) https://ptb.discord.com/channels/996903185685946490/1042241938730012783"
-            "### 4.) Feel free to ping @helper roles! We are here to help!\n\n #Above all else... enjoy your stay! :)",
+            "### 3.) Please follow rules!\n"
+            "> - Read more about them here if you often break them, just to know :) https://ptb.discord.com/channels/996903185685946490/1042241938730012783\n"
+            "### 4.) Feel free to ping @helper roles! We are here to help!\n\n # Above all else... enjoy your stay! :)",
             file=welcome_gif
         )
 
+    @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         channel = self.bot.get_channel(1069755829126971392)
         if channel:
             await channel.send(
-                f"📤 **Member Left**\n"
+                f":sadge: **Member Left**\n"
                 f"{member.display_name} (<@{member.id}> - {member.id}) has left the server."
             )
 
@@ -672,7 +683,7 @@ class General(commands.Cog):
                                     await interaction.followup.send(f"Successfuly changed the link for {game_chose} | {mode_chose} to now be {new_link}!\nDo /meta to view your change.", ephemeral=False)
                                     
                                     # Log it all to a channnel!
-                                    log_channel = 1280965631625396277
+                                    log_channel = 1378566736319741952
                                     channel = self.bot.get_channel(log_channel)
                                     if channel:
                                         await channel.send(f"<@{interaction.user.id}> has successfully changed the link for {game_chose}->{mode_chose} to now be {new_link}!\nDo /meta to view your change.")
@@ -685,22 +696,21 @@ class General(commands.Cog):
 
                                     # Ask if theres another link to add?
                                     await interaction.followup.send(f"Would you like to add another link? (Y/N)")
-                                    while (True):
-                                        def check(message: discord.Message):
-                                            return message.author.id == member.id and message.channel.id == interaction.channel.id
+                                    def check(message: discord.Message):
+                                        return message.author.id == member.id and message.channel.id == interaction.channel.id
+                                
+                                    try:
+                                        msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                                        again_link = msg.content.strip()
+                                    except TimeoutError:
+                                        await interaction.followup.send(f"You didnt send a message in time! Please try again.")
+                                        return
                                     
-                                        try:
-                                            msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
-                                            again_link = msg.content.strip()
-                                        except TimeoutError:
-                                            await interaction.followup.send(f"You didnt send a message in time! Please try again.")
-                                            return
-                                        
-                                        if again_link:
-                                            if again_link.upper() == "Y":
-                                                continue
-                                            elif again_link.upper() == "N":
-                                                break
+                                    if again_link:
+                                        if again_link.upper() == "Y":
+                                            continue
+                                        elif again_link.upper() == "N":
+                                            break
                                         
                                     # Done!
                                     return

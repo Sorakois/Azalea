@@ -41,8 +41,6 @@ roles = {
     "Grandmaster I": 1083847441855561799
 }
 
-# roles = {'tier 1': 1135634051479388180, 'tier 2': 1135634087051268216, 'tier 3': 1135634103211925566}
-
 ignoreList = {836367313502208040, 329669053838917632, 400443611105460234}
 
 class Leveling(commands.Cog):
@@ -58,33 +56,58 @@ class Leveling(commands.Cog):
     @app_commands.command(name="leaderboard", description="Display the leaderboard for this server")
     async def leaderboard(self, interaction: discord.Interaction):
         '''
-        Check the leaderboard of the server
-
+        Check the leaderboard of the server (only showing users still in the server)
         params:
             interaction (discord.Interaction) : Interaction object to respond to
-
         returns:
             A message sent to user.
         '''
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_ID, USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 10")
-                leaders = await cursor.fetchall()
-
+                leaders = []
+                offset = 0
+                
+                while len(leaders) < 10:
+                    # Fetch users in batches, starting with 10 more than we need
+                    batch_size = 10 + offset
+                    await cursor.execute("SELECT USER_ID, USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT %s OFFSET %s", 
+                                    (batch_size, len(leaders) + offset))
+                    batch = await cursor.fetchall()
+                    
+                    if not batch:  # No more users in database
+                        break
+                    
+                    # Check which users are still in the server
+                    valid_users = []
+                    filtered_count = 0
+                    
+                    for user_data in batch:
+                        member = interaction.guild.get_member(user_data[0])
+                        if member is not None:  # User is still in the server
+                            valid_users.append(user_data)
+                            if len(leaders) + len(valid_users) >= 10:  # Stop once we have enough
+                                break
+                        else:
+                            filtered_count += 1
+                    
+                    leaders.extend(valid_users)
+                    
+                    # If we still need more users, adjust offset for next iteration
+                    if len(leaders) < 10:
+                        offset += filtered_count
+                
                 userString = ''
                 levelString = ''
                 for leader in leaders:
-                    user = await self.bot.fetch_user(leader[0])
-                    userString += f'{user.mention}\n'
-
+                    member = interaction.guild.get_member(leader[0])
+                    userString += f'{member.mention}\n'
                     level = leader[1]
                     levelString += f'{level}\n'
-
-
+                    
                 em = discord.Embed(title="Leaderboard")
+                em.set_thumbnail(url=interaction.guild.icon.url if interaction.guild.icon else None)
                 em.add_field(name='Level', value=levelString, inline=True)
                 em.add_field(name='User', value=userString, inline=True)
-
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
     @app_commands.command(name="level", description="Display the level of a user")
@@ -219,290 +242,225 @@ class Leveling(commands.Cog):
             pass
             # maybe log something: logging.exception(f"Database acquisition error for user {author.id}: {e}")
 
-        async def assign_role(self, user, level, highest_level, guild):
-            '''
-            Called when a user levels up, will remove and add roles of each level accordingly.
-            params:
-                user (discord.User) : User object to change role of
-                level (int) : the new level of the user
-                highest_level (int) : the highest level in the server
-                guild (discord.Guild) : Guild object that the user is in.
-            '''
-            async def checkAssign(index):
-                getRole = lambda i : discord.utils.get(guild.roles, id=list(roles.values())[i])
-                if getRole(index) not in user.roles:
-                    roleToAdd = getRole(index)
-                    await user.add_roles(roleToAdd)
-                if index > 0 and getRole(index-1) in user.roles:
-                    roleToRemove = getRole(index-1)
-                    await user.remove_roles(roleToRemove)      
+    async def assign_role(self, user, level, highest_level, guild):
+        '''
+        Called when a user levels up, will remove and add roles of each level accordingly.
+        params:
+            user (discord.User) : User object to change role of
+            level (int) : the new level of the user
+            highest_level (int) : the highest level in the server
+            guild (discord.Guild) : Guild object that the user is in.
+        '''
+        try:
+            # Get the member object (user might be a User object, we need Member)
+            member = guild.get_member(user.id)
+            if not member:
+                return
             
-            # Chocolate II (Levels 1-3)
-            if level <= 3:
-                await checkAssign(0)
-            # Chocolate I (Levels 4-6)
-            elif level <= 6:
-                await checkAssign(1)
-            # Bronze II (Level 7)
-            elif level == 7:
-                await checkAssign(2)
-            # Bronze I (Level 8)
-            elif level == 8:
-                await checkAssign(3)
-            # Silver III (Level 9)
-            elif level == 9:
-                await checkAssign(4)
-            # Silver II (Level 10)
-            elif level == 10:
-                await checkAssign(5)
-            # Silver I (Level 11)
-            elif level == 11:
-                await checkAssign(6)
-            # Gold III (Level 12)
-            elif level == 12:
-                await checkAssign(7)
-            # Gold II (Level 13)
-            elif level == 13:
-                await checkAssign(8)
-            # Gold I (Level 14)
-            elif level == 14:
-                await checkAssign(9)
-            # Crystal III (Level 15)
-            elif level == 15:
-                await checkAssign(10)
-            # Crystal II (Level 16)
-            elif level == 16:
-                await checkAssign(11)
-            # Crystal I (Level 17)
-            elif level == 17:
-                await checkAssign(12)
-            # Diamond III (Level 18)
-            elif level == 18:
-                await checkAssign(13)
-            # Diamond II (Level 19)
-            elif level == 19:
-                await checkAssign(14)
-            # Diamond I (Level 20)
-            elif level == 20:
-                await checkAssign(15)
+            # Get all possible level role objects
+            all_level_roles = []
+            for role_id in roles.values():
+                role = guild.get_role(role_id)
+                if role:
+                    all_level_roles.append(role)
             
-            # Grandmaster I (Level 50+, 1st Place)
-            elif level == highest_level and level >= 50:
-                await checkAssign(28)
-            # Grandmaster II (Level 50+, Top 30% of Grandmaster)
-            elif level >= highest_level * 0.7 and level >= 50:
-                await checkAssign(27)
-            # Grandmaster III (Level 50+)
-            elif level >= 50:
-                await checkAssign(26)
+            # Remove ALL existing level roles first
+            roles_to_remove = [role for role in member.roles if role in all_level_roles]
+            if roles_to_remove:
+                await member.remove_roles(*roles_to_remove, reason="Level role update - removing old roles")
             
-            # Elite I (Level 40-49, Top 30% of Elite)
-            elif level >= highest_level * 0.7 and 40 <= level <= 49:
-                await checkAssign(25)
-            # Elite II (Level 40-49, Top 40% of Elite)
-            elif level >= highest_level * 0.6 and 40 <= level <= 49:
-                await checkAssign(24)
-            # Elite III (Level 40-49, Top 50% of Elite)
-            elif level >= highest_level * 0.5 and 40 <= level <= 49:
-                await checkAssign(23)
-            # Elite IV (Level 40-49, Top 60% of Elite)
-            elif level >= highest_level * 0.4 and 40 <= level <= 49:
-                await checkAssign(22)
-            # Elite V (Level 40-49)
-            elif 40 <= level <= 49:
-                await checkAssign(21)
+            # Determine which role they should have
+            expected_role_index = self.get_expected_role_index(level, highest_level)
             
-            # Master I (Level 21-39, Top 30% of Master)
-            elif level >= highest_level * 0.7 and 21 <= level <= 39:
-                await checkAssign(20)
-            # Master II (Level 21-39, Top 40% of Master)
-            elif level >= highest_level * 0.6 and 21 <= level <= 39:
-                await checkAssign(19)
-            # Master III (Level 21-39, Top 50% of Master)
-            elif level >= highest_level * 0.5 and 21 <= level <= 39:
-                await checkAssign(18)
-            # Master IV (Level 21-39, Top 60% of Master)
-            elif level >= highest_level * 0.4 and 21 <= level <= 39:
-                await checkAssign(17)
-            # Master V (Level 21-39)
-            elif 21 <= level <= 39:
-                await checkAssign(16)
-
-        async def check_user_roles(self, guild):
-            '''
-            Audits all users' roles and fixes any mismatched roles based on their current levels.
-            
-            params:
-                bot (commands.Bot): Bot instance to access database
-                bot (commands.Bot): Bot instance to access database
-                guild (discord.Guild): Guild object to check roles in
-                str: Summary of role changes made
-            '''
-            changes_made = 0
-            users_checked = 0
-            errors = []
-            
-            async with self.bot.db.acquire() as conn:
-                async with conn.cursor() as cursor:
-                    # Get all users with levels from database
-                    await cursor.execute("SELECT USER_ID, USER_LEVEL FROM USER WHERE USER_LEVEL > 0")
-                    user_data = await cursor.fetchall()
-                    
-                    # Get highest level for percentage calculations
-                    await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
-                    highest_level_result = await cursor.fetchone()
-                    highest_level = highest_level_result[0] if highest_level_result else 1
-                    
-                    for user_id, user_level in user_data:
-                        try:
-                            # Get guild member
-                            member = guild.get_member(user_id)
-                            if not member:
-                                continue
-                                
-                            users_checked += 1
-                            
-                            # Calculate what role they should have
-                            expected_role_index = self.get_expected_role_index(user_level, highest_level)
-                            
-                            if expected_role_index is not None:
-                                expected_role_id = list(roles.values())[expected_role_index]
-                                expected_role = discord.utils.get(guild.roles, id=expected_role_id)
-                                
-                                # Check if user has the correct role
-                                current_level_roles = [role for role in member.roles if role.id in list(roles.values())]
-                                
-                                # If they don't have the expected role or have wrong roles
-                                if expected_role not in member.roles or len(current_level_roles) != 1:
-                                    # Remove all level roles
-                                    for role in current_level_roles:
-                                        if role != expected_role:
-                                            await member.remove_roles(role)
-                                            changes_made += 1
-                                    
-                                    # Add correct role if not already present
-                                    if expected_role not in member.roles and expected_role:
-                                        await member.add_roles(expected_role)
-                                        changes_made += 1
-                            
-                        except Exception as e:
-                            errors.append(f"Error processing user {user_id}: {str(e)}")
-                            continue
-            
-            # Prepare summary message
-            summary = f"Checked {users_checked} users, made {changes_made} role changes"
-            if errors:
-                summary += f"\nErrors encountered: {len(errors)}"
-                # Log first few errors for debugging
-                for error in errors[:3]:
-                    summary += f"\n- {error}"
-                if len(errors) > 3:
-                    summary += f"\n- ... and {len(errors) - 3} more errors"
-            
-            return summary
-
-
-        def get_expected_role_index(self, level, highest_level):
-            '''
-            Helper function to determine what role index a user should have based on their level.
-            
-            params:
-                level (int): User's current level
-                highest_level (int): Highest level in the server
+            if expected_role_index is not None:
+                role_id = list(roles.values())[expected_role_index]
+                new_role = guild.get_role(role_id)
                 
-            returns:
-                int or None: Index of the role they should have, or None if no role
-            '''
-            # Chocolate II (Levels 1-3)
-            if level <= 3:
-                return 0
-            # Chocolate I (Levels 4-6)
-            elif level <= 6:
-                return 1
-            # Bronze II (Level 7)
-            elif level == 7:
-                return 2
-            # Bronze I (Level 8)
-            elif level == 8:
-                return 3
-            # Silver III (Level 9)
-            elif level == 9:
-                return 4
-            # Silver II (Level 10)
-            elif level == 10:
-                return 5
-            # Silver I (Level 11)
-            elif level == 11:
-                return 6
-            # Gold III (Level 12)
-            elif level == 12:
-                return 7
-            # Gold II (Level 13)
-            elif level == 13:
-                return 8
-            # Gold I (Level 14)
-            elif level == 14:
-                return 9
-            # Crystal III (Level 15)
-            elif level == 15:
-                return 10
-            # Crystal II (Level 16)
-            elif level == 16:
-                return 11
-            # Crystal I (Level 17)
-            elif level == 17:
-                return 12
-            # Diamond III (Level 18)
-            elif level == 18:
-                return 13
-            # Diamond II (Level 19)
-            elif level == 19:
-                return 14
-            # Diamond I (Level 20)
-            elif level == 20:
-                return 15
+                if new_role:
+                    await member.add_roles(new_role, reason=f"Level {level} achieved")
+                    print(f"Assigned {new_role.name} to {member.display_name} (Level {level})")
+                    
+        except discord.Forbidden:
+            print(f"Missing permissions to manage roles for {user.display_name if hasattr(user, 'display_name') else user.name}")
+        except discord.HTTPException as e:
+            print(f"HTTP error while managing roles for {user.display_name if hasattr(user, 'display_name') else user.name}: {e}")
+        except Exception as e:
+            print(f"Unexpected error in assign_role for {user.display_name if hasattr(user, 'display_name') else user.name}: {e}")
+
+    def get_expected_role_index(self, level, highest_level):
+        '''
+        Helper function to determine what role index a user should have based on their level.
+        
+        params:
+            level (int): User's current level
+            highest_level (int): Highest level in the server
             
-            # Grandmaster I (Level 50+, 1st Place)
-            elif level == highest_level and level >= 50:
-                return 28
-            # Grandmaster II (Level 50+, Top 30% of Grandmaster)
-            elif level >= highest_level * 0.7 and level >= 50:
-                return 27
-            # Grandmaster III (Level 50+)
-            elif level >= 50:
-                return 26
+        returns:
+            int or None: Index of the role they should have, or None if no role
+        '''
+        # Chocolate II (Levels 1-3)
+        if level <= 3:
+            return 0
+        # Chocolate I (Levels 4-6)
+        elif level <= 6:
+            return 1
+        # Bronze II (Level 7)
+        elif level == 7:
+            return 2
+        # Bronze I (Level 8)
+        elif level == 8:
+            return 3
+        # Silver III (Level 9)
+        elif level == 9:
+            return 4
+        # Silver II (Level 10)
+        elif level == 10:
+            return 5
+        # Silver I (Level 11)
+        elif level == 11:
+            return 6
+        # Gold III (Level 12)
+        elif level == 12:
+            return 7
+        # Gold II (Level 13)
+        elif level == 13:
+            return 8
+        # Gold I (Level 14)
+        elif level == 14:
+            return 9
+        # Crystal III (Level 15)
+        elif level == 15:
+            return 10
+        # Crystal II (Level 16)
+        elif level == 16:
+            return 11
+        # Crystal I (Level 17)
+        elif level == 17:
+            return 12
+        # Diamond III (Level 18)
+        elif level == 18:
+            return 13
+        # Diamond II (Level 19)
+        elif level == 19:
+            return 14
+        # Diamond I (Level 20)
+        elif level == 20:
+            return 15
+        
+        # Grandmaster I (Level 50+, 1st Place)
+        elif level == highest_level and level >= 50:
+            return 28
+        # Grandmaster II (Level 50+, Top 30% of Grandmaster)
+        elif level >= highest_level * 0.7 and level >= 50:
+            return 27
+        # Grandmaster III (Level 50+)
+        elif level >= 50:
+            return 26
+        
+        # Elite I (Level 40-49, Top 30% of Elite)
+        elif level >= highest_level * 0.7 and 40 <= level <= 49:
+            return 25
+        # Elite II (Level 40-49, Top 40% of Elite)
+        elif level >= highest_level * 0.6 and 40 <= level <= 49:
+            return 24
+        # Elite III (Level 40-49, Top 50% of Elite)
+        elif level >= highest_level * 0.5 and 40 <= level <= 49:
+            return 23
+        # Elite IV (Level 40-49, Top 60% of Elite)
+        elif level >= highest_level * 0.4 and 40 <= level <= 49:
+            return 22
+        # Elite V (Level 40-49)
+        elif 40 <= level <= 49:
+            return 21
+        
+        # Master I (Level 21-39, Top 30% of Master)
+        elif level >= highest_level * 0.7 and 21 <= level <= 39:
+            return 20
+        # Master II (Level 21-39, Top 40% of Master)
+        elif level >= highest_level * 0.6 and 21 <= level <= 39:
+            return 19
+        # Master III (Level 21-39, Top 50% of Master)
+        elif level >= highest_level * 0.5 and 21 <= level <= 39:
+            return 18
+        # Master IV (Level 21-39, Top 60% of Master)
+        elif level >= highest_level * 0.4 and 21 <= level <= 39:
+            return 17
+        # Master V (Level 21-39)
+        elif 21 <= level <= 39:
+            return 16
+        
+        # If level doesn't match any criteria, return None
+        return None
+
+    async def check_user_roles(self, guild):
+        '''
+        Audits all users' roles and fixes any mismatched roles based on their current levels.
+        
+        params: 
+            guild (discord.Guild): Guild object to check roles in
             
-            # Elite I (Level 40-49, Top 30% of Elite)
-            elif level >= highest_level * 0.7 and 40 <= level <= 49:
-                return 25
-            # Elite II (Level 40-49, Top 40% of Elite)
-            elif level >= highest_level * 0.6 and 40 <= level <= 49:
-                return 24
-            # Elite III (Level 40-49, Top 50% of Elite)
-            elif level >= highest_level * 0.5 and 40 <= level <= 49:
-                return 23
-            # Elite IV (Level 40-49, Top 60% of Elite)
-            elif level >= highest_level * 0.4 and 40 <= level <= 49:
-                return 22
-            # Elite V (Level 40-49)
-            elif 40 <= level <= 49:
-                return 21
-            
-            # Master I (Level 21-39, Top 30% of Master)
-            elif level >= highest_level * 0.7 and 21 <= level <= 39:
-                return 20
-            # Master II (Level 21-39, Top 40% of Master)
-            elif level >= highest_level * 0.6 and 21 <= level <= 39:
-                return 19
-            # Master III (Level 21-39, Top 50% of Master)
-            elif level >= highest_level * 0.5 and 21 <= level <= 39:
-                return 18
-            # Master IV (Level 21-39, Top 60% of Master)
-            elif level >= highest_level * 0.4 and 21 <= level <= 39:
-                return 17
-            # Master V (Level 21-39)
-            elif 21 <= level <= 39:
-                return 16
-            
-            # If level doesn't match any criteria, return None
-            return None
+        returns:
+            str: Summary of role changes made
+        '''
+        changes_made = 0
+        users_checked = 0
+        errors = []
+        
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                # Get all users with levels from database
+                await cursor.execute("SELECT USER_ID, USER_LEVEL FROM USER WHERE USER_LEVEL > 0")
+                user_data = await cursor.fetchall()
+                
+                # Get highest level for percentage calculations
+                await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
+                highest_level_result = await cursor.fetchone()
+                highest_level = highest_level_result[0] if highest_level_result else 1
+                
+                for user_id, user_level in user_data:
+                    try:
+                        # Get guild member
+                        member = guild.get_member(user_id)
+                        if not member:
+                            continue
+                            
+                        users_checked += 1
+                        
+                        # Calculate what role they should have
+                        expected_role_index = self.get_expected_role_index(user_level, highest_level)
+                        
+                        if expected_role_index is not None:
+                            expected_role_id = list(roles.values())[expected_role_index]
+                            expected_role = discord.utils.get(guild.roles, id=expected_role_id)
+                            
+                            # Check if user has the correct role
+                            current_level_roles = [role for role in member.roles if role.id in list(roles.values())]
+                            
+                            # If they don't have the expected role or have wrong roles
+                            if expected_role not in member.roles or len(current_level_roles) != 1:
+                                # Remove all level roles
+                                for role in current_level_roles:
+                                    if role != expected_role:
+                                        await member.remove_roles(role)
+                                        changes_made += 1
+                                
+                                # Add correct role if not already present
+                                if expected_role not in member.roles and expected_role:
+                                    await member.add_roles(expected_role)
+                                    changes_made += 1
+                        
+                    except Exception as e:
+                        errors.append(f"Error processing user {user_id}: {str(e)}")
+                        continue
+        
+        # Prepare summary message
+        summary = f"Checked {users_checked} users, made {changes_made} role changes"
+        if errors:
+            summary += f"\nErrors encountered: {len(errors)}"
+            # Log first few errors for debugging
+            for error in errors[:3]:
+                summary += f"\n- {error}"
+            if len(errors) > 3:
+                summary += f"\n- ... and {len(errors) - 3} more errors"
+        
+        return summary

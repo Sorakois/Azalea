@@ -214,41 +214,45 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
     E_gem = None
     grand_gem = None
 
-    if reward_check > 0: # 1, 2, or 3
-        M_gem = Image.open('assets/level/Master-gem.png').convert("RGBA")
-    if reward_check > 1: # 2 or 3
-        E_gem = Image.open('assets/level/Elite-gem.png').convert("RGBA")
-    if reward_check > 2: # 3 only
-        grand_gem = Image.open('assets/level/GM-gem.png').convert("RGBA")
+    try:
+        if reward_check > 0: # 1, 2, or 3
+            M_gem = Image.open('assets/level/Master-gem.png').convert("RGBA")
+        if reward_check > 1: # 2 or 3
+            E_gem = Image.open('assets/level/Elite-gem.png').convert("RGBA")
+        if reward_check > 2: # 3 only
+            grand_gem = Image.open('assets/level/GM-gem.png').convert("RGBA")
 
-    '''BOOSTER SPECIAL!'''
-    if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.guild.get_member(user_id).roles:
-        # Boosters get their own role icon also added to the /level screen!
+        '''BOOSTER SPECIAL!'''
+        if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.guild.get_member(user_id).roles:
+            # Boosters get their own role icon also added to the /level screen!
 
-        # Booster icon will be their top role
-        top_role_with_icon = None
-        # Start from highest role
-        for role in reversed(interaction.guild.get_member(user_id).roles):
-            # Check if role has an icon
-            if role.icon:  
-                top_role_with_icon = role
-                break
-        
-        if top_role_with_icon:
-            # Get the icon URL
-            icon_url = top_role_with_icon.icon.url
+            # Booster icon will be their top role
+            top_role_with_icon = None
+            # Start from highest role
+            for role in reversed(interaction.guild.get_member(user_id).roles):
+                # Check if role has an icon
+                if role.icon:  
+                    top_role_with_icon = role
+                    break
             
-            # Download the image
-            response = requests.get(icon_url)
-            
-            # Open with PIL
-            boost_icon = Image.open(BytesIO(response.content))
-        else:
-            # No booster icon... so let's use a default as a fallback
-            boost_icon = Image.open('assets/level/boost_diamond.png').convert("RGBA")
+            if top_role_with_icon:
+                # Get the icon URL
+                icon_url = top_role_with_icon.icon.url
+                
+                # Download the image
+                response = requests.get(icon_url)
+                
+                # Open with PIL
+                boost_icon = Image.open(BytesIO(response.content))
+            else:
+                # No booster icon... so let's use a default as a fallback
+                boost_icon = Image.open('assets/level/boost_diamond.png').convert("RGBA")
 
-        # Resize the boost icon to prevent cropping
-        boost_icon = boost_icon.resize((60, 60), Image.LANCZOS)
+            # Resize the boost icon to prevent cropping
+            boost_icon = boost_icon.resize((60, 60), Image.LANCZOS)
+    except:
+        # If you fail, it means it wasnt meant to be.
+        pass
 
     # Helper function to draw text with drop shadow
     def draw_text_with_shadow(draw_obj, position, text, color, font, shadow_color=(60, 50, 20), offset=(2, 2), align='left', anchor=None):
@@ -318,8 +322,12 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
             ui_layer.paste(grand_gem, (0, 0), grand_gem)
 
         '''BOOST REWARDS'''
-        if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.guild.get_member(user_id).roles:
-            ui_layer.paste(boost_icon, (570, 152), boost_icon)
+        try:
+            if discord.utils.get(interaction.guild.roles, id=1066455073745547314) in interaction.guild.get_member(user_id).roles:
+                ui_layer.paste(boost_icon, (570, 152), boost_icon)
+        except:
+            # if error, wasnt meant to be
+            pass
 
         # Add text to UI layer with drop shadows
         draw = ImageDraw.Draw(ui_layer)

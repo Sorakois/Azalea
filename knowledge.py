@@ -77,7 +77,7 @@ class Smart(commands.Cog):
         valid_options = {
             "Honkai: Star Rail": ['Memory of Chaos', 'Pure Fiction', 'Apocalyptic Shadow', 'General Tier List'],
             "Cookie Run Kingdom": ['Arena', 'Arcane Arena', 'Guild Boss', 'Alliance', 'Limited Time Mode', 'Story'],
-            "Zenless Zone Zero": ['Deadly Assault', 'Hollow Zero']
+            "Zenless Zone Zero": ['Deadly Assault', 'Shiyu Defense']
         }
         # dictionary for sub options for a mode (ex. guild boss -> LA, RVD, AOD)
         sub_options = {
@@ -132,17 +132,17 @@ class Smart(commands.Cog):
                     # only send source if it exists in the database
                     if links:
                         if links[0]:
-                            em.add_field(name="First Source: ", value=links[0], inline=True)
+                            em.add_field(name="First Team: ", value=links[0], inline=True)
                         if links[1]:
-                            em.add_field(name="Second Source: ", value=links[1], inline=True)
+                            em.add_field(name="Second Team: ", value=links[1], inline=True)
                         if links[2]: 
-                            em.add_field(name="Third Source: ", value=links[2], inline=True)
+                            em.add_field(name="Third Team: ", value=links[2], inline=True)
                         
                         # Who done did it and when
                         last_edit = edit_data[0].strftime("%B %d, %Y")
                         who_did_edit = edit_data[1]
 
-                        em.add_field(name=f"Last edited: {last_edit}", value= f"Edited by <@{who_did_edit}>", inline=True)
+                        em.add_field(name=f"Last edited: {last_edit}", value= f"Edited by <@{who_did_edit}>", inline=False)
                     else:
                         em.add_field(name="Will update soon!!! ", value="Ping a guide or @sorakoi to remind us to work on this :)", inline=True)
                     em.set_footer(text="Brought to you by... discord.gg/nurture")
