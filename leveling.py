@@ -114,7 +114,6 @@ class Leveling(commands.Cog):
     async def level(self, interaction: discord.Interaction, name: discord.User = None) -> None:
         '''
         Checks the current level of a server member
-
         params:
             interaction (discord.Interaction) : Interaction object to respond to
             name (discord.User) [Optional] : An optional username to check other users' level
@@ -123,16 +122,18 @@ class Leveling(commands.Cog):
             member = interaction.user
         else:
             member = name
+    
+        # Check if the target user is in the server
+        guild_member = interaction.guild.get_member(member.id)
+    
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT USER_XP FROM USER WHERE USER_ID = %s", (member.id,))
                 xp = await cursor.fetchone()
                 await cursor.execute("SELECT USER_LEVEL FROM USER WHERE USER_ID = %s", (member.id,))
                 level = await cursor.fetchone()
-
                 if not xp or not level:
                     await cursor.execute("INSERT INTO USER (USER_ID, USER_LEVEL, USER_XP, USER_LAST_MSG) VALUES (%s, %s, %s, %s)", (member.id, 1, 0, datetime.datetime.utcnow(),))
-
                 try:
                     xp = xp[0]
                     level = level[0]
@@ -141,7 +142,6 @@ class Leveling(commands.Cog):
                     em.add_field(name="Error", value="Sorry your current level cannot be viewed as you have not sent any messages.")
                     await interaction.response.send_message(embed=em, ephemeral=True)
                     return
-
                 try:
                     pfpURL = member.guild_avatar.url if member.guild_avatar else member.avatar.url
                     pfp = re.search('^.+?(?=\..{3}\?)', pfpURL).group()
@@ -150,19 +150,36 @@ class Leveling(commands.Cog):
                 except AttributeError:
                     pfp = 'assets/level/default.jpg'
                     online = False
-
                 await interaction.response.send_message(content="Loading...", ephemeral=False)
-
                 await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
                 highest_level = await cursor.fetchone()
-                await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY USER_LEVEL DESC), USER_ID FROM USER")
-                rankings = await cursor.fetchall()
-
-                res = await createImage(pfp, level, xp, online, highest_level[0], rankings, member.id, interaction)
-
-                await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.gif')])
-
             
+                # Get all rankings sorted by level DESC, then XP DESC
+                await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY USER_LEVEL DESC, USER_XP DESC), USER_ID FROM USER")
+                all_rankings = await cursor.fetchall()
+            
+                # Filter rankings to only include users who are in the server
+                rankings = []
+                current_rank = 1
+                calculated_rank = None
+            
+                for rank, user_id in all_rankings:
+                    guild_member_check = interaction.guild.get_member(user_id)
+                    if guild_member_check is not None:
+                        # User is in the server, add to filtered rankings
+                        rankings.append((current_rank, user_id))
+                        if user_id == member.id:
+                            calculated_rank = current_rank
+                        current_rank += 1
+            
+                # If target user is not in server rankings, they get no rank
+                if guild_member is None:
+                    calculated_rank = None
+            
+                # Create and return the image
+                res = await createImage(pfp, level, xp, online, highest_level[0], member.id, interaction, rankings, calculated_rank)
+                await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.gif')])
+                
     async def levelUp(self, message: discord.Message):
         '''
         Called whenever a message is sent and does experience and level up logic

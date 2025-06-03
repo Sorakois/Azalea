@@ -15,15 +15,16 @@ experienced = {
     }
 
 
-def rankingHandler(level, highest_level, ranking, user_id):
+def rankingHandler(level, highest_level, ranking, user_id, calculated_rank):
     '''
     Badge ranking image
 
     params:
         level (int) : current user level
         highest_level (int) : highest level of the current server
-        ranking (int) : ranking within the server
+        ranking (int) : list of rankings within the server
         user_id (int) : ID of the user
+        calculated_rank (int): user individual rank
 
     returns:
         rank (str) : directory of image to use
@@ -34,7 +35,7 @@ def rankingHandler(level, highest_level, ranking, user_id):
 
     rank = ''
     reward_bool = 0
-
+   
     if level <= 3:
         rank = defaultDir + 'ranks/Chocolate-2.png'
     elif level <= 6:
@@ -116,16 +117,18 @@ def rankingHandler(level, highest_level, ranking, user_id):
         rank = defaultDir + 'ranks/special.png'
         reward_bool = 3
 
-
-    rankNum = 0
-    for i in ranking:
-        if int(i[1]) == user_id:
-            rankNum = i[0]
-            break
-    
+    if calculated_rank is not None:
+        rankNum = 0
+        for i in ranking:
+            if int(i[1]) == user_id:
+                rankNum = i[0]
+                break
+    else:
+        rankNum = calculated_rank
+        
     return rank, rankNum, reward_bool
 
-async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, interaction):
+async def createImage(pfp, level, xp, url, highest_level, user_id, interaction, ranking, calculated_rank = None):
     '''
     Implements template of the leveling banner
 
@@ -134,8 +137,9 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
         level (int) : current user level
         xp (int) : current user xp
         highest_level (int) : highest level of the current server
-        ranking (int) : ranking of current user
+        ranking (int) : list of rankings of all users
         user_id (int) : ID of the current user
+        calculated_rank(int): rank of the users
 
     returns:
         buffer (BytesIO) : Byte stream of the generated image
@@ -178,9 +182,10 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
     pfpImg.putalpha(mask)
 
     # Load rank icon
-    rank, rankNum, reward_check = rankingHandler(level, highest_level, ranking, user_id)
-    rankImg = Image.open(rank).convert("RGBA")
-    rankImg = rankImg.resize((90, 98), Image.LANCZOS)
+    if ranking:
+        rank, rankNum, reward_check = rankingHandler(level, highest_level, ranking, user_id, calculated_rank)
+        rankImg = Image.open(rank).convert("RGBA")
+        rankImg = rankImg.resize((90, 98), Image.LANCZOS)
 
     # XP bar processing
     xpStr = f"{xp//1000}.{str(xp)[-3:-1]}k" if xp >= 1000 else str(xp)
@@ -309,7 +314,8 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
     
         ui_layer.paste(overlay, (0, 0), overlay)
         ui_layer.paste(pfpImg, (15, 13), pfpImg)
-        ui_layer.paste(rankImg, (150, 121), rankImg)
+        if ranking:
+            ui_layer.paste(rankImg, (150, 121), rankImg)
 
         '''RANKING REWARDS'''
         if M_gem is not None:
@@ -336,8 +342,13 @@ async def createImage(pfp, level, xp, url, highest_level, ranking, user_id, inte
         draw_text_with_shadow(draw, (610, 150), f"{xpStr}/{xpNeededStr}", 
                              (240, 217, 108), font2, shadow_color=(0, 0, 0), align='left', anchor='rb')
         
-        draw_text_with_shadow(draw, (370, 80), f"{rankNum}", 
-                             (240, 217, 108), font1, shadow_color=(0, 0, 0))
+        if ranking:
+            draw_text_with_shadow(draw, (370, 80), f"{rankNum}", 
+                                (240, 217, 108), font1, shadow_color=(0, 0, 0))
+        else:
+            # User isnt in the server, and hence wont have a proper ranking
+            draw_text_with_shadow(draw, (370, 80), f"N/A", 
+                                (240, 217, 108), font1, shadow_color=(0, 0, 0))
         
         draw_text_with_shadow(draw, (440, 10), f'{level}', 
                              (240, 217, 108), font1, shadow_color=(0, 0, 0))
