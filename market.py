@@ -17,17 +17,17 @@ class Business(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    '''
-    Trade with other users!
-    Input another user, what items to trade
-    Other user will input trade items
-    Both will confirm, exchange done!
-    
-    NOTE: User1 and User2 requests are stored LOCALLY!
-    '''
     @discord.app_commands.checks.cooldown(1, 30)
     @app_commands.command(name="trade", description="Trade your items with others!")
     async def trade(self, interaction: discord.Interaction, other_user: discord.User):
+        '''
+        Trade with other users!
+        Input another user, what items to trade
+        Other user will input trade items
+        Both will confirm, exchange done!
+        
+        NOTE: User1 and User2 requests are stored LOCALLY!
+        '''
         await interaction.response.defer()
         
         # Simplify variables

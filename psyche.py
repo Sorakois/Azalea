@@ -20,7 +20,7 @@ from discord.ext import commands
 from discord import Colour
 import random
 from typing import Literal
-from buildcommand import HSRCharacter
+from deprecated.buildcommand import HSRCharacter
 import logging
 
 class Persona(commands.Cog):

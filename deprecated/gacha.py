@@ -242,7 +242,7 @@ class InventoryView(discord.ui.View):
             chronos += chrono_image(sorted_inventory[item][2]) + '\n'
         em.add_field(name="Name", value=names)
         em.add_field(name="Rarity", value=raritys)
-        em.add_field(name="Chrono/Promo", value=chronos)
+        em.add_field(name="Promotion", value=chronos)
         em.set_footer(text=f"{self.page}/{self.pages}")
         return em
 

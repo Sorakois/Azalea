@@ -1,3 +1,4 @@
+'''External Imports'''
 import re
 import discord
 from discord import app_commands
@@ -6,11 +7,13 @@ from discord import Colour
 import random
 from typing import Literal
 import json
-#from buildcommand import HSRCharacter
 import logging
-
 import requests
 
+'''Internal Imports'''
+#from buildcommand import HSRCharacter
+
+'''Helper Functions'''
 def cleanse_name(character:str):
     #format query
     character = character.upper()
@@ -107,51 +110,23 @@ def chrono_image(chrono: int):
         return
     return chrono_img_ids[chrono]
 
-# Database of gifs (links)
-hugging_gifs = [
-    "https://c.tenor.com/8YhtDI2-uTQAAAAd/tenor.gif",
-    "https://c.tenor.com/uiak6BECN_sAAAAC/tenor.gif",
-    "https://c.tenor.com/qVWUEYImyKAAAAAC/tenor.gif",
-    "https://c.tenor.com/UnpQCW40JekAAAAC/tenor.gif",
-    "https://c.tenor.com/b3Qvt--s_i0AAAAC/tenor.gif",
-    "https://c.tenor.com/1gf_Jz8WYH0AAAAd/tenor.gif",
-    "https://cdn.weeb.sh/images/S1DyFuQD-.gif",
-    "https://cdn.weeb.sh/images/Bkta0ExOf.gif"
-]
-
 class MiscCMD(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    
-    '''
-    Hug Command:
-        Just randomly sends a hug gif from above. No need for a database for them... yet.
-    '''
-    @app_commands.command(name="hug", description="Receive a hug!")
-    async def hug(self, interaction: discord.Interaction):
-        # Optionally: Log or handle user interaction data here if needed
-        member = interaction.user
-        try:
-            # Send a random hug gif
-            chosen_gif = random.choice(hugging_gifs)
-            await interaction.response.send_message(chosen_gif, ephemeral=False)
-        except Exception as e:
-            # Handle potential errors
-            await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
-
-    '''
-    BUILD COMMAND!
-        Allow users to see how to build characters (best equipment) in:
-            - Honkai Star Rail
-            - Cookie Run Kingdom (in development)
-            - Zenless Zone Zero (in development)
-            - Genshin Impact (in development)
-            - Wuthering Waves (in development)
-    '''
     @discord.app_commands.checks.cooldown(5, 15)
     @app_commands.command(name="build", description="Check the optimal build for each character!")
     async def build(self, interaction : discord.Interaction, game: Literal['HSR', 'CRK'], character: str):
+        '''
+        BUILD COMMAND!
+            Allow users to see how to build characters (best equipment) in:
+                - Honkai Star Rail
+                - Cookie Run Kingdom (in development)
+                - Zenless Zone Zero (in development)
+                - Genshin Impact (in development)
+                - Wuthering Waves (in development)
+        '''
+            
         original_input = character
 
         #fix if mix up with viewcharacter command inputs
@@ -308,25 +283,6 @@ class MiscCMD(commands.Cog):
             await interaction.response.send_message(str(error))
             
     '''
-    Fun fact command!
-        Do the command, get a fun fact. That's it!
+    To Do:
+        - API based things for games
     '''
-    @app_commands.command(name="funfact", description="View a random fact!")
-    async def hug(self, interaction: discord.Interaction):
-        member = interaction.user
-        try:
-            # Websites for API 
-            #   --> https://thefact.space/random
-            #   --> https://uselessfacts.jsph.pl/api/v2/facts/random
-            
-            fun_facts = requests.get("https://thefact.space/random", timeout=10)
-                
-            json_data = json.loads(fun_facts.text)
-            fun_fact = json_data['text']
-            source = json_data['source']
-            
-            await interaction.response.send_message(f"## Fun Fact!\n\n{fun_fact}\n-# Source: <{source}>")
-            
-        except Exception as e:
-            # Handle potential errors
-            await interaction.response.send_message(f"Oops! Something went wrong.\n{e}", ephemeral=True)

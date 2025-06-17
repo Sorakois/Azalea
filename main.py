@@ -16,13 +16,14 @@ from leveling import Leveling
 from util.scrape_wiki import scrape_cookies as scrape_cookie1
 from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
 from cookie_info import CookieInfo
-from gacha import GachaInteraction, HelpView
 from market import Business
 import misc
 from psyche import Persona
 from debug import Prompt, Login
 from knowledge import Smart
-
+from collect import Collection_BASE
+# OLD imports
+# from gacha import GachaInteraction, HelpView
 
 
 # load the enviroment variables
@@ -46,11 +47,14 @@ bot = commands.Bot(command_prefix="%", intents=intents, activity=activity)
 cogs = {
     'leveling': Leveling(bot),
     'cookie_info' : CookieInfo(bot),
-    'gacha' : GachaInteraction(bot),
+    'collection' : Collection_BASE(bot),
     'misc' : misc.MiscCMD(bot),
     'psyche' : Persona(bot),
     'market': Business(bot),
     'smart': Smart(bot)
+
+    # Deprecated:
+    # 'gacha' : GachaInteraction(bot),
     }
 
 # bot settings
@@ -321,18 +325,18 @@ class General(commands.Cog):
         # Log join in #welcome
         channel = self.bot.get_channel(996903186168283220)
         if channel:
-            await channel.send(f"Welcome to Nurture, <@{member.id}>! :NekoLove:\nWe hope you enjoy your stay! ")
+            await channel.send(f"Welcome to Nurture, <@{member.id}>! 💖\nWe hope you enjoy your stay! 🥰")
 
 
         # Automatically set the user to level 0 [choco II]
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_ID FROM USER WHERE USER_ID = %s", (member.id,))
+                await cursor.execute("SELECT LEVEL FROM USER WHERE USER_ID = %s", (member.id,))
                 userExists = await cursor.fetchone()
                 if userExists:
                     # User was here before... let's give them their role back
-                    
-                    pass
+                    for index in enumerate(len(cogs['leveling'].roles)):
+                        pass
                 else:
                     # NEW MEMBER!
                     # Numbers = ID for level 0 role
