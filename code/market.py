@@ -10,13 +10,85 @@ from typing import Literal
 import requests
 import json
 import asyncio
-from misc import cleanse_name, fix_rarity, chrono_image
+from knowledge import cleanse_name, fix_rarity, chrono_image
 import time
+
+async def fetch_balance(cursor, member, interaction):
+    await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (member.id,))
+    balance = await cursor.fetchone()
+
+    try:
+        balance = balance[0]
+    except TypeError:
+        em = discord.Embed()
+        em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any gems yet.")
+        await interaction.response.send_message(embed=em, ephemeral=True)
+        return None # No value detected
+    
+    return balance
+
+async def fetch_essence_balance(cursor, member, interaction):
+    await cursor.execute("SELECT USER_ESSENCE FROM USER WHERE USER_ID = %s", (member.id))
+    ebalance = await cursor.fetchone()
+
+    try:
+        ebalance = ebalance[0]
+    except TypeError:
+        em = discord.Embed()
+        em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any essence yet.")
+        await interaction.response.send_message(embed=em, ephemeral=True)
+        return None # No value detected
+    
+    return ebalance
+
+async def fetch_mentor_tickets(cursor, member, interaction):
+    await cursor.execute("SELECT MENTOR_TICKETs FROM USER WHERE USER_ID = %s", (member.id))
+    mticket_count = await cursor.fetchone()
+
+    try:
+        mticket_count = mticket_count[0]
+    except TypeError:
+        em = discord.Embed()
+        em.add_field(name="Error", value="Sorry your cannot use that command, as you have not recieved any essence yet.")
+        await interaction.response.send_message(embed=em, ephemeral=True)
+        return None # No value detected
+    
+    return mticket_count
 
 class Business(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
+    @discord.app_commands.checks.cooldown(2, 15)
+    @app_commands.command(name="balance", description="Check your balance of currencies")
+    async def balance(self, interaction : discord.Interaction, currency: Literal['mentor tickets']):#Literal['gem', 'essence']):
+       # ADD BACK: GEM/ESSENCE
+       member=interaction.user
+       if currency == 'gem':
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                balance = await fetch_balance(cursor, member, interaction)
+                em = discord.Embed(title=f"Gem Balance")
+                em.set_thumbnail(url=interaction.user.avatar.url)
+                em.add_field(name="Your balance is:", value=f"**__{balance}__** :gem:")
+                await interaction.response.send_message(embed=em, ephemeral=False)
+       if currency == 'essence':
+        async with self.bot.db.acquire() as conn:
+            async with conn.cursor() as cursor:
+                ebalance = await fetch_essence_balance(cursor, member, interaction)
+                em = discord.Embed(title=f"Essence Balance")
+                em.set_thumbnail(url=interaction.user.avatar.url)
+                em.add_field(name="You have collected:", value=f"**__{ebalance}__** <:essence:1295791325094088855>")
+                await interaction.response.send_message(embed=em, ephemeral=False)
+        if currency == 'mentor tickets':
+            async with self.bot.db.acquire() as conn:
+                async with conn.cursor() as cursor:
+                    tickets = await fetch_mentor_tickets(cursor, member, interaction)
+                    em = discord.Embed(title=f"Mentor Tickets:")
+                    em.set_thumbnail(url=interaction.user.avatar.url)
+                    em.add_field(name="You have collected:", value=f"**__{tickets}__** <:ticket:1382853326080839701>")
+                    await interaction.response.send_message(embed=em, ephemeral=False)
+
     @discord.app_commands.checks.cooldown(1, 30)
     @app_commands.command(name="trade", description="Trade your items with others!")
     async def trade(self, interaction: discord.Interaction, other_user: discord.User):
@@ -321,3 +393,14 @@ class Business(commands.Cog):
     async def on_trade_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(str(error))
+
+    @app_commands.command(name="shop", description="Buy things with your money")
+    async def trade(self, interaction: discord.Interaction):
+        '''
+        Things to purchase:
+        - Fishing rod (base)
+            - Upgrade rod with fish
+        '''
+
+        purchasable = {"fishing_rod-1":"emoji_id",
+                       }

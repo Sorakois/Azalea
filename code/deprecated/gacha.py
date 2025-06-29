@@ -15,7 +15,7 @@ import json
 import asyncio
 from asyncio import Lock
 from market import Business
-from misc import cleanse_name, fix_rarity, chrono_image
+from knowledge import cleanse_name, fix_rarity, chrono_image
 
 # ======================================= # ======================================= 
 
@@ -142,64 +142,6 @@ class MultipullView(discord.ui.View):
         self.last_interaction = interaction
         await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
         button.disabled = False
-
-class HelpView(discord.ui.View):
-    '''
-    HelpView Class:
-        - To make the /help commannd look neat
-            -> limits and UI 
-    '''
-    page = 1
-    COMMANDS_PER_PAGE = 8
-
-    def __init__(self, com_and_info, last_interaction: discord.Interaction, name: discord.User, timeout: float | None = 180):
-        super().__init__(timeout=timeout)
-        self.com_and_info = com_and_info
-        self.page = 1
-        self.pages = math.ceil(len(self.com_and_info) / self.COMMANDS_PER_PAGE)
-        self.last_interaction = last_interaction
-        self.user = name
-        self.bot = discord.Client
-
-    async def view_page(self, page_num) -> discord.Embed:
-        first_of_page = (page_num - 1) * self.COMMANDS_PER_PAGE
-        last_of_page = self.COMMANDS_PER_PAGE * page_num
-        if last_of_page > len(self.com_and_info):
-            last_of_page = len(self.com_and_info)
-
-        sorted_commands = sorted(self.com_and_info, key=lambda x: x[0].lower())
-
-        em = discord.Embed(title=f"Azalea's Commands")
-        bot_pfp = self.last_interaction.client.user.avatar.url
-        em.set_thumbnail(url=bot_pfp)
-
-        
-        commands = ''
-        descriptions = ''
-        
-        for item in range(first_of_page, last_of_page):
-            commands += sorted_commands[item][0] + '\n'
-            descriptions += sorted_commands[item][1] + '\n'
-
-        em.add_field(name="Command", value=commands)
-        em.add_field(name="Description", value=descriptions)
-        em.set_footer(text=f"Page {self.page}/{self.pages}")
-        
-        return em
-    
-    @discord.ui.button(label="◀", style=discord.ButtonStyle.blurple)
-    async def left_page(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.page = self.pages if self.page == 1 else self.page - 1
-        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
-        await self.last_interaction.delete_original_response()
-        self.last_interaction = interaction
-
-    @discord.ui.button(label="▶", style=discord.ButtonStyle.blurple)
-    async def right_page(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.page = 1 if self.page == self.pages else self.page + 1
-        await interaction.response.send_message(embed=await self.view_page(self.page), view=self)
-        await self.last_interaction.delete_original_response()
-        self.last_interaction = interaction
 
 class InventoryView(discord.ui.View):
     '''

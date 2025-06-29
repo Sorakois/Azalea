@@ -11,7 +11,7 @@ import json
 import asyncio
 from asyncio import Lock
 from market import Business
-from misc import cleanse_name, fix_rarity, chrono_image
+from knowledge import cleanse_name, fix_rarity, chrono_image
 
 # ======================================= # ======================================= 
 
@@ -27,6 +27,43 @@ class Collection_BASE(commands.Cog):
         self.bot = bot
         self.lock = Lock()
 
+    # Get money by talking. This needs reworked ofc
+    async def crystalOnMessage(self, message: discord.Message, valid_time):
+        if message.author.bot:
+            return
+        
+        author = message.author
+        maxAttempts = 5
+        countAttempt = 0
+
+        while countAttempt < maxAttempts:
+            try:
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        await cursor.execute("SELECT USER_GEMS FROM USER WHERE USER_ID = %s", (author.id,))
+                        crystals = await cursor.fetchone()
+
+                        if valid_time:
+                            if crystals is None:
+                                crystals = 0  # Default value for crystals if none found
+                            else:
+                                crystals = crystals[0] # grab the correct crystal amount
+                            
+                            crystals += random.randrange(self.MINCRYS, self.MAXCRYS)
+                            await cursor.execute("UPDATE USER SET USER_GEMS = %s WHERE USER_ID = %s", (crystals, author.id,))
+                
+                    await conn.commit()
+                    await self.bot.process_commands(message)
+                    # XP successfully awarded!
+                    return
+            except TimeoutError or OperationalError as e:
+                countAttempt += 1
+                if countAttempt > maxAttempts:
+                    return
+                # Give the connection a second to restart
+                await asyncio.sleep(1) 
+
+
     @discord.app_commands.checks.cooldown(1, 30) # make cooldown database based
     @app_commands.command(name="pull", description="Pull to collect characters!")
     async def trade(self, interaction: discord.Interaction, other_user: discord.User):
@@ -41,9 +78,9 @@ class Collection_BASE(commands.Cog):
         # NOTE: Add pull_cd to the database
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
-                await cursor.execute("SELECT PULL_CD FROM USER WHERE USER_ID = %s", (member.id,))
                 
                 # pull_cd is a date-time object
+                await cursor.execute("SELECT PULL_CD FROM USER WHERE USER_ID = %s", (member.id,))
                 pull_cd = await cursor.fetchone()
 
                 # Get time now and compare to pull_cd
@@ -68,5 +105,5 @@ class Collection_BASE(commands.Cog):
      To add:
      - Inventory (a nice looking one)
      - Profile (overal stats kinda thing)
-     
+     - "Bounty" system
      '''   
