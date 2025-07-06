@@ -402,5 +402,5 @@ class Business(commands.Cog):
             - Upgrade rod with fish
         '''
 
-        purchasable = {"fishing_rod-1":"emoji_id",
+        purchasable = {"fishing_rod-1":"<:Rod_Tier1:1389306262201569530>",
                        }
