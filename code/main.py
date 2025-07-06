@@ -363,7 +363,7 @@ class General(commands.Cog):
             message (discord.Message) : Message object of message sent
         '''
         valid_time = await cogs["leveling"].levelUp(message=message)
-        await cogs["collect"].crystalOnMessage(message=message, valid_time=valid_time)
+        #await cogs["collect"].crystalOnMessage(message=message, valid_time=valid_time)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
