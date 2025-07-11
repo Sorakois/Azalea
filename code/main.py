@@ -379,7 +379,10 @@ class General(commands.Cog):
                          1369751936395645049,
                          1369751745927970997,
                          1369735211306188880,
-                         1369750747658588201]
+                         1369750747658588201,
+                         
+                         1083845379893772350 #add choco role here for now as a hotfix
+                         ]
 
         for role_id in divider_roles:
             roleToAdd = member.guild.get_role(role_id)
