@@ -64,6 +64,8 @@ def cleanse_name(character:str):
         character = "destruction trailblazer"
     if character in ["REMEMBRANCE MC", "REMEMBRANCE TB", "REMEMBRANCE TRAILBLAZER", "TRAILBLAZER REMEMBRANCE", "REMEM MC", "REMEM TB", "RMC", "RTB"]:
         character = "remembrance trailblazer"
+    if character in ["KEVIN"]:
+        character = "phainon"
 
     return character.lower()
 
@@ -90,174 +92,14 @@ def chrono_image(chrono: int):
         return chrono_img_ids[chrono]
     return ""
 
-# Classes for Banner Command
-class BannerInfo:
-    """Holds information about a single gacha banner."""
-    def __init__(self, character_name: str, start_date: datetime, end_date: datetime, image_url: str, rarity: str = "5⭐", element: str = "", path: str = ""):
-        self.character_name = character_name
-        self.start_date = start_date
-        self.end_date = end_date
-        self.image_url = image_url
-        self.rarity = rarity
-        self.element = element
-        self.path = path
-
-    def get_time_until_start(self) -> str:
-        """Get formatted time until banner starts."""
-        now = datetime.now(timezone.utc)
-        if self.start_date <= now:
-            return "Available now"
-        delta = self.start_date - now
-        days, hours = delta.days, delta.seconds // 3600
-        return f"{days} days, {hours} hours" if days > 0 else f"{hours} hours"
-
-    def get_time_until_end(self) -> str:
-        """Get formatted time until banner ends."""
-        now = datetime.now(timezone.utc)
-        if self.end_date <= now:
-            return "Banner ended"
-        delta = self.end_date - now
-        days, hours = delta.days, delta.seconds // 3600
-        return f"{days} days, {hours} hours" if days > 0 else f"{hours} hours"
-
-class BannerView(discord.ui.View):
-    """A Discord UI View to navigate between multiple banners."""
-    def __init__(self, banners: List[BannerInfo], game_name: str):
-        super().__init__(timeout=300)
-        self.banners = banners
-        self.current_index = 0
-        self.game_name = game_name
-        self.update_buttons()
-
-    def update_buttons(self):
-        """Update button states based on current index."""
-        self.previous_button.disabled = self.current_index == 0
-        self.next_button.disabled = self.current_index >= len(self.banners) - 1
-
-    def create_embed(self) -> discord.Embed:
-        """Create embed for the current banner."""
-        banner = self.banners[self.current_index]
-        embed = discord.Embed(title=f"{self.game_name} - Upcoming Banner", color=0x7289DA)
-        
-        character_info = f"{banner.rarity} {banner.character_name}"
-        if banner.element: character_info += f" ({banner.element})"
-        if banner.path: character_info += f" - {banner.path}"
-        
-        embed.add_field(name="Character", value=character_info, inline=False)
-        embed.add_field(name="Start Date", value=f"{banner.start_date.strftime('%Y-%m-%d %H:%M UTC')}\n*{banner.get_time_until_start()}*", inline=True)
-        embed.add_field(name="End Date", value=f"{banner.end_date.strftime('%Y-%m-%d %H:%M UTC')}\n*{banner.get_time_until_end()}*", inline=True)
-        if banner.image_url: embed.set_image(url=banner.image_url)
-        embed.set_footer(text=f"Banner {self.current_index + 1} of {len(self.banners)}")
-        return embed
-
-    @discord.ui.button(label="◀ Previous", style=discord.ButtonStyle.secondary)
-    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.current_index > 0:
-            self.current_index -= 1
-            self.update_buttons()
-            await interaction.response.edit_message(embed=self.create_embed(), view=self)
-
-    @discord.ui.button(label="Next ▶", style=discord.ButtonStyle.secondary)
-    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.current_index < len(self.banners) - 1:
-            self.current_index += 1
-            self.update_buttons()
-            await interaction.response.edit_message(embed=self.create_embed(), view=self)
-
-    @discord.ui.button(label="🔄 Refresh", style=discord.ButtonStyle.primary)
-    async def refresh_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(embed=self.create_embed(), view=self)
-
-class BannerDataFetcher:
-    """Handles fetching real banner data from various sources."""
-    def __init__(self):
-        self.session = None
-
-    async def get_session(self):
-        if self.session is None or self.session.closed:
-            self.session = aiohttp.ClientSession()
-        return self.session
-
-    async def close_session(self):
-        if self.session:
-            await self.session.close()
-
-    def parse_date(self, date_str: str) -> datetime:
-        """Parse various date formats into datetime objects."""
-        formats = ["%B %d, %Y", "%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y"]
-        for fmt in formats:
-            try:
-                return datetime.strptime(date_str, fmt).replace(tzinfo=timezone.utc)
-            except ValueError:
-                continue
-        return datetime.now(timezone.utc)
-
-    async def _fetch_and_process_banners(self, url: str, data_list: List[Dict], image_base_url: str, name_key: str, start_key: str, end_key: str, rarity_key: str, element_key: str, path_key: str, path_name: str) -> List[BannerInfo]:
-        """Generic banner fetching logic."""
-        banners = []
-        for banner_data in data_list:
-            image_url = image_base_url.format(name=banner_data[name_key].lower().replace(' ', '-'))
-            banner = BannerInfo(
-                character_name=banner_data[name_key],
-                start_date=self.parse_date(banner_data[start_key]),
-                end_date=self.parse_date(banner_data[end_key]),
-                image_url=image_url,
-                rarity=banner_data[rarity_key],
-                element=banner_data.get(element_key, ""),
-                path=banner_data.get(path_key, "")
-            )
-            banners.append(banner)
-        return banners
-    
-    async def fetch_honkai_star_rail_banners(self) -> List[BannerInfo]:
-        """Fetch real Honkai Star Rail banner data."""
-        # This data would ideally be scraped or from an API. Using static data for now.
-        current_banners = [
-            {"name": "Cipher", "element": "Quantum", "path": "Nihility", "start": "June 11, 2025", "end": "July 1, 2025", "rarity": "5⭐"},
-            {"name": "Phainon", "element": "Physical", "path": "Destruction", "start": "July 1, 2025", "end": "July 22, 2025", "rarity": "5⭐"},
-        ]
-        return await self._fetch_and_process_banners("", current_banners, "https://starrail.honeyhunterworld.com/img/character/{name}-character_gacha_result_bg.webp", 'name', 'start', 'end', 'rarity', 'element', 'path', 'Path')
-
-    async def fetch_genshin_impact_banners(self) -> List[BannerInfo]:
-        """Fetch Genshin Impact banner data."""
-        upcoming_banners = [
-            {"name": "Neuvillette", "element": "Hydro", "weapon": "Catalyst", "start": "July 5, 2025", "end": "July 26, 2025", "rarity": "5⭐"},
-            {"name": "Xianyun", "element": "Anemo", "weapon": "Catalyst", "start": "July 26, 2025", "end": "August 16, 2025", "rarity": "5⭐"}
-        ]
-        return await self._fetch_and_process_banners("", upcoming_banners, "https://webstatic.hoyoverse.com/upload/event/2024/genshin/{name}.jpg", 'name', 'start', 'end', 'rarity', 'element', 'weapon', 'Weapon')
-
-    async def fetch_zenless_zone_zero_banners(self) -> List[BannerInfo]:
-        """Fetch Zenless Zone Zero banner data."""
-        zzz_banners = [
-             {"name": "Yixuan", "element": "Auric Ink", "specialty": "Rupture", "start": "July 16, 2025", "end": "August 6, 2025", "rarity": "S-Rank"},
-             {"name": "Astra Yao", "element": "Ether", "specialty": "Support", "start": "July 16, 2025", "end": "August 6, 2025", "rarity": "S-Rank"}
-        ]
-        return await self._fetch_and_process_banners("", zzz_banners, "https://act.hoyoverse.com/app/mihoyo-zzz-game-record/images/{name}.jpg", 'name', 'start', 'end', 'rarity', 'element', 'specialty', 'Specialty')
-
-    async def fetch_wuthering_waves_banners(self) -> List[BannerInfo]:
-        """Fetch Wuthering Waves banner data."""
-        ww_banners = [
-            {"name": "Camellya", "element": "Havoc", "weapon": "Gauntlets", "start": "July 20, 2025", "end": "August 10, 2025", "rarity": "5⭐"}
-        ]
-        return await self._fetch_and_process_banners("", ww_banners, "https://wutheringwaves.kurogames.com/assets/images/{name}.jpg", 'name', 'start', 'end', 'rarity', 'element', 'weapon', 'Weapon')
-
-    async def fetch_cookie_run_kingdom_banners(self) -> List[BannerInfo]:
-        """Fetch Cookie Run Kingdom banner data."""
-        crk_banners = [
-            {"name": "Mystic Flour Cookie", "type": "Ancient", "class": "Magic", "start": "July 15, 2025", "end": "August 5, 2025", "rarity": "Ancient"}
-        ]
-        return await self._fetch_and_process_banners("", crk_banners, "https://cookierun-kingdom.fandom.com/wiki/File:{name}.png", 'name', 'start', 'end', 'rarity', 'type', 'class', 'Class')
-
 # Main Cog
 class Smart(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.banner_fetcher = BannerDataFetcher()
 
     async def cog_unload(self):
         await self.banner_fetcher.close_session()
 
-    # --- UI Classes for Meta Command ---
     class MetaView(discord.ui.View):
         def __init__(self, bot, game, valid_options, sub_options, user):
             super().__init__(timeout=90)
@@ -304,7 +146,6 @@ class Smart(commands.Cog):
             view.stop()
             await interaction.response.edit_message(view=view)
     
-    # --- Commands ---
     @app_commands.command(name="meta", description="Check the current metas [hsr/crk/zzz]")
     async def meta(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero']):
         member = interaction.user
@@ -356,8 +197,8 @@ class Smart(commands.Cog):
         character = character.lower().replace('caelus', 'trailblazer').replace('stelle', 'trailblazer')
 
         if game == "HSR":
-            if character.upper() in ["TINGYUN", "MARCH", "TRAILBLAZER", "TB", "MC", "RACCOON", "TRASH", "TRASHBLAZER"]:
-                return await interaction.response.send_message(f"'{character}' is ambiguous. Please specify the character's path (e.g., 'Harmony Tingyun').", ephemeral=True)
+            if character.upper() in ["TINGYUN", "MARCH", "TRAILBLAZER", "TB", "MC"]:
+                return await interaction.response.send_message(f"'{character}' is invalid. Please specify the character's path (e.g., 'Harmony Tingyun').", ephemeral=True)
             
             character = cleanse_name(character)
 
@@ -384,10 +225,13 @@ class Smart(commands.Cog):
             em.set_footer(text=f"Created by: {build_info[6].capitalize()} in discord.gg/nurture")
             em.set_thumbnail(url=interaction.user.guild.icon.url)
 
-            # Set Image
-            character_url_name = character.strip().replace(" ", "-")
-            image_url = f"https://starrail.honeyhunterworld.com/img/character/{character_url_name}-character_gacha_result_bg.webp"
-            # Add specific image exceptions here if needed
+            character = character.strip().replace(" ", "-").lower()
+            image_url = f"https://starrail.honeyhunterworld.com/img/character/{character}-character_gacha_result_bg.webp"
+
+            # Images sometimes mess up.... so maybe manually replace if needed
+            if character in ["phainon", "saber", "archer"]:
+                image_url = f"https://starrail.honeyhunterworld.com/img/character/{character}-character_action_side_icon.webp"
+        
             em.set_image(url=image_url)
 
             await interaction.response.send_message(embed=em, ephemeral=False)
@@ -403,41 +247,14 @@ class Smart(commands.Cog):
             await interaction.response.send_message("An unexpected error occurred. Please try again later.", ephemeral=True)
             print(f"Error in build command: {error}")
 
-    @app_commands.command(name="upcoming", description="See how long until the next banner(s) arrive")
-    async def upcoming(self, interaction: discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero', 'Wuthering Waves', 'Genshin Impact']):
-        await interaction.response.defer()
-        
-        banners = []
-        fetcher_map = {
-            'Honkai: Star Rail': self.banner_fetcher.fetch_honkai_star_rail_banners,
-            'Genshin Impact': self.banner_fetcher.fetch_genshin_impact_banners,
-            'Zenless Zone Zero': self.banner_fetcher.fetch_zenless_zone_zero_banners,
-            'Wuthering Waves': self.banner_fetcher.fetch_wuthering_waves_banners,
-            'Cookie Run Kingdom': self.banner_fetcher.fetch_cookie_run_kingdom_banners
-        }
-        
-        if game in fetcher_map:
-            banners = await fetcher_map[game]()
+    # @app_commands.command(name="upcoming", description="See how long until the next banner(s) arrive")
+    # async def upcoming(self, interaction: discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero', 'Wuthering Waves', 'Genshin Impact']):
+    #     await interaction.response.defer()
 
-        if not banners:
-            embed = discord.Embed(title="No Upcoming Banners Found", description=f"Could not fetch banner information for {game}.", color=0xFF0000)
-            return await interaction.followup.send(embed=embed)
-            
-        now = datetime.now(timezone.utc)
-        future_banners = sorted([b for b in banners if b.end_date > now], key=lambda x: x.start_date)
+    # @app_commands.command(name="missing", description="See how close you are to ideal builds")
+    # async def missing(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero']):
+    #     await interaction.response.send_message("This command is under construction.", ephemeral=True)
 
-        if not future_banners:
-            embed = discord.Embed(title="No Upcoming Banners", description=f"All announced banners for {game} have ended.", color=0xFFAA00)
-            return await interaction.followup.send(embed=embed)
-            
-        view = BannerView(future_banners, game)
-        embed = view.create_embed()
-        await interaction.followup.send(embed=embed, view=view)
-
-    @app_commands.command(name="missing", description="See how close you are to ideal builds")
-    async def missing(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero']):
-        await interaction.response.send_message("This command is under construction.", ephemeral=True)
-
-    @app_commands.command(name="simulate", description="Mimic in-game gacha to see your luck")
-    async def simulate(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero']):
-        await interaction.response.send_message("This command is under construction.", ephemeral=True)
+    # @app_commands.command(name="simulate", description="Mimic in-game gacha to see your luck")
+    # async def simulate(self, interaction : discord.Interaction, game: Literal['Honkai: Star Rail', 'Cookie Run Kingdom', 'Zenless Zone Zero']):
+    #     await interaction.response.send_message("This command is under construction.", ephemeral=True)

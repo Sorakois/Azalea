@@ -22,6 +22,7 @@ from debug import Prompt, Login
 from knowledge import Smart
 from collect import Collection_BASE
 from quests import  QuestSystem
+from reaction_roles import ReactionRoles
 
 ''' OLD imports '''
 # from gacha import GachaInteraction, HelpView
@@ -113,7 +114,8 @@ cogs = {
     'market': Business(bot),
     'smart': Smart(bot),
     'collect': Collection_BASE(bot),
-    'quests': QuestSystem(bot)
+    'quests': QuestSystem(bot),
+    'roles': ReactionRoles(bot)
 
     # Deprecated:
     # 'gacha' : GachaInteraction(bot),
@@ -421,9 +423,11 @@ class General(commands.Cog):
             "> - There are cool perks for leveling up, so check here! https://ptb.discord.com/channels/996903185685946490/1084978040821514241\n"
             "### 2.) If you have any questions, please reach out to mods!\n"
             "> - Answers to our FAQ can be found here! https://ptb.discord.com/channels/996903185685946490/1365023830145499259\n"
-            "### 3.) Please follow rules!\n"
+            "### 3.) Make sure to select your roles!\n"
+            "> - They can all be found here https://ptb.discord.com/channels/996903185685946490/1393934563725541457/1393973359267545148\n"
+            "### 4.) Please follow rules!\n"
             "> - Read more about them here if you often break them, just to know :) https://ptb.discord.com/channels/996903185685946490/1042241938730012783\n"
-            "### 4.) Feel free to ping @helper roles! We are here to help!\n\n # Above all else... enjoy your stay! :)",
+            "### 5.) Feel free to ping @helper roles! We are here to help!\n\n # Above all else... enjoy your stay! :)",
             file=welcome_gif
         )
 
@@ -453,8 +457,17 @@ class General(commands.Cog):
                          1364999650762948628, # Guide
                          1377746510816481450 # Test Server
                          }
+        
         if any(role.id in allowed_roles for role in interaction.user.roles):
             split = prompt.split(' ')
+
+            # Reaction role stuff handled in reaction_roles.py
+            reaction_roles_cog = self.bot.get_cog('ReactionRoles')
+            if reaction_roles_cog:
+                handler = reaction_roles_cog.get_reaction_role_handler()
+                if await handler(interaction, prompt):
+                    # Done!
+                    return
 
             if prompt == Prompt.XP_BOOST.value: 
                 boost = int(split[1])
