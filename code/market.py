@@ -398,9 +398,23 @@ class Business(commands.Cog):
     async def trade(self, interaction: discord.Interaction):
         '''
         Things to purchase:
+
+        Normal:
         - Fishing rod (base)
             - Upgrade rod with fish
+
+        Buy with mentor tickets:
+
+        Buy with weekly contest medals
+        
         '''
 
         purchasable = {"fishing_rod-1":"<:Rod_Tier1:1389306262201569530>",
                        }
+        
+        ''' Shop Embeded '''
+        em = discord.Embed(title="--- <a:coins:1382852360254001232> Shop <a:coins:1382852360254001232> ---")
+        # Get the items dynamically from the database :)
+        em.add_field(name=f"")
+        em.set_footer(text=f"")
+        await interaction.response.send_message(embed=em, ephemeral=False)
