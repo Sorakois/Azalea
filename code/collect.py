@@ -68,6 +68,9 @@ class Collection_BASE(commands.Cog):
     @app_commands.command(name="pull", description="Pull to collect characters!")
     async def trade(self, interaction: discord.Interaction, other_user: discord.User):
         member = interaction.user
+
+        # Random anime character API --> https://www.animecharactersdatabase.com/r.php?c
+
         '''
         All games will be in one pool,
         

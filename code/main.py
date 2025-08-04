@@ -329,26 +329,28 @@ class General(commands.Cog):
         params:
             interaction (discord.Interaction) : slash command object
         '''
-        com_and_info = [["/help", "See available commands"],
-                        ["/level", "Display the level of a user"],
-                        ["/leaderboard", "Display the leaderboard for this server"], 
-                        ["/wiki", "View wiki info for a character"], 
-                        ["/build", "View the best stats for a character"],
-                        ["/pull", "Spend gems, gain a character"], 
-                        ["/multipull", "Spend more gems, get multiplate characters"], 
-                        ["/profile", "View your overall gacha stats"], 
-                        ["/trivia", "Answer questions, get gems"], 
-                        ["/crumble", "Destory a character you own in return for essence"], 
-                        ["/featured", "View who is rate-up on /pull"], 
-                        ["/fiftyfifty", "See if you lost/won your last rate-up chance"], 
-                        ["/expand", "Spend essence, gain more inventory slots"], 
-                        ["/promote", "Lose dupes, gain Chrono level"], 
-                        ["/hug", "Recieve a warm hug"], 
-                        ["/setfav", "Set a character to appear on your profile"], 
-                        ["/balance", "View how many gems/essence you have"], 
-                        ["/profilecolor", "Change the embed color of your profile"], 
-                        ["/viewcharacter", "View any character in the gacha pool"], 
-                        ["/daily", "Recieve a large sum of gems every 24hrs"],
+        com_and_info = [
+                        ["/level", "Check server leveling progress of any user"],
+                        ["/leaderboard", "Display the leaderboard for this server"],
+                        ["/build", "View what character stats to aim for [HSR/....]"],
+                        ["/meta", "See what the current metas are for each gamemmode [CRK/HSR/...]"],
+                        ["/shop", "Buy items with the currencies you collect [coins, tickets, ...]"],
+                        ["/balance", "View how many coins/tickets you have"], 
+                        #["/wiki", "View wiki info for a character"], 
+                        #["/pull", "Spend gems, gain a character"], 
+                        #["/multipull", "Spend more gems, get multiplate characters"], 
+                        #["/profile", "View your overall gacha stats"], 
+                        #["/trivia", "Answer questions, get gems"], 
+                        #["/crumble", "Destory a character you own in return for essence"], 
+                        #["/featured", "View who is rate-up on /pull"], 
+                        #["/fiftyfifty", "See if you lost/won your last rate-up chance"], 
+                        #["/expand", "Spend essence, gain more inventory slots"], 
+                        #["/promote", "Lose dupes, gain Chrono level"], 
+                        #["/hug", "Recieve a warm hug"], 
+                        #["/setfav", "Set a character to appear on your profile"], 
+                        #["/profilecolor", "Change the embed color of your profile"], 
+                        #["/viewcharacter", "View any character in the gacha pool"], 
+                        #["/daily", "Recieve a large sum of gems every 24hrs"],
                         ]
 
 
@@ -800,8 +802,13 @@ class General(commands.Cog):
                                     # Done!
                                     return
 
+            elif prompt == Prompt.BUILD_CHANGE.value:
+                pass
+
         else:
             await interaction.response.send_message('Not gonna happen 🤓', ephemeral=True)
+        
+        
 
     ''' This section is for the "daily reminder" for CRK for guild contri'''
     # Send the message!
