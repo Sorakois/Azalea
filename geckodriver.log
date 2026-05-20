@@ -59,3 +59,222 @@ Dynamically enable window occlusion 1
 console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
 console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
 JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1755098789796	geckodriver	INFO	Listening on 127.0.0.1:52323
+1755098792860	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52324" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileI2DDqZ"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755098793170	Marionette	INFO	Marionette enabled
+1755098793279	Marionette	INFO	Listening on port 52331
+WebDriver BiDi listening on ws://127.0.0.1:52324
+Read port: 52331
+1755098793502	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+1755098795588	Marionette	INFO	Stopped listening on port 52331
+Dynamically enable window occlusion 1
+console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1755099068876	geckodriver	INFO	Listening on 127.0.0.1:52412
+1755099071916	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52413" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofile1ORFNt"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755099072199	Marionette	INFO	Marionette enabled
+1755099072299	Marionette	INFO	Listening on port 52421
+WebDriver BiDi listening on ws://127.0.0.1:52413
+Read port: 52421
+1755099072385	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+1755099074551	Marionette	INFO	Stopped listening on port 52421
+Dynamically enable window occlusion 1
+console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1755099272621	geckodriver	INFO	Listening on 127.0.0.1:52471
+1755099275682	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52472" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofilez9HFv1"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755099275956	Marionette	INFO	Marionette enabled
+1755099276056	Marionette	INFO	Listening on port 52480
+WebDriver BiDi listening on ws://127.0.0.1:52472
+Read port: 52480
+1755099276137	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+1755099278458	Marionette	INFO	Stopped listening on port 52480
+Dynamically enable window occlusion 1
+console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1755099443663	geckodriver	INFO	Listening on 127.0.0.1:52536
+1755099446716	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52537" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileyTPOst"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755099447043	Marionette	INFO	Marionette enabled
+1755099447164	Marionette	INFO	Listening on port 52544
+WebDriver BiDi listening on ws://127.0.0.1:52537
+Read port: 52544
+1755099447278	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+1755099449563	Marionette	INFO	Stopped listening on port 52544
+Dynamically enable window occlusion 1
+console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1755099489494	geckodriver	INFO	Listening on 127.0.0.1:52586
+1755099492561	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52587" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofilePXj0zX"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755099492847	Marionette	INFO	Marionette enabled
+1755099492965	Marionette	INFO	Listening on port 52594
+Read port: 52594
+WebDriver BiDi listening on ws://127.0.0.1:52587
+1755099493009	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+1755099495175	Marionette	INFO	Stopped listening on port 52594
+Dynamically enable window occlusion 1
+console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1755099647563	geckodriver	INFO	Listening on 127.0.0.1:52650
+1755099650620	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52651" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofilehFlg5b"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755099650899	Marionette	INFO	Marionette enabled
+1755099650997	Marionette	INFO	Listening on port 52658
+WebDriver BiDi listening on ws://127.0.0.1:52651
+Read port: 52658
+1755099651078	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1755099786242	geckodriver	INFO	Listening on 127.0.0.1:52769
+1755099789291	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "52770" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileZLyCgM"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1755099789579	Marionette	INFO	Marionette enabled
+1755099789674	Marionette	INFO	Listening on port 52777
+WebDriver BiDi listening on ws://127.0.0.1:52770
+Read port: 52777
+1755099789751	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-stop not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-escape-hatch-signal not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+console.warn: RSLoader: Recipe train-hop-pilot-to-beta-start-and-wait-for-major-version-bump not returned from collection nimbus-secure-experiments because it contains feature newtabTrainhopAddon, which is disallowed for that collection.
+1755099792356	Marionette	INFO	Stopped listening on port 52777
+Dynamically enable window occlusion 1
+console.error: "Failed to fetch https://ads.mozilla.org/v1/delete_user:" "NetworkError when attempting to fetch resource."
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource://services-settings/RemoteSettingsClient.sys.mjs, line 101: Error: Unknown callback
+1771949758915	geckodriver	INFO	Listening on 127.0.0.1:51354
+1771949761972	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "51355" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileWDhswk"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771949762332	Marionette	INFO	Marionette enabled
+1771949762445	Marionette	INFO	Listening on port 51362
+WebDriver BiDi listening on ws://127.0.0.1:51355
+Read port: 51362
+1771949762535	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1771949764812	Marionette	INFO	Stopped listening on port 51362
+Dynamically enable window occlusion 1
+JavaScript error: resource:///actors/LinkHandlerParent.sys.mjs, line 34: InvalidStateError: CanvasRenderingContext2D.drawImage: Passed-in video frame is "broken"
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+1771955342797	geckodriver	INFO	Listening on 127.0.0.1:49951
+1771955345830	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "49952" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofiler6GZK1"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771955346148	Marionette	INFO	Marionette enabled
+1771955346243	Marionette	INFO	Listening on port 49959
+WebDriver BiDi listening on ws://127.0.0.1:49952
+Read port: 49959
+1771955346470	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1771955348451	Marionette	INFO	Stopped listening on port 49959
+Dynamically enable window occlusion 1
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+JavaScript error: resource:///actors/LinkHandlerParent.sys.mjs, line 34: InvalidStateError: CanvasRenderingContext2D.drawImage: Passed-in video frame is "broken"
+1771974133831	geckodriver	INFO	Listening on 127.0.0.1:51213
+1771974136894	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "51214" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofile41Cz4r"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771974137307	Marionette	INFO	Marionette enabled
+1771974137415	Marionette	INFO	Listening on port 51221
+WebDriver BiDi listening on ws://127.0.0.1:51214
+Read port: 51221
+1771974137661	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1771974140023	Marionette	INFO	Stopped listening on port 51221
+Dynamically enable window occlusion 1
+JavaScript error: resource:///actors/LinkHandlerParent.sys.mjs, line 34: InvalidStateError: CanvasRenderingContext2D.drawImage: Passed-in video frame is "broken"
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+1771979686715	geckodriver	INFO	Listening on 127.0.0.1:57999
+1771979689764	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "58000" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileZi7GZ7"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771979690194	Marionette	INFO	Marionette enabled
+1771979690317	Marionette	INFO	Listening on port 58029
+WebDriver BiDi listening on ws://127.0.0.1:58000
+Read port: 58029
+1771979690424	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1771979695804	Marionette	INFO	Stopped listening on port 58029
+Dynamically enable window occlusion 1
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+1771980500497	geckodriver	INFO	Listening on 127.0.0.1:55933
+1771980503544	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "55934" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileoKzs6z"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771980503949	Marionette	INFO	Marionette enabled
+1771980504071	Marionette	INFO	Listening on port 55942
+WebDriver BiDi listening on ws://127.0.0.1:55934
+Read port: 55942
+1771980504269	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+ConnectToPipe() failure: GetLastError()=00000005
+1771980508658	Marionette	INFO	Stopped listening on port 55942
+Dynamically enable window occlusion 1
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+1771980558709	geckodriver	INFO	Listening on 127.0.0.1:55978
+1771980561729	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "55979" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofileZIHh1T"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771980562042	Marionette	INFO	Marionette enabled
+1771980562138	Marionette	INFO	Listening on port 55986
+WebDriver BiDi listening on ws://127.0.0.1:55979
+Read port: 55986
+1771980562410	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1771980567056	Marionette	INFO	Stopped listening on port 55986
+Dynamically enable window occlusion 1
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.
+1771980773877	geckodriver	INFO	Listening on 127.0.0.1:57832
+1771980776908	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "57833" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\BLEAU_~1\\AppData\\Local\\Temp\\rust_mozprofilesCqRNc"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+Dynamically enable window occlusion 0
+1771980777202	Marionette	INFO	Marionette enabled
+1771980777300	Marionette	INFO	Listening on port 57842
+WebDriver BiDi listening on ws://127.0.0.1:57833
+Read port: 57842
+1771980777377	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1771980789727	Marionette	INFO	Stopped listening on port 57842
+Dynamically enable window occlusion 1
+console.warn: TopSitesFeed: Failed to fetch data from MARS server: NetworkError when attempting to fetch resource.

@@ -23,6 +23,8 @@ from knowledge import Smart
 from collect import Collection_BASE
 from quests import  QuestSystem
 from reaction_roles import ReactionRoles
+from prestige_calculator import handle_monthly_prestige_command
+from dailies import AutomationCog
 
 ''' OLD imports '''
 # from gacha import GachaInteraction, HelpView
@@ -115,7 +117,8 @@ cogs = {
     'smart': Smart(bot),
     'collect': Collection_BASE(bot),
     'quests': QuestSystem(bot),
-    'roles': ReactionRoles(bot)
+    'roles': ReactionRoles(bot),
+    'dailies': AutomationCog(bot)
 
     # Deprecated:
     # 'gacha' : GachaInteraction(bot),
@@ -336,20 +339,25 @@ class General(commands.Cog):
                         ["/meta", "See what the current metas are for each gamemmode [CRK/HSR/...]"],
                         ["/shop", "Buy items with the currencies you collect [coins, tickets, ...]"],
                         ["/balance", "View how many coins/tickets you have"], 
+                        
                         #["/wiki", "View wiki info for a character"], 
+                        
                         #["/pull", "Spend gems, gain a character"], 
                         #["/multipull", "Spend more gems, get multiplate characters"], 
-                        #["/profile", "View your overall gacha stats"], 
-                        #["/trivia", "Answer questions, get gems"], 
                         #["/crumble", "Destory a character you own in return for essence"], 
                         #["/featured", "View who is rate-up on /pull"], 
                         #["/fiftyfifty", "See if you lost/won your last rate-up chance"], 
                         #["/expand", "Spend essence, gain more inventory slots"], 
                         #["/promote", "Lose dupes, gain Chrono level"], 
-                        #["/hug", "Recieve a warm hug"], 
+                        
+                        #["/profile", "View your overall gacha stats"], 
                         #["/setfav", "Set a character to appear on your profile"], 
                         #["/profilecolor", "Change the embed color of your profile"], 
                         #["/viewcharacter", "View any character in the gacha pool"], 
+                        
+
+                        #["/trivia", "Answer questions, get gems"], 
+                        #["/hug", "Recieve a warm hug"], 
                         #["/daily", "Recieve a large sum of gems every 24hrs"],
                         ]
 
@@ -399,6 +407,12 @@ class General(commands.Cog):
         if channel:
             await channel.send(f"Welcome to Nurture, <@{member.id}>! 💖\nWe hope you enjoy your stay! 🥰")
 
+        # Send a message to #general
+        channel = self.bot.get_channel(996906490663276575)
+        if channel:
+            message = await channel.send(f"Everyone please welcome our latest (and maybe greatest?) member... <@{member.id}>! <:poggies:1404867219002753045>")
+            await message.add_reaction("<:poggies:1404867219002753045>")
+
 
         # Automatically set the user to level 0 [choco II]
         async with self.bot.db.acquire() as conn:
@@ -438,7 +452,7 @@ class General(commands.Cog):
         channel = self.bot.get_channel(1069755829126971392)
         if channel:
             await channel.send(
-                f":sadge: **Member Left**\n"
+                f"<:sadge:1404868061571579904> **Member Left**\n"
                 f"{member.display_name} (<@{member.id}> - {member.id}) has left the server."
             )
 
@@ -803,7 +817,110 @@ class General(commands.Cog):
                                     return
 
             elif prompt == Prompt.BUILD_CHANGE.value:
-                pass
+                await interaction.response.defer()
+    
+                # Ask for character name
+                await interaction.followup.send("What character would you like to edit?")
+                
+                def check(message: discord.Message):
+                    return message.author.id == member.id and message.channel.id == interaction.channel.id
+                
+                try:
+                    msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                    char_name = msg.content.strip().lower()
+                except asyncio.TimeoutError:
+                    await interaction.followup.send("You didn't send a message in time.")
+                    return
+                
+                async with self.bot.db.acquire() as conn:
+                    async with conn.cursor() as cursor:
+                        # Get character info
+                        await cursor.execute("SELECT * FROM HSR_BUILD WHERE name = %s", (char_name,))
+                        char_data = await cursor.fetchone()
+                        
+                        if not char_data:
+                            await interaction.followup.send(f"Character '{char_name}' not found in database.")
+                            return
+                        
+                        # Display current build info
+                        current_info = f"""**Current build for {char_name.title()}:**
+                        '''
+                        FIX ME
+                        '''
+                        ```
+                        Char data: {char_data}
+                        Path: {char_data[2]}
+                        Stats: {char_data[3][:200]}{'...' if len(char_data[3]) > 200 else ''}
+                        Trace Priority: {char_data[4][:200]}{'...' if len(char_data[4]) > 200 else ''}
+                        Substats: {char_data[5][:200]}{'...' if len(char_data[5]) > 200 else ''}
+                        Gear Mainstats: {char_data[6][:200]}{'...' if len(char_data[6]) > 200 else ''}
+                        Best LC: {char_data[7][:200]}{'...' if len(char_data[7]) > 200 else ''}
+                        Best Relics: {char_data[8][:200]}{'...' if len(char_data[8]) > 200 else ''}
+                        Best Planar: {char_data[9][:200]}{'...' if len(char_data[9]) > 200 else ''}
+                        Best Team: {char_data[10][:200]}{'...' if len(char_data[10]) > 200 else ''}
+                        Notes: {char_data[11][:200]}{'...' if len(char_data[11]) > 200 else ''}
+                        ```"""
+                        
+                        await interaction.followup.send(current_info)
+                        
+                        # Ask what field to change
+                        fields = ["path", "stats", "trace_priority", "substats", "gear_mainstats", "best_lc", "best_relics", "best_planar", "best_team", "notes"]
+                        field_options = "\n".join([f"{i+1}. {field}" for i, field in enumerate(fields)])
+                        
+                        await interaction.followup.send(f"What would you like to change?\n```{field_options}```\nEnter the number (1-10):")
+                        
+                        try:
+                            msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                            field_choice = int(msg.content.strip())
+                            
+                            if field_choice < 1 or field_choice > 10:
+                                await interaction.followup.send("Invalid choice. Please enter a number between 1-10.")
+                                return
+                                
+                            selected_field = fields[field_choice - 1]
+                            
+                        except (asyncio.TimeoutError, ValueError):
+                            await interaction.followup.send("Invalid input or timeout.")
+                            return
+                        
+                        # Ask for new value
+                        await interaction.followup.send(f"Enter the new value for **{selected_field}**:")
+                        
+                        try:
+                            msg = await interaction.client.wait_for('message', check=check, timeout=60.0)
+                            new_value = msg.content.strip()
+                        except asyncio.TimeoutError:
+                            await interaction.followup.send("You didn't send a message in time.")
+                            return
+                        
+                        # Map field names to database columns
+                        field_mapping = {
+                            "path": "path",
+                            "stats": "stats", 
+                            "trace_priority": "trapri",
+                            "substats": "substats",
+                            "gear_mainstats": "gear_mainstats",
+                            "best_lc": "bestlc",
+                            "best_relics": "bestrelics", 
+                            "best_planar": "bestplanar",
+                            "best_team": "bestteam",
+                            "notes": "notes"}
+            
+                        db_column = field_mapping[selected_field]
+                        
+                        # Construct and execute the UPDATE query.
+                        # Using an f-string for the column name is safe here because its value is
+                        # strictly controlled by the 'fields' list and 'field_mapping' dictionary,
+                        # preventing SQL injection. User input is properly parameterized.
+                        sql_query = f"UPDATE HSR_BUILD SET {db_column} = %s WHERE name = %s"
+                        
+                        await cursor.execute(sql_query, (new_value, char_name))
+                        await conn.commit()
+                        
+                        await interaction.followup.send(f"Successfully updated **{selected_field}** for **{char_name.title()}**!")
+
+            elif prompt == Prompt.MONTHLY_PRESTIGE.value:
+                await handle_monthly_prestige_command(bot, interaction)
 
         else:
             await interaction.response.send_message('Not gonna happen 🤓', ephemeral=True)
@@ -884,4 +1001,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('SORA_TOKEN'))
