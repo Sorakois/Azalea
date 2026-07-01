@@ -1,3 +1,5 @@
+import logging
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -193,6 +195,12 @@ class Leveling(commands.Cog):
                             xp = 0
                             level = 1
                             last_msg = None
+
+                            # Force role assignment for brand new DB entries
+                            await asyncio.wait_for(cursor.execute("SELECT MAX(USER_LEVEL) FROM USER"), timeout=5)
+                            highest_level_result = await asyncio.wait_for(cursor.fetchone(), timeout=5)
+                            highest_level = highest_level_result[0] if highest_level_result[0] else 1
+                            await self.assign_role(author, level, highest_level, guild)
                         else:
                             level, xp, last_msg = result
 
@@ -222,11 +230,10 @@ class Leveling(commands.Cog):
                                 await self.assign_role(author, level, highest_level[0], guild)
 
                     except asyncio.TimeoutError:
-                        pass
-                        # maybe log something: logging.warning(f"Database timeout for user {author.id}")
+                        logging.warning(f"Database timeout for user {author.id}")
                     except Exception as e:
                         pass
-                        # maybe log something: logging.exception(f"Unexpected error in levelUp for user {author.id}: {e}")
+                        logging.exception(f"Unexpected error in levelUp for user {author.id}: {e}")
 
                 await conn.commit()
 
@@ -235,7 +242,7 @@ class Leveling(commands.Cog):
 
         except Exception as e:
             pass
-            # maybe log something: logging.exception(f"Database acquisition error for user {author.id}: {e}")
+            logging.exception(f"Database acquisition error for user {author.id}: {e}")
 
     async def assign_role(self, user, level, highest_level, guild):
         '''
