@@ -28,7 +28,7 @@ class ReactionRoles(commands.Cog):
                 "title": "Aesthetic Color Roles ❤️",
                 "description": "Pick what color your username should be!",
                 "color": 0xff6b6b,
-                "image_url": "https://c.tenor.com/nd9ZgHOIpegAAAAd/tenor.gif",
+                "image_url": "https://c.tenor.com/FpkLsxSt-Y8AAAAC/tenor.gif",
                 "roles": {
                     "🍎": ("Red", "1033481143745527869"),
                     "🍊": ("Orange", "1033481146748649594"),
@@ -58,6 +58,7 @@ class ReactionRoles(commands.Cog):
                     "🍪": ("Cookie Run: Kingdom", "1123025025847525416"),
                     "🤖": ("NIKKE", "1506389147856928848"),
                     "🕰️": ("Reverse: 1999", "1506389123718578197"),
+                    "🏇": ("Uma Musume", "1506871273333063850"),
                     "🎹": ("Hatsune Miku: Colorful Stage", "1506389283081158717"),
                 }
             },
@@ -65,7 +66,7 @@ class ReactionRoles(commands.Cog):
                 "title": "Notification Roles 🔔",
                 "description": "Select what you'd like to recieve notifications for!",
                 "color": 0x45b7d1,
-                "image_url": "https://c.tenor.com/EFqSNRfgGi4AAAAd/tenor.gif",
+                "image_url": "https://c.tenor.com/2lLCyJMgAkIAAAAC/tenor.gif",
                 "roles": {
                     "<:gladge:1275504053681520660>": ("Server Updates", "1033467117246353478"),
                     "☕": ("Server Polls", "1133794178405515316"),
@@ -82,7 +83,7 @@ class ReactionRoles(commands.Cog):
                 "title": "Helper Roles 🪴",
                 "description": "IMPORTANT: All roles are publically pingable! Select to be pinged to help others, ping to ask for help.",
                 "color": 0xf39c12,
-                "image_url": "https://media.tenor.com/VprYhfrdZroAAAAi/pure-vanilla-cookie-crk.gif",
+                "image_url": "https://media.tenor.com/r3NhpqJPpNAAAAAi/wuwa.gif",
                 "roles": {
                     "🎮": ("Gameplay Helper", "1506387878807208057"),
                     "🔧": ("Technical/Hardware/Software Helper", "1506521575376289822"),
@@ -92,7 +93,7 @@ class ReactionRoles(commands.Cog):
                 "title": "Misc. Roles 🛒🪄",
                 "description": "Other random roles that you might like... 👀",
                 "color": 0x9b59b6,
-                "image_url": "https://media.tenor.com/s32xQPXxDX8AAAAj/miyabi-zenless.gif",
+                "image_url": "https://c.tenor.com/d27gEByLFVUAAAAC/tenor.gif",
                 "roles": {
                     "🕵️": ("Venting Access", "1118288707724771409"),
                 }

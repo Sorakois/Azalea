@@ -10,35 +10,11 @@ import aiomysql
 import asyncio
 
 roles = {
-    "Chocolate II": 1083845379893772350,
-    "Chocolate I": 1075548364814434464, 
-    "Bronze II": 1075548426021912586, 
-    "Bronze I": 1083846147359117332,
-    "Silver III": 1083846231886934106, 
-    "Silver II": 1083846281031594134,
-    "Silver I": 1083846355946045440,
-    "Gold III": 1083846397176062002,
-    "Gold II": 1083846446631108658,
-    "Gold I": 1083846490679689367,
-    "Crystal III": 1083846553627787395,
-    "Crystal II": 1083846603628089354,
-    "Crystal I": 1083846651258613840,
-    "Diamond III": 1083846764072812645, 
-    "Diamond II": 1083846821799010439, 
-    "Diamond I": 1083846870520045599, 
-    "Master V": 1083846913301938228,
-    "Master IV": 1083847070458331236,
-    "Master III": 1083847110740414565,
-    "Master II": 1083847154134696065, 
-    "Master I": 1083847222610899065,
-    "Elite V": 1176363093853483008,
-    "Elite IV": 1176363039352705104,
-    "Elite III": 1176362985363611709,
-    "Elite II": 1176362613563732059,
-    "Elite I": 1176362538766708816,
-    "Grandmaster III": 1083847310976499752, 
-    "Grandmaster II": 1083847373647785985, 
-    "Grandmaster I": 1083847441855561799
+    "(Level 1 - 5) Germinating": 1521712119513481276,
+    "(Level 5 - 10) Seedling": 1521712856981311689,
+    "(Level 10 - 20) Vegitative": 1521712959275929610,
+    "(Level 20 - 35) Flowering": 1521713146945999165,
+    "(Level 35 - 50) Senescence": 1521713250125746246,
 }
 
 ignoreList = {836367313502208040, 329669053838917632, 400443611105460234}
@@ -110,76 +86,78 @@ class Leveling(commands.Cog):
                 em.add_field(name='User', value=userString, inline=True)
                 await interaction.response.send_message(embed=em, ephemeral=False)
 
-    @app_commands.command(name="level", description="Display the level of a user")
-    async def level(self, interaction: discord.Interaction, name: discord.User = None) -> None:
-        '''
-        Checks the current level of a server member
-        params:
-            interaction (discord.Interaction) : Interaction object to respond to
-            name (discord.User) [Optional] : An optional username to check other users' level
-        '''
-        if name is None:
-            member = interaction.user
-        else:
-            member = name
+    '''=============== bring this back later ==============='''
+    # @app_commands.command(name="level", description="Display the level of a user")
+    # async def level(self, interaction: discord.Interaction, name: discord.User = None) -> None:
+    #     '''
+    #     Checks the current level of a server member
+    #     params:
+    #         interaction (discord.Interaction) : Interaction object to respond to
+    #         name (discord.User) [Optional] : An optional username to check other users' level
+    #     '''
+    #     if name is None:
+    #         member = interaction.user
+    #     else:
+    #         member = name
     
-        # Check if the target user is in the server
-        guild_member = interaction.guild.get_member(member.id)
+    #     # Check if the target user is in the server
+    #     guild_member = interaction.guild.get_member(member.id)
     
-        async with self.bot.db.acquire() as conn:
-            async with conn.cursor() as cursor:
-                await cursor.execute("SELECT USER_XP FROM USER WHERE USER_ID = %s", (member.id,))
-                xp = await cursor.fetchone()
-                await cursor.execute("SELECT USER_LEVEL FROM USER WHERE USER_ID = %s", (member.id,))
-                level = await cursor.fetchone()
-                if not xp or not level:
-                    await cursor.execute("INSERT INTO USER (USER_ID, USER_LEVEL, USER_XP, USER_LAST_MSG) VALUES (%s, %s, %s, %s)", (member.id, 1, 0, datetime.datetime.utcnow(),))
-                try:
-                    xp = xp[0]
-                    level = level[0]
-                except TypeError:
-                    em = discord.Embed()
-                    em.add_field(name="Error", value="Sorry your current level cannot be viewed as you have not sent any messages.")
-                    await interaction.response.send_message(embed=em, ephemeral=True)
-                    return
-                try:
-                    pfpURL = member.guild_avatar.url if member.guild_avatar else member.avatar.url
-                    pfp = re.search('^.+?(?=\..{3}\?)', pfpURL).group()
-                    pfp += '.jpg?size=1024'
-                    online = True
-                except AttributeError:
-                    pfp = 'assets/level/default.jpg'
-                    online = False
-                await interaction.response.send_message(content="Loading...", ephemeral=False)
-                await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
-                highest_level = await cursor.fetchone()
+    #     async with self.bot.db.acquire() as conn:
+    #         async with conn.cursor() as cursor:
+    #             await cursor.execute("SELECT USER_XP FROM USER WHERE USER_ID = %s", (member.id,))
+    #             xp = await cursor.fetchone()
+    #             await cursor.execute("SELECT USER_LEVEL FROM USER WHERE USER_ID = %s", (member.id,))
+    #             level = await cursor.fetchone()
+    #             if not xp or not level:
+    #                 await cursor.execute("INSERT INTO USER (USER_ID, USER_LEVEL, USER_XP, USER_LAST_MSG) VALUES (%s, %s, %s, %s)", (member.id, 1, 0, datetime.datetime.utcnow(),))
+    #             try:
+    #                 xp = xp[0]
+    #                 level = level[0]
+    #             except TypeError:
+    #                 em = discord.Embed()
+    #                 em.add_field(name="Error", value="Sorry your current level cannot be viewed as you have not sent any messages.")
+    #                 await interaction.response.send_message(embed=em, ephemeral=True)
+    #                 return
+    #             try:
+    #                 pfpURL = member.guild_avatar.url if member.guild_avatar else member.avatar.url
+    #                 pfp = re.search('^.+?(?=\..{3}\?)', pfpURL).group()
+    #                 pfp += '.jpg?size=1024'
+    #                 online = True
+    #             except AttributeError:
+    #                 pfp = 'assets/level/default.jpg'
+    #                 online = False
+    #             await interaction.response.send_message(content="Loading...", ephemeral=False)
+    #             await cursor.execute("SELECT USER_LEVEL FROM USER ORDER BY USER_LEVEL DESC LIMIT 1")
+    #             highest_level = await cursor.fetchone()
             
-                # Get all rankings sorted by level DESC, then XP DESC
-                await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY USER_LEVEL DESC, USER_XP DESC), USER_ID FROM USER")
-                all_rankings = await cursor.fetchall()
+    #             # Get all rankings sorted by level DESC, then XP DESC
+    #             await cursor.execute("SELECT ROW_NUMBER() OVER(ORDER BY USER_LEVEL DESC, USER_XP DESC), USER_ID FROM USER")
+    #             all_rankings = await cursor.fetchall()
             
-                # Filter rankings to only include users who are in the server
-                rankings = []
-                current_rank = 1
-                calculated_rank = None
+    #             # Filter rankings to only include users who are in the server
+    #             rankings = []
+    #             current_rank = 1
+    #             calculated_rank = None
             
-                for rank, user_id in all_rankings:
-                    guild_member_check = interaction.guild.get_member(user_id)
-                    if guild_member_check is not None:
-                        # User is in the server, add to filtered rankings
-                        rankings.append((current_rank, user_id))
-                        if user_id == member.id:
-                            calculated_rank = current_rank
-                        current_rank += 1
+    #             for rank, user_id in all_rankings:
+    #                 guild_member_check = interaction.guild.get_member(user_id)
+    #                 if guild_member_check is not None:
+    #                     # User is in the server, add to filtered rankings
+    #                     rankings.append((current_rank, user_id))
+    #                     if user_id == member.id:
+    #                         calculated_rank = current_rank
+    #                     current_rank += 1
             
-                # If target user is not in server rankings, they get no rank
-                if guild_member is None:
-                    calculated_rank = None
+    #             # If target user is not in server rankings, they get no rank
+    #             if guild_member is None:
+    #                 calculated_rank = None
             
-                # Create and return the image
-                res = await createImage(pfp, level, xp, online, highest_level[0], member.id, interaction, rankings, calculated_rank)
-                await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.gif')])
-                
+    #             # Create and return the image
+    #             res = await createImage(pfp, level, xp, online, highest_level[0], member.id, interaction, rankings, calculated_rank)
+    #             await interaction.edit_original_response(content=None, attachments=[discord.File(fp=res, filename='rank.gif')])
+    '''=============== bring this back later ==============='''
+
     async def levelUp(self, message: discord.Message):
         '''
         Called whenever a message is sent and does experience and level up logic
@@ -315,96 +293,25 @@ class Leveling(commands.Cog):
         returns:
             int or None: Index of the role they should have, or None if no role
         '''
-        # Chocolate II (Levels 1-3)
-        if level <= 3:
+        # Index 0 maps to: (Level 1 - 5) Germinating
+        if level < 5:
             return 0
-        # Chocolate I (Levels 4-6)
-        elif level <= 6:
+            
+        # Index 1 maps to: (Level 5 - 10) Seedling
+        elif level < 10:
             return 1
-        # Bronze II (Level 7)
-        elif level == 7:
+            
+        # Index 2 maps to: (Level 10 - 20) Vegitative
+        elif level < 20:
             return 2
-        # Bronze I (Level 8)
-        elif level == 8:
+            
+        # Index 3 maps to: (Level 20 - 35) Flowering
+        elif level < 35:
             return 3
-        # Silver III (Level 9)
-        elif level == 9:
+            
+        # Index 4 maps to: (Level 35 - 50+) Senescence
+        elif level >= 35:
             return 4
-        # Silver II (Level 10)
-        elif level == 10:
-            return 5
-        # Silver I (Level 11)
-        elif level == 11:
-            return 6
-        # Gold III (Level 12)
-        elif level == 12:
-            return 7
-        # Gold II (Level 13)
-        elif level == 13:
-            return 8
-        # Gold I (Level 14)
-        elif level == 14:
-            return 9
-        # Crystal III (Level 15)
-        elif level == 15:
-            return 10
-        # Crystal II (Level 16)
-        elif level == 16:
-            return 11
-        # Crystal I (Level 17)
-        elif level == 17:
-            return 12
-        # Diamond III (Level 18)
-        elif level == 18:
-            return 13
-        # Diamond II (Level 19)
-        elif level == 19:
-            return 14
-        # Diamond I (Level 20)
-        elif level == 20:
-            return 15
-        
-        # Grandmaster I (Level 50+, 1st Place)
-        elif level == highest_level and level >= 50:
-            return 28
-        # Grandmaster II (Level 50+, Top 30% of Grandmaster)
-        elif level >= highest_level * 0.7 and level >= 50:
-            return 27
-        # Grandmaster III (Level 50+)
-        elif level >= 50:
-            return 26
-        
-        # Elite I (Level 40-49, Top 30% of Elite)
-        elif level >= highest_level * 0.7 and 40 <= level <= 49:
-            return 25
-        # Elite II (Level 40-49, Top 40% of Elite)
-        elif level >= highest_level * 0.6 and 40 <= level <= 49:
-            return 24
-        # Elite III (Level 40-49, Top 50% of Elite)
-        elif level >= highest_level * 0.5 and 40 <= level <= 49:
-            return 23
-        # Elite IV (Level 40-49, Top 60% of Elite)
-        elif level >= highest_level * 0.4 and 40 <= level <= 49:
-            return 22
-        # Elite V (Level 40-49)
-        elif 40 <= level <= 49:
-            return 21
-        
-        # Master I (Level 21-39, Top 30% of Master)
-        elif level >= highest_level * 0.7 and 21 <= level <= 39:
-            return 20
-        # Master II (Level 21-39, Top 40% of Master)
-        elif level >= highest_level * 0.6 and 21 <= level <= 39:
-            return 19
-        # Master III (Level 21-39, Top 50% of Master)
-        elif level >= highest_level * 0.5 and 21 <= level <= 39:
-            return 18
-        # Master IV (Level 21-39, Top 60% of Master)
-        elif level >= highest_level * 0.4 and 21 <= level <= 39:
-            return 17
-        # Master V (Level 21-39)
-        elif 21 <= level <= 39:
-            return 16
         
         # If level doesn't match any criteria, return None
         return None

@@ -393,7 +393,7 @@ class General(commands.Cog):
                          1369735211306188880,
                          1369750747658588201,
                          
-                         1083845379893772350 #add choco role here for now as a hotfix
+                         1521712119513481276 #add lvl 1 role here for now as a hotfix
                          ]
 
         for role_id in divider_roles:
@@ -414,7 +414,7 @@ class General(commands.Cog):
             await message.add_reaction("<:poggies:1404867219002753045>")
 
 
-        # Automatically set the user to level 0 [choco II]
+        # Automatically set the user to level 1
         async with self.bot.db.acquire() as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute("SELECT LEVEL FROM USER WHERE USER_ID = %s", (member.id,))
@@ -426,7 +426,7 @@ class General(commands.Cog):
                 else:
                     # NEW MEMBER!
                     # Numbers = ID for level 0 role
-                    roleToAdd = member.guild.get_role(1083845379893772350)
+                    roleToAdd = member.guild.get_role(1521712119513481276)
                     if roleToAdd:
                         await member.add_roles(roleToAdd)
 
@@ -469,9 +469,9 @@ class General(commands.Cog):
         '''
 
         # Check if the user is allowed to make a request
-        allowed_roles = {1083847502580695091, # Experienced
-                         1364999650762948628, # Guide
-                         1377746510816481450 # Test Server
+        allowed_roles = {1364999650762948628, # Guide
+                         1377746510816481450, # Test Server
+                         1067995521270157452 # Owner
                          }
         
         if any(role.id in allowed_roles for role in interaction.user.roles):
@@ -928,51 +928,56 @@ class General(commands.Cog):
         
 
     ''' This section is for the "daily reminder" for CRK for guild contri'''
+    '''bring this back later ==============='''
     # Send the message!
-    @tasks.loop(hours=24)
-    async def daily_ping(self):
-        channel = self.bot.get_channel(1042253069196480542)
-        if channel:
-            today = datetime.datetime.utcnow().weekday()  # 0=Monday, 1=Tuesday, etc.
+    # @tasks.loop(hours=24)
+    # async def daily_ping(self):
+    #     channel = self.bot.get_channel(1042253069196480542)
+    #     if channel:
+    #         today = datetime.datetime.utcnow().weekday()  # 0=Monday, 1=Tuesday, etc.
             
-            if today == 1:  # Tuesday - send tally day message without ping
-                tally_message = "Today is a tally day! Enjoy the day off :)"
-                await channel.send(tally_message)
-                return
+    #         if today == 1:  # Tuesday - send tally day message without ping
+    #             tally_message = "Today is a tally day! Enjoy the day off :)"
+    #             await channel.send(tally_message)
+    #             return
             
-            # Calculate ticket count: Wed=3, Thu=6, Fri=9, Sat=12, Sun=15, Mon=18
-            # Days after Tuesday: Wed=1, Thu=2, Fri=3, Sat=4, Sun=5, Mon=6
-            if today >= 2:  # Wed-Sun (2-6)
-                days_after_tuesday = today - 1
-            else:  # Monday (0)
-                days_after_tuesday = 6
+    #         # Calculate ticket count: Wed=3, Thu=6, Fri=9, Sat=12, Sun=15, Mon=18
+    #         # Days after Tuesday: Wed=1, Thu=2, Fri=3, Sat=4, Sun=5, Mon=6
+    #         if today >= 2:  # Wed-Sun (2-6)
+    #             days_after_tuesday = today - 1
+    #         else:  # Monday (0)
+    #             days_after_tuesday = 6
             
-            ticket_count = days_after_tuesday * 3  # Start at 3, +3 each day
-            ticket_count = min(ticket_count, 18)  # Cap at 18
+    #         ticket_count = days_after_tuesday * 3  # Start at 3, +3 each day
+    #         ticket_count = min(ticket_count, 18)  # Cap at 18
             
-            ping_message = f"<@&{1042250208534343763}> be sure to contribute... there's only 2 more hours until tickets refresh!\nCurrent tickets: {ticket_count}/18"
+    #         ping_message = f"<@&{1042250208534343763}> be sure to contribute... there's only 2 more hours until tickets refresh!\nCurrent tickets: {ticket_count}/18"
             
-            await channel.send(ping_message)
-            print(f"Sent daily ping at {datetime.datetime.utcnow()}")
-        else:
-            print("Error: Could not find channel.")
+    #         await channel.send(ping_message)
+    #         print(f"Sent daily ping at {datetime.datetime.utcnow()}")
+    #     else:
+    #         print("Error: Could not find channel.")
     
-    # Do all of this before starting the "oh is it time yet?" loop
-    @daily_ping.before_loop
-    async def before_daily_ping(self):
-        await self.bot.wait_until_ready()
-        seconds = await self.seconds_until_9am()
-        await asyncio.sleep(seconds)
     
-    # check how much longer we need to wait before sending the alert
-    async def seconds_until_9am(self):
-        now = datetime.datetime.now(datetime.timezone.utc)
-        target_hour = 13  # 13:00 UTC = 9:00 AM ET
-        target = now.replace(hour=target_hour, minute=0, second=0, microsecond=0)
-        if now.hour >= target_hour:
-            target += datetime.timedelta(days=1)
-        return (target - now).total_seconds()
+    # # Do all of this before starting the "oh is it time yet?" loop
+    # @daily_ping.before_loop
+    # async def before_daily_ping(self):
+    #     await self.bot.wait_until_ready()
+    #     seconds = await self.seconds_until_9am()
+    #     await asyncio.sleep(seconds)
     
+    # # check how much longer we need to wait before sending the alert
+    # async def seconds_until_9am(self):
+    #     now = datetime.datetime.now(datetime.timezone.utc)
+    #     target_hour = 13  # 13:00 UTC = 9:00 AM ET
+    #     target = now.replace(hour=target_hour, minute=0, second=0, microsecond=0)
+    #     if now.hour >= target_hour:
+    #         target += datetime.timedelta(days=1)
+    #     return (target - now).total_seconds()
+    
+    '''=============== bring this back later ==============='''
+
+
 # Add the general cog after declaration.
 cogs['general'] = General(bot)
 
@@ -1001,4 +1006,4 @@ async def on_ready():
     
 
 
-bot.run(os.environ.get('SORA_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))

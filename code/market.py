@@ -332,8 +332,8 @@ class Business(commands.Cog):
                             # Swap the ID from it being User1 to it now being User2
                             await cursor.execute("UPDATE ITEM SET USER_ID = %s WHERE ITEM_ID = %s AND ITEM_INFO_ID = %s AND PROMO = 0 AND USER_ID = %s", (other_user.id, instanceID, infoID, member.id))
                             # Subtract inv slot from User 1, add to User 2
-                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT + 1 WHERE USER_ID = %s", other_user.id)
-                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT - 1 WHERE USER_ID = %s", member.id)
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS = USER_INV_SLOTS + 1 WHERE USER_ID = %s", other_user.id)
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS = USER_INV_SLOTS - 1 WHERE USER_ID = %s", member.id)
                     if user2_chars is not None: # User2 -> User1, CHAR
                         for eachChar in user2_chars:
                             instanceID = eachChar[1]
@@ -341,8 +341,8 @@ class Business(commands.Cog):
                             # Swap the ID from it being User1 to it now being User2
                             await cursor.execute("UPDATE ITEM SET USER_ID = %s WHERE ITEM_ID = %s AND ITEM_INFO_ID = %s AND PROMO = 0 AND USER_ID = %s", (member.id, instanceID, infoID, other_user.id))
                             # Subtract inv slot from User 1, add to User 2
-                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT + 1 WHERE USER_ID = %s", member.id)
-                            await cursor.execute("UPDATE USER SET USER_INV_SLOT = USER_INV_SLOT - 1 WHERE USER_ID = %s", other_user.id)
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS = USER_INV_SLOTS + 1 WHERE USER_ID = %s", member.id)
+                            await cursor.execute("UPDATE USER SET USER_INV_SLOTS = USER_INV_SLOTS - 1 WHERE USER_ID = %s", other_user.id)
             '''
             DONE!!!! Output to user now to show the results.
             '''
