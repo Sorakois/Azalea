@@ -402,10 +402,29 @@ class General(commands.Cog):
                 await member.add_roles(roleToAdd)
 
 
-        # Log join in #welcome
+        # Log join in #welcome, now with an embed
         channel = self.bot.get_channel(996903186168283220)
         if channel:
-            await channel.send(f"Welcome to Nurture, <@{member.id}>! 💖\nWe hope you enjoy your stay! 🥰")
+
+            welcome_embed = discord.Embed(
+                title="Welcome to Nurture!",
+                description=f"Hello {member.mention}! Welcome to Nurture! Please: check out https://ptb.discord.com/channels/996903185685946490/1393934563725541457 and https://ptb.discord.com/channels/996903185685946490/1042241938730012783! If you have any questions, please ping a mod or Sorakoi. Please leave suggestions in https://ptb.discord.com/channels/996903185685946490/1037499277297074217. Thank you for joining us, and enjoy your stay!  🥰",
+                color=discord.Color.blurple()
+            )
+            
+            # Author (top left)
+            welcome_embed.set_author(name=self.bot.user.display_name, icon_url=self.bot.user.display_avatar.url)
+            # Thumbnail (top right)
+            welcome_embed.set_thumbnail(url=member.display_avatar.url)
+
+            custom_gif = discord.File("assets/firefly_wave.gif", filename="welcome_gif.gif")
+            welcome_embed.set_image(url="attachment://welcome_gif.gif")
+            
+            await channel.send(
+                content=f"Welcome {member.mention}!", 
+                embed=welcome_embed, 
+                file=custom_gif
+            )
 
         # Send a message to #general
         channel = self.bot.get_channel(996906490663276575)
