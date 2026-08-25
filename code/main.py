@@ -13,7 +13,10 @@ import asyncio
 from asyncio import Lock
 import math
 
+from giveaways import Giveaways, GiveawayJoinView, load_giveaways, save_giveaways, parse_time
+
 ''' Internal imports '''
+from partners import Partners
 from leveling import Leveling
 #from util.scrape_wiki import scrape_cookies as scrape_cookie1
 #from util.scrape_wiki_ob import scrape_cookies as scrape_cookie2
@@ -118,7 +121,9 @@ cogs = {
     'collect': Collection_BASE(bot),
     'quests': QuestSystem(bot),
     'roles': ReactionRoles(bot),
-    'dailies': AutomationCog(bot)
+    'dailies': AutomationCog(bot),
+    'partners': Partners(bot),
+    'giveaways': Giveaways(bot)
 
     # Deprecated:
     # 'gacha' : GachaInteraction(bot),
@@ -408,7 +413,7 @@ class General(commands.Cog):
 
             welcome_embed = discord.Embed(
                 title="Welcome to Nurture!",
-                description=f"Hello {member.mention}! Welcome to Nurture! Please: check out https://ptb.discord.com/channels/996903185685946490/1393934563725541457 and https://ptb.discord.com/channels/996903185685946490/1042241938730012783! If you have any questions, please ping a mod or Sorakoi. Please leave suggestions in https://ptb.discord.com/channels/996903185685946490/1037499277297074217. Thank you for joining us, and enjoy your stay!  🥰",
+                description=f"Hello {member.mention}!\nPlease: check out https://ptb.discord.com/channels/996903185685946490/1393934563725541457 and https://ptb.discord.com/channels/996903185685946490/1042241938730012783! \nIf you have any questions, please ping a mod or Sorakoi. \nPlease leave suggestions in https://ptb.discord.com/channels/996903185685946490/1037499277297074217. \n\nThank you for joining us, and enjoy your stay!  🥰",
                 color=discord.Color.blurple()
             )
             
@@ -940,6 +945,95 @@ class General(commands.Cog):
 
             elif prompt == Prompt.MONTHLY_PRESTIGE.value:
                 await handle_monthly_prestige_command(bot, interaction)
+            elif prompt == Prompt.GSTART.value:
+                class GiveawaySetupModal(discord.ui.Modal):
+                    def __init__(self):
+                        super().__init__(title="Start a Giveaway")
+                        
+                    g_duration = discord.ui.TextInput(
+                        label="Duration (e.g. 10m, 1h, 2d)", 
+                        required=True, 
+                        max_length=10
+                    )
+                    g_winners = discord.ui.TextInput(
+                        label="Number of Winners", 
+                        required=True, 
+                        max_length=3
+                    )
+                    g_prize = discord.ui.TextInput(
+                        label="Prize", 
+                        required=True, 
+                        max_length=100
+                    )
+                    g_type = discord.ui.TextInput(
+                        label="Type (general OR collab)", 
+                        required=True, 
+                        max_length=10
+                    )
+                    g_keys = discord.ui.TextInput(
+                        label="Collab Keys (Home,Partner) - Optional", 
+                        required=False, 
+                        placeholder="NurtureKey, OtherServerKey"
+                    )
+
+                    async def on_submit(self, interaction: discord.Interaction):
+                        await interaction.response.defer(ephemeral=True)
+                        
+                        seconds = parse_time(self.g_duration.value.strip())
+                        if not seconds:
+                            return await interaction.followup.send("❌ Invalid duration format.", ephemeral=True)
+                            
+                        try:
+                            winners_count = int(self.g_winners.value.strip())
+                        except ValueError:
+                            return await interaction.followup.send("❌ Winners must be a number.", ephemeral=True)
+                            
+                        giveaway_type = self.g_type.value.strip().lower()
+                        if giveaway_type not in ["general", "collab"]:
+                            return await interaction.followup.send("❌ Type must be exactly 'general' or 'collab'.", ephemeral=True)
+                            
+                        home_key, partner_key = None, None
+                        if giveaway_type == "collab":
+                            if not self.g_keys.value:
+                                return await interaction.followup.send("❌ Collab giveaways require keys formatted as 'home,partner'.", ephemeral=True)
+                            key_parts = self.g_keys.value.split(',')
+                            if len(key_parts) != 2:
+                                return await interaction.followup.send("❌ Provide exactly two keys separated by a comma (e.g., KEY1,KEY2).", ephemeral=True)
+                            home_key, partner_key = key_parts[0].strip(), key_parts[1].strip()
+
+                        end_time = datetime.datetime.utcnow() + datetime.timedelta(seconds=seconds)
+                        end_timestamp = int(end_time.timestamp())
+
+                        em = discord.Embed(
+                            title=f"🎉 GIVEAWAY: {self.g_prize.value.strip()}",
+                            description=f"Ends: <t:{end_timestamp}:R> (<t:{end_timestamp}:f>)\nHosted by: {interaction.user.mention}\nWinners: {winners_count}",
+                            color=discord.Color.gold()
+                        )
+                        
+                        if giveaway_type == "collab":
+                            em.add_field(name="⚠️ Collab Giveaway", value="Click the join button and enter the secret keys from both servers' announcements to enter!", inline=False)
+                        else:
+                            em.add_field(name="Requirement", value="Must have sent at least one message in the server to enter.", inline=False)
+
+                        view = GiveawayJoinView(interaction.client)
+                        msg = await interaction.channel.send(embed=em, view=view)
+
+                        data = load_giveaways()
+                        data[str(msg.id)] = {
+                            "channel_id": interaction.channel.id,
+                            "prize": self.g_prize.value.strip(),
+                            "end_time": end_timestamp,
+                            "winners_count": winners_count,
+                            "type": giveaway_type,
+                            "keys": [home_key, partner_key] if giveaway_type == "collab" else [],
+                            "entrants": [],
+                            "ended": False
+                        }
+                        save_giveaways(data)
+                        await interaction.followup.send("✅ Giveaway started successfully!", ephemeral=True)
+
+                await interaction.response.send_modal(GiveawaySetupModal())
+                return
 
         else:
             await interaction.response.send_message('Not gonna happen 🤓', ephemeral=True)
@@ -1020,9 +1114,15 @@ async def on_ready():
             pass
     synced = await bot.tree.sync()
 
+    # Start giveaway check
+    bot.add_view(GiveawayJoinView(bot))
+    
     # # Start the "timer" for pinging to Contribute in CRK Guild
     # cogs['general'].daily_ping.start()
     
-
+    # Rebuild the reaction roles on startup
+    reaction_roles_cog = bot.get_cog('ReactionRoles')
+    if reaction_roles_cog:
+        await reaction_roles_cog.rebuild_reaction_mappings()
 
 bot.run(os.environ.get('BOT_TOKEN'))
