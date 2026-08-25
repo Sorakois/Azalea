@@ -145,6 +145,8 @@ class GiveawayJoinView(discord.ui.View):
 class Giveaways(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    def cog_load(self):
         self.giveaway_task.start()
         
     def cog_unload(self):
