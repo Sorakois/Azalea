@@ -20,6 +20,14 @@ class Partners(commands.Cog):
                 "xp_active": 2000,
                 "xp_late": 200
             },
+            "CVLT_OF_CHAOS": {
+                "home": "NURTUREINCHAOS",
+                "partner": "Cheese",
+                "start": datetime.datetime(2026, 9, 13, 0, 0, 0),
+                "end": datetime.datetime(2026, 11, 1, 23, 59, 59),
+                "xp_active": 2000,
+                "xp_late": 200
+            }
         }
 
     @app_commands.command(name="collab_claim", description="Claim your limited-time collaboration reward!")

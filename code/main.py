@@ -840,6 +840,62 @@ class General(commands.Cog):
                                     # Done!
                                     return
 
+            elif prompt == Prompt.G_END.value:
+                import random
+                await interaction.response.defer()
+                await interaction.followup.send("Enter the Message ID of the giveaway you want to end:")
+
+                def check(message: discord.Message):
+                    return message.author.id == interaction.user.id and message.channel.id == interaction.channel.id
+            
+                try:
+                    msg = await interaction.client.wait_for('message', check=check, timeout=30.0)
+                    msg_id = msg.content.strip()
+                except asyncio.TimeoutError:
+                    return await interaction.followup.send("You didn't send a message in time.")
+
+                data = load_giveaways()
+                if msg_id not in data:
+                    return await interaction.followup.send(f"❌ Giveaway with Message ID {msg_id} not found.")
+
+                g_data = data[msg_id]
+                if g_data.get("ended", False):
+                    return await interaction.followup.send("⚠️ This giveaway has already been marked as ended.")
+
+                # Use fetch_channel instead of get_channel to avoid cache misses
+                try:
+                    channel = await self.bot.fetch_channel(g_data["channel_id"])
+                    giveaway_msg = await channel.fetch_message(int(msg_id))
+                except discord.NotFound:
+                    return await interaction.followup.send("❌ Could not find the channel or original giveaway message.")
+
+                entrants = g_data["entrants"]
+                winners_count = g_data["winners_count"]
+                prize = g_data["prize"]
+
+                if len(entrants) == 0:
+                    await channel.send(f"Nobody entered the giveaway for **{prize}**! 😢")
+                    if giveaway_msg.embeds:
+                        em = giveaway_msg.embeds[0]
+                        em.description = f"Ended.\nHosted by: <@{giveaway_msg.author.id}>\nWinners: None"
+                        await giveaway_msg.edit(embed=em, view=None)
+                else:
+                    winners_count = min(winners_count, len(entrants))
+                    winners = random.sample(entrants, winners_count)
+                    winner_mentions = ", ".join([f"<@{w}>" for w in winners])
+                    
+                    await giveaway_msg.reply(f"🎉 Congratulations {winner_mentions}! You won **{prize}**!")
+                    
+                    if giveaway_msg.embeds:
+                        em = giveaway_msg.embeds[0]
+                        em.description = f"Ended.\nHosted by: <@{giveaway_msg.author.id}>\nWinners: {winner_mentions}"
+                        em.color = discord.Color.dark_grey()
+                        await giveaway_msg.edit(content="🎉 **GIVEAWAY ENDED** 🎉", embed=em, view=None)
+
+                g_data["ended"] = True
+                save_giveaways(data)
+                await interaction.followup.send(f"✅ Successfully ended the giveaway for **{prize}**!")
+                
             elif prompt == Prompt.BUILD_CHANGE.value:
                 await interaction.response.defer()
     
